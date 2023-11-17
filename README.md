@@ -108,6 +108,11 @@
 
 ![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/601a9448-d86b-4601-9259-4ec7f3ff67c4)
 
+<hr>
+
+# Trouble Shooting
+
+[go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/main/docs/TROUBLE_SHOOTING.md)
 
 <hr>
 
