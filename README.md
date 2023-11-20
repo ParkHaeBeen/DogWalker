@@ -106,8 +106,7 @@
 
 ### ERD
 
-![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/515c2838-c1f8-41ce-960d-7c3077d78bf3)
-
+![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/9ccdb858-58aa-46f8-9c3e-1d9f3eb5275f)
 
 
 <hr>
