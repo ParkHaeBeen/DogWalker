@@ -20,9 +20,8 @@
 
 💡 로그인
 - JWT 토큰 기반으로 구현
-  - (AccessToken + RefreshToken) -> Redis 활용
-  - RememberMeAuthentication 구현
- 
+  - AccessToken 
+  - RefreshToken) -> 쿠키 + db이용 
 
 <br>
 
