@@ -66,11 +66,12 @@ public class MemberController {
 
   /**
    * 고객 회원가입
-   * @param request
+   * @param joinRequest
    */
   @PostMapping("/join/user")
-  public ResponseEntity<LoginResponse> joinMember(@RequestBody JoinUserRequest request,@RequestPart MultipartFile dotImg){
-    LoginResult joinResult = oauthService.joinCustomer(request , dotImg);
+  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") JoinUserRequest joinRequest,@RequestPart MultipartFile dogImg){
+    log.info("joinrequest ={}",joinRequest);
+    LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
     String refreshToken = joinResult.getRefreshToken();
     ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);

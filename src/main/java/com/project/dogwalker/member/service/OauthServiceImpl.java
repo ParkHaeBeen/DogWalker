@@ -1,23 +1,22 @@
 package com.project.dogwalker.member.service;
 
+import com.project.dogwalker.domain.token.RefreshToken;
+import com.project.dogwalker.domain.token.RefreshTokenRepository;
+import com.project.dogwalker.domain.user.Role;
+import com.project.dogwalker.domain.user.User;
+import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfo;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
+import com.project.dogwalker.domain.user.walker.WalkerSchedule;
+import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.member.aws.AwsService;
-import com.project.dogwalker.member.client.Oauth;
+import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.dto.ClientResponse;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenProvider;
-import com.project.dogwalker.domain.token.RefreshToken;
-import com.project.dogwalker.domain.token.RefreshTokenRepository;
-import com.project.dogwalker.domain.user.Role;
-import com.project.dogwalker.domain.user.User;
-import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.domain.user.walker.WalkerSchedule;
-import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +27,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class OauthServiceImpl implements OauthService{
 
-  private final Map<String,Oauth> oauthList;
+  private final AllOauths oauthClients;
   private final UserRepository userRepository;
   private final JwtTokenProvider jwtProvider;
   private final RefreshTokenProvider refreshTokenProvider;
@@ -45,7 +44,7 @@ public class OauthServiceImpl implements OauthService{
    */
   @Override
   public String requestUrl(String type){
-    return oauthList.get(type).getLoginView();
+    return oauthClients.requestUrl(type);
   }
 
 
@@ -55,15 +54,15 @@ public class OauthServiceImpl implements OauthService{
    * @param type 구글,카카오 중 어느 로그인인지
    */
   @Override
-  @Transactional
   public LoginResult login(String code,String type){
-    ClientResponse clientReponse = oauthList.get(type).login(code);
+    final ClientResponse clientReponse = oauthClients.login(type,code);
     log.info("respoonse ={}",clientReponse);
-    Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     boolean newMember=true;
     String accessToken = null;
     String refreshToken = null;
+
+    Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     if(userExist.isPresent()){
       User user = userExist.get();
@@ -93,25 +92,25 @@ public class OauthServiceImpl implements OauthService{
   public LoginResult joinCustomer(JoinUserRequest request , MultipartFile dotImg) {
     User newUser = User.from(request.getCommonRequest());
     newUser.setUserRole(Role.USER);
-    User joinUser = userRepository.save(newUser);
+    final User joinUser = userRepository.save(newUser);
 
     //aws s3 이미지 업로드
-    String imgUrl = awsService.saveDogImg(dotImg);
+    final String imgUrl = awsService.saveDogImg(dotImg);
 
     //강이지 정보 저장
     customerDogInfoRepository.save(CustomerDogInfo.builder()
                                                   .dogMaster(joinUser)
                                                   .dogImgUrl(imgUrl)
                                                   .dogBirth(request.getDogBirth())
-                                                  .dogName(request.getDotName())
-                                                  .dogType(request.getDotType())
+                                                  .dogName(request.getDogName())
+                                                  .dogType(request.getDogType())
                                                   .dogDescription(request.getDogDescription())
                                                   .build());
 
     //토큰 생성
-    String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
-    RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
-    String refreshToken=token.getRefreshToken();
+    final String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
+    final RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
+    final String refreshToken=token.getRefreshToken();
     refreshTokenRepository.save(token);
 
     return LoginResult.builder()
@@ -128,27 +127,30 @@ public class OauthServiceImpl implements OauthService{
    * @param request
    */
   @Override
-  @Transactional
   public LoginResult joinWalker(JoinWalkerRequest request) {
     User newUser = User.from(request.getCommonRequest());
     newUser.setUserRole(Role.WALKER);
-    User joinUser = userRepository.save(newUser);
+    final User joinUser = userRepository.save(newUser);
 
     //워커 예약 불가 날짜 저장
+    log.info("shedule = {}, size = {}",request.getSchedules(),request.getSchedules().size());
     if(request.getSchedules().size()!=0) {
-      request.getSchedules().stream()
-          .map(schedule -> walkerScheduleRepository.save(WalkerSchedule.builder()
-              .walkerId(joinUser.getUserId())
-              .dayOfWeek(schedule.getDayOfWeek())
-              .startTime(schedule.getStartTime())
-              .endTime(schedule.getEndTime())
-              .build()));
+      request.getSchedules().forEach(schedule -> {
+        WalkerSchedule walkerSchedule = WalkerSchedule.builder()
+            .walkerId(joinUser.getUserId())
+            .dayOfWeek(schedule.getDayOfWeek())
+            .startTime(schedule.getStartTime())
+            .endTime(schedule.getEndTime())
+            .build();
+
+        walkerScheduleRepository.save(walkerSchedule);
+      });
     }
 
     //토큰 생성
-    String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
-    RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
-    String refreshToken=token.getRefreshToken();
+    final String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
+    final RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
+    final String refreshToken=token.getRefreshToken();
     refreshTokenRepository.save(token);
 
     return LoginResult.builder()
