@@ -25,8 +25,7 @@ public class NaverOauth implements Oauth {
   @Value("${naver.redirect.url}")
   private String NAVER_REDIRECT_URL;
 
-  private final NaverClient naverClient;
-  private final NaverClient2 naverClient2;
+  private final NaverCoreClient naverCoreClient;
   @Override
   public String getLoginView() {
     String reqUrl=NAVER_API_URL+"response_type=code&"
@@ -38,17 +37,18 @@ public class NaverOauth implements Oauth {
   @Override
   public ClientResponse login(String code) {
     log.info("token in oauth = {}",code);
-    NaverResponse naverResponse = naverClient.getNaverToken(NaverRequest.builder()
+    NaverResponse naverResponse = naverCoreClient.getNaverToken(NaverRequest.builder()
                                                 .grant_type("authorization_code")
                                                 .client_id(NAVER_CLIENT_ID)
                                                 .client_secret(NAVER_CLIENT_PW)
                                                 .code(code)
                                                 .state("9kgsGTfH4j7IyAkg")
                                                 .build());
-    Map<String,String> headerMap=new HashMap<>();
     log.info("response ={}",naverResponse);
+
+    Map<String,String> headerMap=new HashMap<>();
     headerMap.put("authorization","Bearer "+naverResponse.getAccess_token());
 
-    return naverClient2.getNaverDetailInfo(headerMap);
+    return naverCoreClient.getNaverDetailInfo(headerMap);
   }
 }

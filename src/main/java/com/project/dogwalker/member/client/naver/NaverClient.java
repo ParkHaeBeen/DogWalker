@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(name = "naver",url = "${naver.token.url}")
 public interface NaverClient {
 
-  @GetMapping("/oauth2.0/token")
+  @GetMapping("")
   NaverResponse getNaverToken(@SpringQueryMap NaverRequest naverRequest);
 
 }
