@@ -1,7 +1,7 @@
 CREATE TABLE `Users` (
                          `user_Id`	bigint	NOT NULL,
                          `user_email`	varchar(100) NOT NULL,
-                         `user_phoneNumber`	varchar(20)	NOT NULL,
+                         `user_phone_number`	varchar(20)	NOT NULL,
                          `user_lat`	double	NOT NULL,
                          `user_lnt`	double	NOT NULL,
                          `user_role`	varchar(10)	NOT NULL,

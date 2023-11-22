@@ -32,6 +32,7 @@ dependencies {
 	//openfeign
 	implementation platform('org.springframework.cloud:spring-cloud-dependencies:2022.0.0')
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
 
 	//임시 db
