@@ -57,9 +57,9 @@ public class OauthServiceImpl implements OauthService{
   @Override
   @Transactional
   public LoginResult login(String code,String type){
-    ClientResponse googleResponse = oauthList.get(type).login(code);
-
-    Optional<User> userExist = userRepository.findByUserEmail(googleResponse.getEmail());
+    ClientResponse clientReponse = oauthList.get(type).login(code);
+    log.info("respoonse ={}",clientReponse);
+    Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     boolean newMember=true;
     String accessToken = null;
@@ -75,8 +75,8 @@ public class OauthServiceImpl implements OauthService{
     }
 
     return LoginResult.builder()
-        .name(googleResponse.getName())
-        .email(googleResponse.getEmail())
+        .name(clientReponse.getName())
+        .email(clientReponse.getEmail())
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .newMember(newMember)
