@@ -47,7 +47,7 @@ public class NaverOauth implements Oauth {
     log.info("response ={}",naverResponse);
 
     Map<String,String> headerMap=new HashMap<>();
-    headerMap.put("authorization","Bearer "+naverResponse.getAccess_token());
+    headerMap.put("authorization","Bearer "+naverResponse.getAccessToken());
 
     return naverCoreClient.getNaverDetailInfo(headerMap);
   }

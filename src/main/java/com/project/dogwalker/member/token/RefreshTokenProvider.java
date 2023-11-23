@@ -25,10 +25,7 @@ public class RefreshTokenProvider {
   }
 
   public boolean isNotExpired(final RefreshToken refreshToken){
-    if(refreshToken.getExpiredAt().isBefore(LocalDateTime.now())){
-      return false;
-    }
-    return true;
+    return !refreshToken.getExpiredAt().isBefore(LocalDateTime.now());
   }
 
 }

@@ -17,7 +17,9 @@ import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenProvider;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,7 @@ public class OauthServiceImpl implements OauthService{
    * 해당 type 로그인 url로 이동하게
    */
   @Override
-  public String requestUrl(String type){
+  public String requestUrl(final String type){
     return oauthClients.requestUrl(type);
   }
 
@@ -54,7 +56,8 @@ public class OauthServiceImpl implements OauthService{
    * @param type 구글,카카오 중 어느 로그인인지
    */
   @Override
-  public LoginResult login(String code,String type){
+  public LoginResult login(final String code,final String type){
+    //회원이 있는지 없는지 먼저 확인??
     final ClientResponse clientReponse = oauthClients.login(type,code);
     log.info("respoonse ={}",clientReponse);
 
@@ -89,7 +92,7 @@ public class OauthServiceImpl implements OauthService{
    * @param dotImg
    */
   @Override
-  public LoginResult joinCustomer(JoinUserRequest request , MultipartFile dotImg) {
+  public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
     User newUser = User.from(request.getCommonRequest());
     newUser.setUserRole(Role.USER);
     final User joinUser = userRepository.save(newUser);
@@ -99,7 +102,7 @@ public class OauthServiceImpl implements OauthService{
 
     //강이지 정보 저장
     customerDogInfoRepository.save(CustomerDogInfo.builder()
-                                                  .dogMaster(joinUser)
+                                                  .masterId(joinUser.getUserId())
                                                   .dogImgUrl(imgUrl)
                                                   .dogBirth(request.getDogBirth())
                                                   .dogName(request.getDogName())
@@ -127,7 +130,7 @@ public class OauthServiceImpl implements OauthService{
    * @param request
    */
   @Override
-  public LoginResult joinWalker(JoinWalkerRequest request) {
+  public LoginResult joinWalker(final JoinWalkerRequest request) {
     User newUser = User.from(request.getCommonRequest());
     newUser.setUserRole(Role.WALKER);
     final User joinUser = userRepository.save(newUser);
@@ -135,16 +138,18 @@ public class OauthServiceImpl implements OauthService{
     //워커 예약 불가 날짜 저장
     log.info("shedule = {}, size = {}",request.getSchedules(),request.getSchedules().size());
     if(request.getSchedules().size()!=0) {
-      request.getSchedules().forEach(schedule -> {
-        WalkerSchedule walkerSchedule = WalkerSchedule.builder()
-            .walkerId(joinUser.getUserId())
-            .dayOfWeek(schedule.getDayOfWeek())
-            .startTime(schedule.getStartTime())
-            .endTime(schedule.getEndTime())
-            .build();
 
-        walkerScheduleRepository.save(walkerSchedule);
-      });
+      List<WalkerSchedule> walkerSchedules = request.getSchedules().stream()
+          .map(schedule -> WalkerSchedule.builder()
+              .walkerId(joinUser.getUserId())
+              .dayOfWeek(schedule.getDayOfWeek())
+              .startTime(schedule.getStartTime())
+              .endTime(schedule.getEndTime())
+              .build())
+          .collect(Collectors.toList());
+
+      walkerScheduleRepository.saveAll(walkerSchedules);
+
     }
 
     //토큰 생성

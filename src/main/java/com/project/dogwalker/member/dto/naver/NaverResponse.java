@@ -1,5 +1,6 @@
 package com.project.dogwalker.member.dto.naver;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,8 +8,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NaverResponse {
 
-  private String access_token;
-  private String refresh_token;
-  private String token_type;
-  private String expires_in;
+  @JsonProperty("access_token")
+  private String accessToken;
+
+  @JsonProperty("refresh_token")
+  private String refreshToken;
+
+  @JsonProperty("token_type")
+  private String tokenType;
+
+  @JsonProperty("expires_in")
+  private String expiresIn;
+
 }

@@ -26,7 +26,7 @@ public class JwtTokenProvider {
    * @param email 회원이메일
    * @param role 회원 역할(고객, 워커)
    */
-  public String generateToken(String email, Role role){
+  public String generateToken(final String email,final Role role){
     final Date now=new Date();
     final Date validateDate=new Date(now.getTime()+TOKEN_EXPIRE_TIME);
 

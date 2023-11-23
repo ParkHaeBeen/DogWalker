@@ -45,7 +45,7 @@ public class MemberController {
    * @param type
    */
   @GetMapping("/login/{type}")
-  public ResponseEntity<LoginResponse> loginInfo(@RequestParam String code,@PathVariable String type){
+  public ResponseEntity<LoginResponse> loginInfo(@RequestParam final String code,@PathVariable final String type){
     log.info("login result = {}",code);
     final LoginResult result = oauthService.login(code , type);
     final String refreshToken=result.getRefreshToken();
@@ -69,7 +69,7 @@ public class MemberController {
    * @param joinRequest
    */
   @PostMapping("/join/user")
-  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") JoinUserRequest joinRequest,@RequestPart MultipartFile dogImg){
+  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
     LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
@@ -86,7 +86,7 @@ public class MemberController {
    * @param request
    */
   @PostMapping("/join/walker")
-  public ResponseEntity<LoginResponse> joinWalker(@RequestBody JoinWalkerRequest request){
+  public ResponseEntity<LoginResponse> joinWalker(@RequestBody final JoinWalkerRequest request){
     LoginResult joinResult = oauthService.joinWalker(request);
 
     String refreshToken = joinResult.getRefreshToken();

@@ -1,15 +1,26 @@
 package com.project.dogwalker.member.dto.google;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class GoogleResponse {
-  private String access_token;
-  private String expires_in;
-  private String refresh_token;
+  @JsonProperty("access_token")
+  private String accessToken;
+
+  @JsonProperty("expires_in")
+  private String expiresIn;
+
+  @JsonProperty("refresh_token")
+  private String refreshToken;
+
   private String scope;
-  private String token_type;
-  private String id_token;
+
+  @JsonProperty("token_type")
+  private String tokenType;
+
+  @JsonProperty("id_token")
+  private String idToken;
 }

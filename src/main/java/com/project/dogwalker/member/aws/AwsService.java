@@ -23,11 +23,11 @@ public class AwsService {
   @Value("${aws.s3.bucket}")
   private String BUCKET_NAME;
 
-  public String saveDogImg(MultipartFile imgFile) {
+  public String saveDogImg(final MultipartFile imgFile) {
     String originalFilename = imgFile.getOriginalFilename();
     String s3Key=FOLDER_NAME+originalFilename;
 
-    uploadImageToS3(s3Client,BUCKET_NAME,s3Key,imgFile);
+    uploadImageToS3(BUCKET_NAME,s3Key,imgFile);
 
     String imageUrl = s3Client.utilities().getUrl(GetUrlRequest.builder()
         .bucket(BUCKET_NAME)
@@ -37,7 +37,7 @@ public class AwsService {
     return imageUrl;
   }
 
-  private void uploadImageToS3(S3Client s3Client, String bucketName, String key, MultipartFile imageFile) {
+  private void uploadImageToS3(final String bucketName,final String key,final MultipartFile imageFile) {
 
     try {
       PutObjectRequest putObjectRequest = PutObjectRequest.builder()

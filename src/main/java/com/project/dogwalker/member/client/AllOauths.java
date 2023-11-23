@@ -11,17 +11,17 @@ public class AllOauths {
 
   private final Map<String,Oauth> oauthList;
 
-  public String requestUrl(String type){
+  public String requestUrl(final String type){
     Oauth oauth=getOauth(type);
     return oauth.getLoginView();
   }
 
-  public ClientResponse login(String type,String code){
+  public ClientResponse login(final String type,final String code){
     Oauth oauth=getOauth(type);
     return oauth.login(code);
   }
 
-  public Oauth getOauth(String type){
+  private Oauth getOauth(final String type){
     return oauthList.get(type);
   }
 }

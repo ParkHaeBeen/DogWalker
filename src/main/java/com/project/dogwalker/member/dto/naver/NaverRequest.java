@@ -7,6 +7,7 @@ import lombok.Data;
 @Builder
 public class NaverRequest {
 
+
   private String grant_type;
   private String client_id;
   private String client_secret;

@@ -51,7 +51,7 @@ public class GoogleOauth implements Oauth {
                                                     .build());
 
     return googleClient.getGoogleDetailInfo(GoogleInfRequest.builder()
-                                                    .idToken(googleResponse.getId_token())
+                                                    .idToken(googleResponse.getIdToken())
                                                     .build());
   }
 
