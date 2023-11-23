@@ -11,10 +11,7 @@ public enum ErrorCode {
   FEIGN_BAD_REQUEST("잘못된 요청입니다"),
   FEIGN_PARSE_ERROR("파싱 에러가 발생했습니다"),
   FEIGN_ERROR("feign 예외 발생했습니다"),
-  NOT_WRITE_SERVICE_PRICE("서비수 수행자는 회원가입시 서비스 수행에 대한 가격을 기입해야합니다"),
-  TOKEN_EXPIRED("토큰 만료기간이 지났습니다"),
-  NOT_WALKER("해당 경로는 서비스 수행자만 가능합니다"),
-  TOKEN_NOT_EXIST("토큰이 존재하지 않습니다");
+  NOT_WRITE_SERVICE_PRICE("서비수 수행자는 회원가입시 서비스 수행에 대한 가격을 기입해야합니다");
   private final String value;
 
   ErrorCode(final String value) {
