@@ -19,4 +19,8 @@ public class JoinWalkerRequest {
   //예약 불가 날짜
   @Builder.Default
   private List<JoinWalkerSchedule> schedules=new ArrayList<>();
+
+  //서비스 수행자마다 30,40,50분단위 가격
+  @Builder.Default
+  private List<JoinWalkerPrice> servicePrices=new ArrayList<>();
 }

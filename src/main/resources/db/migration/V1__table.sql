@@ -1,5 +1,5 @@
 CREATE TABLE `Users` (
-                         `user_Id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         `user_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                          `user_email`	varchar(100) NOT NULL,
                          `user_phone_number`	varchar(20)	NOT NULL,
                          `user_lat`	double	NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE `Users` (
 );
 
 CREATE TABLE `walker_schedule` (
-                                   `walker_sc_Id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                   `walker_sc_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                                    `walker_id`	bigint	NOT NULL,
                                    `unavailable_day`	varchar(4) NOT NULL,
                                    `unavailable_time_start`	int	NOT NULL,
@@ -26,10 +26,17 @@ CREATE TABLE `refresh_token` (
 
 CREATE TABLE `customer_dog_info` (
                                      `dog_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                     `user_Id`	bigint	NOT NULL,
+                                     `user_id`	bigint	NOT NULL,
                                      `dog_img_url`	varchar(100) NOT NULL,
                                      `dog_birth_date`	timestamp NOT NULL,
                                      `dog_name`	varchar(10) NOT NULL,
                                      `dog_type`	varchar(20)	NOT NULL,
                                      `dog_description`	varchar(500) NOT NULL
+);
+
+CREATE TABLE `walker_service_price` (
+                                        `walker_price_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                        `walker_id`	bigint	NOT NULL,
+                                        `walker_service_unit`	int	NOT NULL,
+                                        `walker_service_fee`	int	NOT NULL
 );

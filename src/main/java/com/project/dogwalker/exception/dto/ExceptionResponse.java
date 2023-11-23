@@ -24,4 +24,6 @@ public class ExceptionResponse {
   public static ExceptionResponse from(final String message, final ErrorCode errorCode) {
     return new ExceptionResponse(message, errorCode);
   }
+
+
 }

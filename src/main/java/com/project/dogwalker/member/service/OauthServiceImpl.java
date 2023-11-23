@@ -1,5 +1,7 @@
 package com.project.dogwalker.member.service;
 
+import static com.project.dogwalker.exception.ErrorCode.NOT_WRITE_SERVICE_PRICE;
+
 import com.project.dogwalker.domain.token.RefreshToken;
 import com.project.dogwalker.domain.token.RefreshTokenRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -9,6 +11,9 @@ import com.project.dogwalker.domain.user.customer.CustomerDogInfo;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
 import com.project.dogwalker.domain.user.walker.WalkerSchedule;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
+import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
+import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
+import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.dto.ClientResponse;
@@ -38,6 +43,7 @@ public class OauthServiceImpl implements OauthService{
   private final RefreshTokenProvider refreshTokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
   private final WalkerScheduleRepository walkerScheduleRepository;
+  private final WalkerServicePriceRepository walkerServicePriceRepository;
   private final AwsService awsService;
   private final CustomerDogInfoRepository customerDogInfoRepository;
 
@@ -150,6 +156,21 @@ public class OauthServiceImpl implements OauthService{
 
       walkerScheduleRepository.saveAll(walkerSchedules);
 
+    }
+
+    //서비스 수행자가 30,40,50분마다 설정한 가격 저장
+    if(request.getServicePrices().size()!=0){
+      List<WalkerServicePrice> timePerPrice = request.getServicePrices().stream()
+          .map(price -> WalkerServicePrice.builder()
+              .walkerId(joinUser.getUserId())
+              .serviceFee(price.getTimeFee())
+              .timeUnit(price.getTimeUnit())
+              .build())
+          .collect(Collectors.toList());
+
+      walkerServicePriceRepository.saveAll(timePerPrice);
+    }else{
+      throw new WalkerNotWritePriceException(NOT_WRITE_SERVICE_PRICE);
     }
 
     //토큰 생성

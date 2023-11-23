@@ -7,6 +7,7 @@ import com.project.dogwalker.exception.feign.FeignErrorParseException;
 import com.project.dogwalker.exception.feign.FeignNotFoundException;
 import com.project.dogwalker.exception.feign.FeignServerException;
 import com.project.dogwalker.exception.member.ImgUploadFailException;
+import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ExceptionResponse> handleFeignServer(final FeignServerException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.internalServerError().body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(WalkerNotWritePriceException.class)
+  public ResponseEntity<ExceptionResponse> handleWalkerNotWritePRice(final WalkerNotWritePriceException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
+    return ResponseEntity.badRequest().body(ExceptionResponse.from(e));
   }
 }
 
