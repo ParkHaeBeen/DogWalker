@@ -4,11 +4,10 @@ import com.project.dogwalker.exception.CustomException;
 import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
-
 @Getter
-public class WalkerNotWritePriceException extends CustomException {
+public class NotWalkerException extends CustomException {
 
-  public WalkerNotWritePriceException(final ErrorCode errorCode){
+  public NotWalkerException(final ErrorCode errorCode ) {
     super(errorCode);
   }
 }
