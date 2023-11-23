@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FeignErrorDecoder implements ErrorDecoder {
 
-  private final ObjectMapper objectMapper=new ObjectMapper();
+  private final ObjectMapper objectMapper;
 
   @Override
   public Exception decode(String methodKey , Response response) {
