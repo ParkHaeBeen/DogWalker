@@ -24,7 +24,7 @@ public class CustomerDogInfo {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "dog_Id",nullable = false)
+  @Column(name = "dog_id",nullable = false)
   private Long customerDogId;
 
   @Column(name = "user_id")

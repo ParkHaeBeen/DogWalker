@@ -13,7 +13,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
   private final ObjectMapper objectMapper;
 
   @Override
-  public Exception decode(String methodKey , Response response) {
+  public Exception decode(final String methodKey ,final Response response) {
     switch (response.status()){
       case 400 : return new FeignBadRequestException(parse(response));
       case 404 : return new FeignNotFoundException(parse(response));
@@ -22,7 +22,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
     }
   }
 
-  private String parse(Response response){
+  private String parse(final Response response){
     try {
       return objectMapper.readValue(response.body().asInputStream(), FeignResponseError.class).error.toString();
     } catch (IOException e) {

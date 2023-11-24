@@ -23,9 +23,10 @@ public class WalkerSchedule {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "walker_sc_id")
   private Long walkerScId;
 
-  @Column(name = "walker_Id",nullable = false)
+  @Column(name = "walker_id",nullable = false)
   private Long walkerId;
 
   @Column(name = "unavailable_day",nullable = false)
