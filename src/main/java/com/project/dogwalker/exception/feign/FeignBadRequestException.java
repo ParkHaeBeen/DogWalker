@@ -6,7 +6,7 @@ import com.project.dogwalker.exception.CustomException;
 
 public class FeignBadRequestException extends CustomException {
 
-  public FeignBadRequestException(final String exception) {
+  public FeignBadRequestException(String exception) {
     super(FEIGN_BAD_REQUEST , exception);
   }
 }

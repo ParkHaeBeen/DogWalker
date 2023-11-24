@@ -6,7 +6,7 @@ import com.project.dogwalker.exception.CustomException;
 
 public class FeignNotFoundException extends CustomException {
 
-  public FeignNotFoundException(final String message) {
+  public FeignNotFoundException(String message) {
     super(FEIGN_NOT_FOUND, message);
   }
 }

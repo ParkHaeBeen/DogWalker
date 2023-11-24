@@ -4,7 +4,7 @@ import com.project.dogwalker.exception.CustomException;
 import com.project.dogwalker.exception.ErrorCode;
 
 public class FeignCommonException extends CustomException {
-  public FeignCommonException(final String message) {
+  public FeignCommonException(String message) {
     super(ErrorCode.FEIGN_ERROR, message);
   }
 }
