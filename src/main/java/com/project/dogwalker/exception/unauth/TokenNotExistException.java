@@ -1,13 +1,13 @@
 package com.project.dogwalker.exception.unauth;
 
-import static com.project.dogwalker.exception.ErrorCode.*;
-
 import com.project.dogwalker.exception.CustomException;
 import com.project.dogwalker.exception.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public class TokenNotExistException extends CustomException {
 
-  public TokenNotExistException(Exception exception) {
-    super(NOT_EXIST_ACCESS_TOKEN , exception);
+  public TokenNotExistException(final ErrorCode errorCode) {
+    super(errorCode);
   }
 }
