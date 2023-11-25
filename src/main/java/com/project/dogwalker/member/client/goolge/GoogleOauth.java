@@ -41,8 +41,8 @@ public class GoogleOauth implements Oauth {
    * @param code
    */
   @Override
-  public ClientResponse login(String code){
-    GoogleResponse googleResponse = googleClient.getGoogleToken(GoogleRequest.builder()
+  public ClientResponse login(final String code){
+    final GoogleResponse googleResponse = googleClient.getGoogleToken(GoogleRequest.builder()
                                                     .clientId(GOOGLE_CLIENT_ID)
                                                     .clientSecret(GOOGLE_CLIENT_PW)
                                                     .code(code)
@@ -50,9 +50,11 @@ public class GoogleOauth implements Oauth {
                                                     .grantType("authorization_code")
                                                     .build());
 
-    return googleClient.getGoogleDetailInfo(GoogleInfRequest.builder()
-                                                    .idToken(googleResponse.getIdToken())
-                                                    .build());
+    ClientResponse googleDetailInfo = googleClient.getGoogleDetailInfo(GoogleInfRequest.builder()
+        .idToken(googleResponse.getIdToken())
+        .build());
+    googleDetailInfo.setIdToken(googleResponse.getIdToken());
+    return googleDetailInfo;
   }
 
 }

@@ -14,5 +14,4 @@ public class LoginResult {
   private String name;
   private String refreshToken;
   private String accessToken;
-  private boolean newMember;
 }

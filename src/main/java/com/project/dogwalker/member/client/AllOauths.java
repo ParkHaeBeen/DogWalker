@@ -12,16 +12,21 @@ public class AllOauths {
   private final Map<String,Oauth> oauthList;
 
   public String requestUrl(final String type){
-    Oauth oauth=getOauth(type);
+    Oauth oauth=getTypeOauth(type);
     return oauth.getLoginView();
   }
 
   public ClientResponse login(final String type,final String code){
-    Oauth oauth=getOauth(type);
+    Oauth oauth=getTypeOauth(type);
     return oauth.login(code);
   }
 
-  private Oauth getOauth(final String type){
+
+  /**
+   * type 네이버, 구글에 따라서 Oauth 빈 가져오기
+   * @param type
+   */
+  private Oauth getTypeOauth(final String type){
     return oauthList.get(type);
   }
 }

@@ -1,9 +1,9 @@
 package com.project.dogwalker.member.controller;
 
-import com.project.dogwalker.member.dto.join.JoinUserRequest;
-import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.dto.LoginResponse;
 import com.project.dogwalker.member.dto.LoginResult;
+import com.project.dogwalker.member.dto.join.JoinUserRequest;
+import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.service.OauthService;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +32,14 @@ public class MemberController {
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   @GetMapping("/login/{type}/view")
-  public ResponseEntity<String> getLoginView(@PathVariable String type){
+  public ResponseEntity<String> getLoginView(@PathVariable final String type){
     return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
         .body(oauthService.requestUrl(type));
   }
 
 
   /**
-   * 새로운 고객이면 LoginResponse의 newMember 필드에 true가 들어가면서 회원가입 페이지로 이동
-   * 가입된 고객이면 accessToken(바디)과 refreshToken(쿠키) 보냄
+   * 새로운 회원이면 exception발생
    * @param code
    * @param type
    */
@@ -50,14 +49,7 @@ public class MemberController {
     final LoginResult result = oauthService.login(code , type);
     final String refreshToken=result.getRefreshToken();
 
-    //새로운 멤버시 회원가입뷰로 보내게
-    if(refreshToken==null){
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(LoginResponse.from(result));
-    }
-
-    //기존 회원 로그인시
-    ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
         .body(LoginResponse.from(result));

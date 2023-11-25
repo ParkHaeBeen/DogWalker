@@ -13,6 +13,8 @@ import com.project.dogwalker.domain.user.walker.WalkerSchedule;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
+import com.project.dogwalker.exception.ErrorCode;
+import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
@@ -57,37 +59,32 @@ public class OauthServiceImpl implements OauthService{
 
 
   /**
-   * 토큰 받은후 사용자 이메일, 이름 정보 얻은후 db에서 조회후 새로운 회원이면 회원가입뷰로 가서 작성후 회원 저장
-   * @param code 구글에서 오는 코드
-   * @param type 구글,카카오 중 어느 로그인인지
+   * 토큰 받은후 사용자 이메일, 이름 정보 얻은후 db에서 조회후 새로운 회원이면 exception반환
+   * @param code 구글,네이버에서 오는 코드
+   * @param type 구글,네이버 중 어느 로그인인지
    */
   @Override
   public LoginResult login(final String code,final String type){
-    //회원이 있는지 없는지 먼저 확인??
     final ClientResponse clientReponse = oauthClients.login(type,code);
     log.info("respoonse ={}",clientReponse);
 
-    boolean newMember=true;
-    String accessToken = null;
-    String refreshToken = null;
-
     Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
-    if(userExist.isPresent()){
-      User user = userExist.get();
-      newMember=false;
-      accessToken= jwtProvider.generateToken(user.getUserEmail(),user.getUserRole());
-      RefreshToken token=refreshTokenProvider.generateRefreshToken(user.getUserId());
-      refreshToken=token.getRefreshToken();
-      refreshTokenRepository.save(token);
+    if(!userExist.isPresent()){
+      throw new MemberNotFoundException(ErrorCode.NOT_EXIST_MEMBER,clientReponse.getIdToken());
     }
+
+    final User user = userExist.get();
+    final String accessToken = jwtProvider.generateToken(user.getUserEmail() , user.getUserRole());
+    final RefreshToken token = refreshTokenProvider.generateRefreshToken(user.getUserId());
+    final String refreshToken = token.getRefreshToken();
+    refreshTokenRepository.save(token);
 
     return LoginResult.builder()
         .name(clientReponse.getName())
         .email(clientReponse.getEmail())
         .accessToken(accessToken)
         .refreshToken(refreshToken)
-        .newMember(newMember)
         .build();
   }
 
@@ -127,7 +124,6 @@ public class OauthServiceImpl implements OauthService{
         .email(joinUser.getUserEmail())
         .accessToken(accessToken)
         .refreshToken(refreshToken)
-        .newMember(false)
         .build();
   }
 
@@ -184,7 +180,6 @@ public class OauthServiceImpl implements OauthService{
         .email(joinUser.getUserEmail())
         .accessToken(accessToken)
         .refreshToken(refreshToken)
-        .newMember(false)
         .build();
   }
 }
