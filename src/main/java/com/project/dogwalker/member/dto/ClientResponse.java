@@ -15,5 +15,6 @@ public class ClientResponse {
 
   private String email;
   private String name;
+  private String idToken;
 
 }

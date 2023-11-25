@@ -1,6 +1,7 @@
 package com.project.dogwalker.exception;
 
 import com.project.dogwalker.exception.dto.ExceptionResponse;
+import com.project.dogwalker.exception.dto.TokenResponse;
 import com.project.dogwalker.exception.feign.FeignBadRequestException;
 import com.project.dogwalker.exception.feign.FeignCommonException;
 import com.project.dogwalker.exception.feign.FeignErrorParseException;
@@ -64,9 +65,9 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MemberNotFoundException.class)
-  public ResponseEntity<ExceptionResponse> hanlderNotFoundMember(final MemberNotFoundException e){
+  public ResponseEntity<TokenResponse> hanldeNotFoundMember(final MemberNotFoundException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionResponse.from(e));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TokenResponse.from(e,e.getToken()));
   }
 }
 
