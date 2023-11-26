@@ -6,7 +6,7 @@
 
 ### [회원가입과 로그인]
 :bulb: 회원가입
-- OAuth(google), Email을 통해서 회원가입
+- OAuth(google,naver)을 통해서 회원가입
 - 서비스 이용 고객과 서비스 수행자를 role로서 구분
 - 상세 정보를 저장할 테이블 각각 생성(customer_info, walker_info)
   -  서비스 이용 고객
@@ -20,9 +20,8 @@
 
 💡 로그인
 - JWT 토큰 기반으로 구현
-  - (AccessToken + RefreshToken) -> Redis 활용
-  - RememberMeAuthentication 구현
- 
+  - AccessToken 
+  - RefreshToken -> 쿠키 + db이용 
 
 <br>
 
@@ -101,13 +100,13 @@
 
 💡 소비자와 산책 수행자간의 채팅 서비스
 -> WebSocket 이용
+-> 채팅방 상태 : 사용중, 사용완료
 
 <hr>
 
 ### ERD
 
-![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/515c2838-c1f8-41ce-960d-7c3077d78bf3)
-
+![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/bf9504d0-4289-4116-80a3-7279029df0cf)
 
 
 <hr>
