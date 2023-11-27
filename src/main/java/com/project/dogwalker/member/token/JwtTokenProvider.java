@@ -1,14 +1,15 @@
 package com.project.dogwalker.member.token;
 
 import com.project.dogwalker.domain.user.Role;
+import com.project.dogwalker.member.dto.MemberInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
-import org.springframework.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class JwtTokenProvider {
@@ -62,5 +63,18 @@ public class JwtTokenProvider {
     return claims.getBody().getExpiration().after(new Date());
   }
 
+  public boolean isWalker(final String authorizationToken){
+    final Jws<Claims> claims = parseClaims(authorizationToken);
+    final Role role = (Role) claims.getBody().get("role");
+    return role==Role.WALKER;
+  }
+
+  public MemberInfo getMemberInfo(final String authorizationHeader) {
+    final Jws<Claims> claims = parseClaims(authorizationHeader);
+    final Claims body = claims.getBody();
+    final String email = body.get("email" , String.class);
+    final Role role=(Role) body.get("role");
+    return new MemberInfo(email,role);
+  }
 
 }
