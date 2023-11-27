@@ -5,13 +5,13 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class MemberNotFoundException extends CustomException {
+public class LoginMemberNotFoundException extends CustomException {
   private String token;
-  public MemberNotFoundException(final ErrorCode errorCode) {
+  public LoginMemberNotFoundException(final ErrorCode errorCode) {
     super(errorCode);
   }
 
-  public MemberNotFoundException(final ErrorCode errorCode ,final String token) {
+  public LoginMemberNotFoundException(final ErrorCode errorCode ,final String token) {
     super(errorCode);
     this.token = token;
   }

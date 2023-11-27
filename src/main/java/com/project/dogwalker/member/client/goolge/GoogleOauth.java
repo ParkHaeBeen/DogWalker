@@ -50,6 +50,7 @@ public class GoogleOauth implements Oauth {
                                                     .grantType("authorization_code")
                                                     .build());
 
+    log.info("googleResponse = {}",googleResponse);
     ClientResponse googleDetailInfo = googleClient.getGoogleDetailInfo(GoogleInfRequest.builder()
         .idToken(googleResponse.getIdToken())
         .build());
@@ -57,4 +58,12 @@ public class GoogleOauth implements Oauth {
     return googleDetailInfo;
   }
 
+  @Override
+  public ClientResponse getUserInfo(final String accessToken){
+    ClientResponse googleDetailInfo = googleClient.getGoogleDetailInfo(GoogleInfRequest.builder()
+        .idToken(accessToken)
+        .build());
+
+    return googleDetailInfo;
+  }
 }

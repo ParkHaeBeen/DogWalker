@@ -8,7 +8,7 @@ import com.project.dogwalker.exception.feign.FeignErrorParseException;
 import com.project.dogwalker.exception.feign.FeignNotFoundException;
 import com.project.dogwalker.exception.feign.FeignServerException;
 import com.project.dogwalker.exception.member.ImgUploadFailException;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -64,8 +64,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(ExceptionResponse.from(e));
   }
 
-  @ExceptionHandler(MemberNotFoundException.class)
-  public ResponseEntity<TokenResponse> hanldeNotFoundMember(final MemberNotFoundException e){
+  @ExceptionHandler(LoginMemberNotFoundException.class)
+  public ResponseEntity<TokenResponse> hanldeNotFoundMember(final LoginMemberNotFoundException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TokenResponse.from(e,e.getToken()));
   }

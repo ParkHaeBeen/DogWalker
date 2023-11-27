@@ -29,4 +29,6 @@ public class JoinUserRequest {
   private String dogDescription;
 
 
+
+
 }

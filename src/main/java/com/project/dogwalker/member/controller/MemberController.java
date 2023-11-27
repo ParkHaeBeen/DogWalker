@@ -60,8 +60,8 @@ public class MemberController {
    * 고객 회원가입
    * @param joinRequest
    */
-  @PostMapping("/join/user")
-  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart final MultipartFile dogImg){
+  @PostMapping( "/join/user")
+  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart("dogImg") final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
     LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
@@ -79,6 +79,7 @@ public class MemberController {
    */
   @PostMapping("/join/walker")
   public ResponseEntity<LoginResponse> joinWalker(@RequestBody final JoinWalkerRequest request){
+    log.info("join walker request = {}",request);
     LoginResult joinResult = oauthService.joinWalker(request);
 
     String refreshToken = joinResult.getRefreshToken();

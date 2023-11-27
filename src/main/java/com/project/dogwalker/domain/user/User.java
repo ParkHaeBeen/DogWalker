@@ -58,9 +58,9 @@ public class User extends BaseEntity {
   @Column(name = "user_name",nullable = false)
   private String userName;
 
-  public static User from(final JoinCommonRequest request){
+  public static User from(final JoinCommonRequest request, final String userEmail){
     return User.builder()
-        .userEmail(request.getEmail())
+        .userEmail(userEmail)
         .userPhoneNumber(request.getPhoneNumber())
         .userLat(request.getLat())
         .userLnt(request.getLnt())

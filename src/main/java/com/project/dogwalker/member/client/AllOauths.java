@@ -3,22 +3,29 @@ package com.project.dogwalker.member.client;
 import com.project.dogwalker.member.dto.ClientResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AllOauths {
 
   private final Map<String,Oauth> oauthList;
 
   public String requestUrl(final String type){
-    Oauth oauth=getTypeOauth(type);
+    final Oauth oauth=getTypeOauth(type);
     return oauth.getLoginView();
   }
 
   public ClientResponse login(final String type,final String code){
-    Oauth oauth=getTypeOauth(type);
+    final Oauth oauth=getTypeOauth(type);
     return oauth.login(code);
+  }
+
+  public ClientResponse getUserInfo(final String type, final String accessToken){
+    final Oauth oauth = getTypeOauth(type);
+    return oauth.getUserInfo(accessToken);
   }
 
 

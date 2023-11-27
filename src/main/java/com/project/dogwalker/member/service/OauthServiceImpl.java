@@ -1,5 +1,6 @@
 package com.project.dogwalker.member.service;
 
+import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.NOT_WRITE_SERVICE_PRICE;
 
 import com.project.dogwalker.domain.token.RefreshToken;
@@ -13,8 +14,7 @@ import com.project.dogwalker.domain.user.walker.WalkerSchedule;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
-import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
@@ -71,7 +71,7 @@ public class OauthServiceImpl implements OauthService{
     Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     if(!userExist.isPresent()){
-      throw new MemberNotFoundException(ErrorCode.NOT_EXIST_MEMBER,clientReponse.getIdToken());
+      throw new LoginMemberNotFoundException(NOT_EXIST_MEMBER,clientReponse.getIdToken());
     }
 
     final User user = userExist.get();
@@ -96,7 +96,11 @@ public class OauthServiceImpl implements OauthService{
    */
   @Override
   public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
-    User newUser = User.from(request.getCommonRequest());
+    log.info("request = {}",request.getCommonRequest());
+    final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
+        request.getCommonRequest().getAccessToken());
+
+    User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
     newUser.setUserRole(Role.USER);
     final User joinUser = userRepository.save(newUser);
 
@@ -133,7 +137,10 @@ public class OauthServiceImpl implements OauthService{
    */
   @Override
   public LoginResult joinWalker(final JoinWalkerRequest request) {
-    User newUser = User.from(request.getCommonRequest());
+    final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
+        request.getCommonRequest().getAccessToken());
+    log.info("userInfo = {}",userInfo);
+    User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
     newUser.setUserRole(Role.WALKER);
     final User joinUser = userRepository.save(newUser);
 

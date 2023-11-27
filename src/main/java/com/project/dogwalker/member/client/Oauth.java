@@ -7,4 +7,5 @@ public interface Oauth {
   String getLoginView();
   ClientResponse login(String code);
 
+  ClientResponse getUserInfo(String accessToken);
 }
