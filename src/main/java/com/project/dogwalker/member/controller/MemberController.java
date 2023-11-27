@@ -1,5 +1,8 @@
 package com.project.dogwalker.member.controller;
 
+import com.project.dogwalker.exception.ErrorCode;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResponse;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,6 +92,21 @@ public class MemberController {
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
         .body(LoginResponse.from(joinResult));
+  }
+
+  /**
+   * Refresh token 만료시 재발급
+   * @param refreshToken
+   */
+  @PostMapping("/auth/newtoken")
+  public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
+    if(refreshToken==null){
+      throw new RefreshTokenNotExistException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
+    }
+
+    final IssueToken issueToken = oauthService.generateToken(refreshToken);
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(issueToken.getRefreshToken());
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(issueToken.getAccessToken());
   }
 
 

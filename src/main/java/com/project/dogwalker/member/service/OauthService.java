@@ -1,5 +1,6 @@
 package com.project.dogwalker.member.service;
 
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
@@ -12,4 +13,6 @@ public interface OauthService {
 
   LoginResult joinCustomer(JoinUserRequest request, MultipartFile dotImg);
   LoginResult joinWalker(JoinWalkerRequest request);
+
+  IssueToken generateToken(final String refreshToken);
 }
