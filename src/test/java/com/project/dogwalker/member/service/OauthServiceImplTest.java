@@ -120,7 +120,6 @@ class OauthServiceImplTest {
     Optional<User> user= Optional.empty();
     Map<String,Oauth> map=new HashMap<>();
 
-    //여기서 에러가 나옵니다
     given(oauthClients.login(type,code)).willReturn(clientResponse);
     given(userRepository.findByUserEmail(clientResponse.getEmail())).willReturn(Optional.empty());
 
