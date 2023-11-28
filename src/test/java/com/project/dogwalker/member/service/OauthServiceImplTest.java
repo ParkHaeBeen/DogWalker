@@ -1,6 +1,7 @@
 package com.project.dogwalker.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -14,11 +15,16 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
+import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
+import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.member.aws.AwsService;
+import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.client.Oauth;
 import com.project.dogwalker.member.dto.ClientResponse;
+import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
+import com.project.dogwalker.member.dto.join.JoinWalkerPrice;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerSchedule;
 import com.project.dogwalker.member.token.JwtTokenProvider;
@@ -56,6 +62,9 @@ class OauthServiceImplTest {
   private WalkerScheduleRepository walkerScheduleRepository;
 
   @Mock
+  private WalkerServicePriceRepository walkerServicePriceRepository;
+
+  @Mock
   private AwsService awsService;
 
   @Mock
@@ -71,7 +80,8 @@ class OauthServiceImplTest {
     String type = "google";
     String accessToken = "accessToken";
     String refreshToken="refreshToken";
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test");
+    String idToken="idToken";
+    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
     Optional<User> user= Optional.ofNullable(User.builder()
                                                 .userId(1L)
                                                 .userLat(12.0)
@@ -97,34 +107,25 @@ class OauthServiceImplTest {
     assertThat(result.getName()).isEqualTo("test");
     assertThat(result.getRefreshToken()).isEqualTo(refreshToken);
     assertThat(result.getAccessToken()).isEqualTo(accessToken);
-    assertThat(result.isNewMember()).isFalse();
   }
 
   @Test
-  @DisplayName("새로운 회원 로그인 성공 - token, refreshtoken 발급 X")
+  @DisplayName("새로운 회원 로그인시 exception 반환")
   void loginSuccessNewMember() {
     //given
     String code = "testCode";
     String type = "google";
-    String accessToken = "accessToken";
-    String refreshToken="refreshToken";
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test");
+    String idToken="idToken";
+    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
     Optional<User> user= Optional.empty();
     Map<String,Oauth> map=new HashMap<>();
 
-    //여기서 에러가 나옵니다
     given(oauthClients.login(type,code)).willReturn(clientResponse);
-    given(userRepository.findByUserEmail(clientResponse.getEmail())).willReturn(user);
+    given(userRepository.findByUserEmail(clientResponse.getEmail())).willReturn(Optional.empty());
 
-    //when
-    LoginResult result = oauthService.login(code , type);
+    //when then
+    assertThrows(LoginMemberNotFoundException.class ,()-> oauthService.login(code , type));
 
-    //then
-    assertThat(result.getEmail()).isEqualTo(clientResponse.getEmail());
-    assertThat(result.getName()).isEqualTo("test");
-    assertThat(result.getRefreshToken()).isEqualTo(null);
-    assertThat(result.getAccessToken()).isEqualTo(null);
-    assertThat(result.isNewMember()).isTrue();
   }
 
   @Test
@@ -133,9 +134,11 @@ class OauthServiceImplTest {
     //given
     String accessToken = "accessToken";
     String refreshToken="refreshToken";
+    String type = "google";
+    String idToken="idToken";
     String imgUrl="url";
 
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test");
+    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
     User user= User.builder()
         .userId(1L)
         .userLat(12.0)
@@ -148,7 +151,8 @@ class OauthServiceImplTest {
 
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
         .name("test")
-        .email("test@gmail.com")
+        .accessToken(idToken)
+        .loginType(type)
         .build();
 
     JoinUserRequest request=JoinUserRequest.builder()
@@ -158,6 +162,7 @@ class OauthServiceImplTest {
     MultipartFile multipartFile=mock(MultipartFile.class);
     RefreshToken refreshTokenObject=RefreshToken.builder().refreshToken(refreshToken).build();
 
+    given(oauthClients.getUserInfo(type,idToken)).willReturn(clientResponse);
     given(userRepository.save(any())).willReturn(user);
     given(awsService.saveDogImg(any())).willReturn(imgUrl);
     given(jwtProvider.generateToken(user.getUserEmail(),user.getUserRole())).willReturn(accessToken);
@@ -169,7 +174,7 @@ class OauthServiceImplTest {
 
     //then
     assertThat(loginResult.getName()).isEqualTo(request.getCommonRequest().getName());
-    assertThat(loginResult.getEmail()).isEqualTo(request.getCommonRequest().getEmail());
+    assertThat(loginResult.getEmail()).isEqualTo(clientResponse.getEmail());
     assertThat(loginResult.getAccessToken()).isEqualTo(accessToken);
     assertThat(loginResult.getRefreshToken()).isEqualTo(refreshToken);
   }
@@ -180,12 +185,17 @@ class OauthServiceImplTest {
     //given
     String accessToken = "accessToken";
     String refreshToken="refreshToken";
+    String type = "google";
+    String idToken="idToken";
+    String email="test@gmail.com";
+
     RefreshToken refreshTokenObject=RefreshToken.builder().refreshToken(refreshToken).build();
+    ClientResponse clientResponse = new ClientResponse(email,"test",idToken);
     User user= User.builder()
         .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("test123@naver.com")
+        .userEmail(email)
         .userPhoneNumber("010-1234-1234")
         .userName("test")
         .userRole(Role.WALKER)
@@ -193,18 +203,26 @@ class OauthServiceImplTest {
 
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
         .name(user.getUserName())
-        .email(user.getUserEmail())
+        .accessToken(idToken)
+        .loginType(type)
         .build();
 
     JoinWalkerSchedule schedule1=JoinWalkerSchedule.builder().build();
     JoinWalkerSchedule schedule2=JoinWalkerSchedule.builder().build();
     List<JoinWalkerSchedule> schedules=List.of(schedule1,schedule2);
 
+    JoinWalkerPrice price1=JoinWalkerPrice.builder().build();
+    JoinWalkerPrice price2=JoinWalkerPrice.builder().build();
+    List<JoinWalkerPrice> prices=List.of(price1,price2);
+
+
     JoinWalkerRequest walkerRequest=JoinWalkerRequest.builder()
         .commonRequest(commonRequest)
         .schedules(schedules)
+        .servicePrices(prices)
         .build();
 
+    given(oauthClients.getUserInfo(type,idToken)).willReturn(clientResponse);
     given(userRepository.save(any())).willReturn(user);
     given(jwtProvider.generateToken(user.getUserEmail(),user.getUserRole())).willReturn(accessToken);
     given(refreshTokenProvider.generateRefreshToken(anyLong())).willReturn(refreshTokenObject);
@@ -215,9 +233,8 @@ class OauthServiceImplTest {
 
     //then
     assertThat(loginResult.getName()).isEqualTo(user.getUserName());
-    assertThat(loginResult.getEmail()).isEqualTo(user.getUserEmail());
+    assertThat(loginResult.getEmail()).isEqualTo(clientResponse.getEmail());
     assertThat(loginResult.getAccessToken()).isEqualTo(accessToken);
     assertThat(loginResult.getRefreshToken()).isEqualTo(refreshToken);
-    assertThat(loginResult.isNewMember()).isFalse();
   }
 }
