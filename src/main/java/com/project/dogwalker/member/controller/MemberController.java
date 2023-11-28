@@ -67,10 +67,10 @@ public class MemberController {
   @PostMapping( "/join/user")
   public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart("dogImg") final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
-    LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
+    final LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
-    String refreshToken = joinResult.getRefreshToken();
-    ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
+    final String refreshToken = joinResult.getRefreshToken();
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
 
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
@@ -84,10 +84,10 @@ public class MemberController {
   @PostMapping("/join/walker")
   public ResponseEntity<LoginResponse> joinWalker(@RequestBody final JoinWalkerRequest request){
     log.info("join walker request = {}",request);
-    LoginResult joinResult = oauthService.joinWalker(request);
+    final LoginResult joinResult = oauthService.joinWalker(request);
 
-    String refreshToken = joinResult.getRefreshToken();
-    ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
+    final String refreshToken = joinResult.getRefreshToken();
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
 
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
@@ -95,7 +95,7 @@ public class MemberController {
   }
 
   /**
-   * token 만료시 지급
+   * access token 만료시 accessToken,refreshToken 재지급
    * @param refreshToken
    */
   @PostMapping("/auth/newtoken")
@@ -109,5 +109,16 @@ public class MemberController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(issueToken.getAccessToken());
   }
 
+  /**
+   * refreshToken 만료시 프론트단에서 재발급 요청
+   * @param accessToken
+   */
+  @PostMapping("/auth/refreshtoken")
+  public ResponseEntity<?> reIssueRefreshToken(final String accessToken){
+    final String newRefreshToken = oauthService.generateNewRefreshToken(accessToken);
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(newRefreshToken);
 
+    return ResponseEntity.status(HttpStatus.OK)
+        .header(HttpHeaders.SET_COOKIE,cookie.toString()).build();
+  }
 }

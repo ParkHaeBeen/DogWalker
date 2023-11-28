@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Login {
+public @interface Auth {
 
   boolean required() default true;
   boolean isWalker() default false;

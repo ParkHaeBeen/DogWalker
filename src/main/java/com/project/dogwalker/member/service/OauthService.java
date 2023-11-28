@@ -14,5 +14,7 @@ public interface OauthService {
   LoginResult joinCustomer(JoinUserRequest request, MultipartFile dotImg);
   LoginResult joinWalker(JoinWalkerRequest request);
 
-  IssueToken generateToken(final String refreshToken);
+  IssueToken generateToken(String refreshToken);
+
+  String generateNewRefreshToken(String accessToken);
 }

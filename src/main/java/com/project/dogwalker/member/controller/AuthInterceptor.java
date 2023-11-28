@@ -24,31 +24,30 @@ public class AuthInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(final HttpServletRequest request ,final HttpServletResponse response ,final Object handler) throws Exception {
+    final Auth authAnnotation = getLoginAnnotation(handler);
 
-    if(!(handler instanceof HandlerMethod) || checkLoginAnnotation(handler)==null){
+    if(!(handler instanceof HandlerMethod) || authAnnotation ==null){
       return true;
     }
 
-    if(checkAuth(request)){
+    if(isAuthExist(request)){
       validateToken(request);
-      IsWalkerRequired(request,handler);
+      isWalker(request, authAnnotation);
       return true;
     }
 
-    validateTokenRequired(handler);
+    validateTokenRequired(authAnnotation);
     return true;
   }
 
-  private void validateTokenRequired(final Object handler) {
-    Login login = checkLoginAnnotation(handler);
-    if(login!=null && login.required()){
+  private void validateTokenRequired(final Auth authAnnotation) {
+    if(authAnnotation !=null && authAnnotation.required()){
       throw new TokenNotExistException(ErrorCode.TOKEN_NOT_EXIST);
     }
   }
 
-  private void IsWalkerRequired(final HttpServletRequest request , final Object handler) {
-    Login login = checkLoginAnnotation(handler);
-    if(login!=null && login.isWalker() && !checkWalker(request)){
+  private void isWalker(final HttpServletRequest request , final Auth authAnnotation) {
+    if(authAnnotation !=null && authAnnotation.isWalker() && !checkWalker(request)){
       throw new NotWalkerException(NOT_WALKER);
     }
   }
@@ -69,12 +68,12 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
   }
 
-  private boolean checkAuth(final HttpServletRequest request) {
+  private boolean isAuthExist(final HttpServletRequest request) {
     return request.getHeader(HttpHeaders.AUTHORIZATION) != null;
   }
 
-  private Login checkLoginAnnotation(final Object handler) {
+  private Auth getLoginAnnotation(final Object handler) {
     HandlerMethod handlerMethod= (HandlerMethod) handler;
-    return handlerMethod.getMethodAnnotation(Login.class);
+    return handlerMethod.getMethodAnnotation(Auth.class);
   }
 }

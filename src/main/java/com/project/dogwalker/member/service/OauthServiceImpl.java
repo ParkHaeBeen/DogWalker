@@ -21,11 +21,13 @@ import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
 import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.dto.ClientResponse;
 import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.token.JwtTokenProvider;
@@ -43,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class OauthServiceImpl implements OauthService{
 
   private final AllOauths oauthClients;
@@ -71,6 +73,7 @@ public class OauthServiceImpl implements OauthService{
    * @param type 구글,네이버 중 어느 로그인인지
    */
   @Override
+  @Transactional
   public LoginResult login(final String code,final String type){
     final ClientResponse clientReponse = oauthClients.login(type,code);
     log.info("respoonse ={}",clientReponse);
@@ -102,6 +105,7 @@ public class OauthServiceImpl implements OauthService{
    * @param dotImg
    */
   @Override
+  @Transactional
   public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
     log.info("request = {}",request.getCommonRequest());
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
@@ -143,6 +147,7 @@ public class OauthServiceImpl implements OauthService{
    * @param request
    */
   @Override
+  @Transactional
   public LoginResult joinWalker(final JoinWalkerRequest request) {
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
@@ -198,6 +203,7 @@ public class OauthServiceImpl implements OauthService{
   }
 
   @Override
+  @Transactional
   public IssueToken generateToken(final String refreshToken) {
     final RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
         .orElseThrow(()->new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
@@ -212,9 +218,8 @@ public class OauthServiceImpl implements OauthService{
         NOT_EXIST_MEMBER));
 
     final String accessToken = jwtProvider.generateToken(user.getUserEmail() , user.getUserRole());
-    final RefreshToken newRefreshToken = refreshTokenProvider.generateRefreshToken(userId);
-    refreshTokenRepository.save(newRefreshToken);
-    refreshTokenRepository.delete(findRefreshToken);
+    final RefreshToken newRefreshToken = generateNewRefreshToken(userId ,
+        findRefreshToken);
 
     return IssueToken.builder()
         .accessToken(accessToken)
@@ -222,7 +227,36 @@ public class OauthServiceImpl implements OauthService{
         .build();
   }
 
+
+  /**
+   * accessToken 만료부터 확인후 만료면 로그아웃
+   * accessToken 으로 유저 정보 가져오기
+   * @param accessToken
+   */
+  @Override
+  public String generateNewRefreshToken(String accessToken) {
+    if(!jwtProvider.validateToken(accessToken)){
+      throw new TokenExpiredException(TOKEN_EXPIRED);
+    }
+
+    final MemberInfo memberInfo = jwtProvider.getMemberInfo(accessToken);
+    final User user = userRepository.findByUserEmail(memberInfo.getEmail())
+        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+    final RefreshToken token = refreshTokenRepository.findByUserId(user.getUserId())
+        .orElseThrow(() -> new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
+
+    final RefreshToken newRefreshToken = generateNewRefreshToken(user.getUserId() , token);
+    return newRefreshToken.getRefreshToken();
+  }
+
   private boolean checkExpiredToken(final RefreshToken findRefreshToken) {
     return findRefreshToken.getExpiredAt().isBefore(LocalDateTime.now());
+  }
+
+  private RefreshToken generateNewRefreshToken(Long userId , RefreshToken findRefreshToken) {
+    final RefreshToken newRefreshToken = refreshTokenProvider.generateRefreshToken(userId);
+    refreshTokenRepository.save(newRefreshToken);
+    refreshTokenRepository.delete(findRefreshToken);
+    return newRefreshToken;
   }
 }
