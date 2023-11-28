@@ -95,7 +95,7 @@ public class MemberController {
   }
 
   /**
-   * Refresh token 만료시 재발급
+   * token 만료시 지급
    * @param refreshToken
    */
   @PostMapping("/auth/newtoken")
