@@ -1,7 +1,9 @@
 package com.project.dogwalker.member.service;
 
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
+import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_REFRESH_TOKEN;
 import static com.project.dogwalker.exception.ErrorCode.NOT_WRITE_SERVICE_PRICE;
+import static com.project.dogwalker.exception.ErrorCode.TOKEN_EXPIRED;
 
 import com.project.dogwalker.domain.token.RefreshToken;
 import com.project.dogwalker.domain.token.RefreshTokenRepository;
@@ -15,15 +17,22 @@ import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
+import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.dto.ClientResponse;
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenProvider;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
+@Transactional(readOnly = true)
 public class OauthServiceImpl implements OauthService{
 
   private final AllOauths oauthClients;
@@ -64,6 +73,7 @@ public class OauthServiceImpl implements OauthService{
    * @param type 구글,네이버 중 어느 로그인인지
    */
   @Override
+  @Transactional
   public LoginResult login(final String code,final String type){
     final ClientResponse clientReponse = oauthClients.login(type,code);
     log.info("respoonse ={}",clientReponse);
@@ -95,6 +105,7 @@ public class OauthServiceImpl implements OauthService{
    * @param dotImg
    */
   @Override
+  @Transactional
   public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
     log.info("request = {}",request.getCommonRequest());
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
@@ -136,6 +147,7 @@ public class OauthServiceImpl implements OauthService{
    * @param request
    */
   @Override
+  @Transactional
   public LoginResult joinWalker(final JoinWalkerRequest request) {
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
@@ -188,5 +200,63 @@ public class OauthServiceImpl implements OauthService{
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .build();
+  }
+
+  @Override
+  @Transactional
+  public IssueToken generateToken(final String refreshToken) {
+    final RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+        .orElseThrow(()->new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
+
+    if(checkExpiredToken(findRefreshToken)){
+      refreshTokenRepository.delete(findRefreshToken);
+      throw new RefreshTokenExpiredException(TOKEN_EXPIRED);
+    }
+
+    final Long userId=findRefreshToken.getUserId();
+    final User user=userRepository.findById(userId).orElseThrow(()->new MemberNotFoundException(
+        NOT_EXIST_MEMBER));
+
+    final String accessToken = jwtProvider.generateToken(user.getUserEmail() , user.getUserRole());
+    final RefreshToken newRefreshToken = generateNewRefreshToken(userId ,
+        findRefreshToken);
+
+    return IssueToken.builder()
+        .accessToken(accessToken)
+        .refreshToken(newRefreshToken.getRefreshToken())
+        .build();
+  }
+
+
+  /**
+   * accessToken 만료부터 확인후 만료면 로그아웃
+   * accessToken 으로 유저 정보 가져오기
+   * @param accessToken
+   */
+  @Override
+  public String generateNewRefreshToken(String accessToken) {
+    if(!jwtProvider.validateToken(accessToken)){
+      throw new TokenExpiredException(TOKEN_EXPIRED);
+    }
+
+    final MemberInfo memberInfo = jwtProvider.getMemberInfo(accessToken);
+    final User user = userRepository.findByUserEmail(memberInfo.getEmail())
+        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+    final RefreshToken token = refreshTokenRepository.findByUserId(user.getUserId())
+        .orElseThrow(() -> new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
+
+    final RefreshToken newRefreshToken = generateNewRefreshToken(user.getUserId() , token);
+    return newRefreshToken.getRefreshToken();
+  }
+
+  private boolean checkExpiredToken(final RefreshToken findRefreshToken) {
+    return findRefreshToken.getExpiredAt().isBefore(LocalDateTime.now());
+  }
+
+  private RefreshToken generateNewRefreshToken(Long userId , RefreshToken findRefreshToken) {
+    final RefreshToken newRefreshToken = refreshTokenProvider.generateRefreshToken(userId);
+    refreshTokenRepository.save(newRefreshToken);
+    refreshTokenRepository.delete(findRefreshToken);
+    return newRefreshToken;
   }
 }

@@ -1,5 +1,8 @@
 package com.project.dogwalker.member.controller;
 
+import com.project.dogwalker.exception.ErrorCode;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResponse;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
@@ -12,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,10 +67,10 @@ public class MemberController {
   @PostMapping( "/join/user")
   public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart("dogImg") final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
-    LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
+    final LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
-    String refreshToken = joinResult.getRefreshToken();
-    ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
+    final String refreshToken = joinResult.getRefreshToken();
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
 
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
@@ -80,15 +84,41 @@ public class MemberController {
   @PostMapping("/join/walker")
   public ResponseEntity<LoginResponse> joinWalker(@RequestBody final JoinWalkerRequest request){
     log.info("join walker request = {}",request);
-    LoginResult joinResult = oauthService.joinWalker(request);
+    final LoginResult joinResult = oauthService.joinWalker(request);
 
-    String refreshToken = joinResult.getRefreshToken();
-    ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
+    final String refreshToken = joinResult.getRefreshToken();
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(refreshToken);
 
     return ResponseEntity.status(HttpStatus.OK)
         .header(HttpHeaders.SET_COOKIE,cookie.toString())
         .body(LoginResponse.from(joinResult));
   }
 
+  /**
+   * access token 만료시 accessToken,refreshToken 재지급
+   * @param refreshToken
+   */
+  @PostMapping("/auth/newtoken")
+  public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
+    if(refreshToken==null){
+      throw new RefreshTokenNotExistException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
+    }
 
+    final IssueToken issueToken = oauthService.generateToken(refreshToken);
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(issueToken.getRefreshToken());
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(issueToken.getAccessToken());
+  }
+
+  /**
+   * refreshToken 만료시 프론트단에서 재발급 요청
+   * @param accessToken
+   */
+  @PostMapping("/auth/refreshtoken")
+  public ResponseEntity<?> reIssueRefreshToken(final String accessToken){
+    final String newRefreshToken = oauthService.generateNewRefreshToken(accessToken);
+    final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(newRefreshToken);
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .header(HttpHeaders.SET_COOKIE,cookie.toString()).build();
+  }
 }
