@@ -2,6 +2,7 @@ package com.project.dogwalker.domain.reserve;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
+import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +33,7 @@ public class PayHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "pay_history_id")
   private Long payId;
 
 
@@ -48,9 +50,19 @@ public class PayHistory extends BaseEntity {
   private Integer payPrice;
 
   //결제완료 : PY, 환불 : PR
+  @Builder.Default
   @Column(name = "pay_status",nullable = false)
-  private String payStatus;
+  private String payStatus="PY";
 
   @Column(name = "pay_method",nullable = false)
   private String payMethod;
+
+  public static PayHistory of(final ReserveRequest request,final WalkerReserveService service){
+    return PayHistory.builder()
+        .customer(service.getCustomer())
+        .payMethod(request.getPayMethod())
+        .reserveService(service)
+        .payPrice(request.getPrice())
+        .build();
+  }
 }

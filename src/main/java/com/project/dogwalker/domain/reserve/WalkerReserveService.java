@@ -2,6 +2,7 @@ package com.project.dogwalker.domain.reserve;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
+import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,13 +50,24 @@ public class WalkerReserveService extends BaseEntity {
   @Column(name = "walker_service_implement_unit",nullable = false)
   private Integer timeUnit;
 
-  //고객 취소 = CC, 서비스 수행자 예약 수락 여부 = WY(수락), WN(거부)
+  //고객 취소 = CC, 서비스 수행자 예약 수락 여부 = WY(수락), WN(거부),WP(진행중)
+  @Builder.Default
   @Column(name = "walker_service_status",nullable = false)
-  private String status;
+  private String status="WP";
 
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
 
   @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY)
   private PayHistory payHistory;
+
+  public static WalkerReserveService of(final ReserveRequest request,final User user,final User walker){
+    return WalkerReserveService.builder()
+        .customer(user)
+        .serviceDate(request.getServiceDate())
+        .servicePrice(request.getPrice())
+        .timeUnit(request.getTimeUnit())
+        .walker(walker)
+        .build();
+  }
 }
