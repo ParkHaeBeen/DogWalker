@@ -1,5 +1,7 @@
 package com.project.dogwalker.domain.reserve;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.*;
+
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
@@ -29,7 +31,7 @@ import lombok.Setter;
 @Table(name = "walker_reserve_service")
 @AttributeOverride(name = "createdAt", column = @Column(name = "walker_reserve_service_created_at"))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "walker_reserve_service_updated_at"))
-public class WalkerReserveService extends BaseEntity {
+public class WalkerReserveServiceInfo extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,16 +46,16 @@ public class WalkerReserveService extends BaseEntity {
   @Column(name = "walker_id",nullable = false)
   private User walker;
 
-  @Column(name = "walker_service_implement_date",nullable = false)
+  @Column(name = "walker_service_date",nullable = false)
   private LocalDateTime serviceDate;
 
-  @Column(name = "walker_service_implement_unit",nullable = false)
+  @Column(name = "walker_service_time_unit",nullable = false)
   private Integer timeUnit;
 
   //고객 취소 = CC, 서비스 수행자 예약 수락 여부 = WY(수락), WN(거부),WP(진행중)
   @Builder.Default
   @Column(name = "walker_service_status",nullable = false)
-  private String status="WP";
+  private WalkerServiceStatus status= WALKER_CHECKING;
 
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
@@ -61,8 +63,8 @@ public class WalkerReserveService extends BaseEntity {
   @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY)
   private PayHistory payHistory;
 
-  public static WalkerReserveService of(final ReserveRequest request,final User user,final User walker){
-    return WalkerReserveService.builder()
+  public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
+    return WalkerReserveServiceInfo.builder()
         .customer(user)
         .serviceDate(request.getServiceDate())
         .servicePrice(request.getPrice())

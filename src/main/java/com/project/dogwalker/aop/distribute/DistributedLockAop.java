@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DistributedLockAop {
 
-  private static final String REDIS_LOCK_PREFIX="LOCK:";
   private final RedissonClient redissonClient;
   private final AopForTransaction aopForTransaction;
 
@@ -37,7 +36,7 @@ public class DistributedLockAop {
     final Method method = signature.getMethod();
     final DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
 
-    String key=REDIS_LOCK_PREFIX+getReserveParameter(joinPoint);
+    String key=getReserveParameter(joinPoint);
     RLock lock=redissonClient.getLock(key);
 
     try{
@@ -72,6 +71,7 @@ public class DistributedLockAop {
     if(request==null){
       throw new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST);
     }
-    return request.getWalkerId()+""+request.getServiceDate();
+
+    return request.getClass().getSimpleName()+":"+request.getWalkerId()+request.getServiceDate();
   }
 }

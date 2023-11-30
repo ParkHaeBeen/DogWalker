@@ -2,19 +2,17 @@ package com.project.dogwalker.reserve.service;
 
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
-import static com.project.dogwalker.exception.ErrorCode.RESERVE_PROCESS;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
-import com.project.dogwalker.domain.reserve.WalkerReserveService;
+import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveAlreayException;
-import com.project.dogwalker.exception.reserve.ReserveProcessException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
@@ -22,7 +20,6 @@ import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,18 +36,12 @@ public class ReserveServiceImpl implements ReserveService{
   private final UserRepository userRepository;
 
   /**
-   * db에 이미 예약이 되어잇는지 확인하고
-   * 다른 고객이 예약을 진행중인지 확인
+   * db에 이미 예약이 되어잇는지 확인
    * @param request
    */
   @Override
   public void isReserved(final ReserveCheckRequest request) {
-    exsitReserve(request.getWalkerId(),request.getServiceDate());
-    final String key=generate(request);
-    final RLock lock = redissonClient.getLock(key);
-    if(lock.isLocked()){
-      throw new ReserveProcessException(RESERVE_PROCESS);
-    }
+    existReserve(request.getWalkerId(),request.getServiceDate());
   }
 
 
@@ -64,7 +55,7 @@ public class ReserveServiceImpl implements ReserveService{
   @Override
   @DistributedLock
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
-    exsitReserve(request.getWalkerId(),request.getServiceDate());
+    existReserve(request.getWalkerId(),request.getServiceDate());
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
@@ -72,11 +63,11 @@ public class ReserveServiceImpl implements ReserveService{
     final User walker = userRepository.findByUserIdAndUserRole(request.getWalkerId() , Role.WALKER)
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
 
-    final WalkerReserveService reserveService = WalkerReserveService.of(request , customer , walker);
+    final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
     final PayHistory payHistory = PayHistory.of(request , reserveService);
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
-    final WalkerReserveService reserve = reserveServiceRepository.save(reserveService);
+    final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
 
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
@@ -87,12 +78,9 @@ public class ReserveServiceImpl implements ReserveService{
         .build();
   }
 
-  private void exsitReserve(Long walkerId, LocalDateTime serviceDate) {
+  private void existReserve(Long walkerId, LocalDateTime serviceDate) {
     reserveServiceRepository.findByWalkerUserIdAndServiceDate(walkerId,serviceDate)
         .orElseThrow(()-> new ReserveAlreayException(RESERVE_ALREAY));
   }
 
-  private String generate(final ReserveCheckRequest request) {
-    return "LOCK:"+request.getWalkerId()+request.getServiceDate();
-  }
 }

@@ -1,5 +1,7 @@
 package com.project.dogwalker.domain.reserve;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.*;
+
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
@@ -44,20 +46,20 @@ public class PayHistory extends BaseEntity {
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "walker_reserve_service_id")
   @Column(name = "walker_reserve_service_id",nullable = false)
-  private WalkerReserveService reserveService;
+  private WalkerReserveServiceInfo reserveService;
 
-  @Column(name = "pay_price",nullable = false)
-  private Integer payPrice;
+  @Column(name = "pay_price")
+  private int payPrice;
 
   //결제완료 : PY, 환불 : PR
   @Builder.Default
   @Column(name = "pay_status",nullable = false)
-  private String payStatus="PY";
+  private PayStatus payStatus= PAY_DONE;
 
   @Column(name = "pay_method",nullable = false)
   private String payMethod;
 
-  public static PayHistory of(final ReserveRequest request,final WalkerReserveService service){
+  public static PayHistory of(final ReserveRequest request,final WalkerReserveServiceInfo service){
     return PayHistory.builder()
         .customer(service.getCustomer())
         .payMethod(request.getPayMethod())
