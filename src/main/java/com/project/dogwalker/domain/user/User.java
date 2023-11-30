@@ -29,7 +29,6 @@ import lombok.Setter;
       uniqueConstraints = {@UniqueConstraint(name = "users_email_unique",columnNames = {"user_email"})})
 @AttributeOverride(name = "createdAt", column = @Column(name = "user_created_at"))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "user_updated_at"))
-
 public class User extends BaseEntity {
 
   @Id

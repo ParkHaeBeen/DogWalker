@@ -40,3 +40,26 @@ CREATE TABLE `walker_service_price` (
                                         `walker_service_unit`	int	NOT NULL,
                                         `walker_service_fee`	int	NOT NULL
 );
+
+CREATE TABLE `walker_reserve_service` (
+                                          `walker_reserve_service_id`	bigint AUTO_INCREMENT NOT NULL,
+                                          `walker_id`	bigint	NOT NULL,
+                                          `customer_id`	bigint	NOT NULL,
+                                          `walker_reserve_service_created_at`	timestamp NOT NULL,
+                                          `walker_service_date`	timestamp NOT NULL,
+                                          `walker_service_time_unit` int NOT NULL,
+                                          `walker_service_status`	char(15)	NOT NULL,
+                                          `walker_reserve_service_update_at`	timestamp NOT NULL,
+                                          `walker_reserve_service_price` int NOT NULL
+);
+
+CREATE TABLE `pay_history` (
+                               `pay_history_id`	bigint	NOT NULL,
+                               `user_id`	bigint	NOT NULL,
+                               `walker_reserve_service_id`	bigint	NOT NULL,
+                               `pay_price`	int NOT NULL,
+                               `pay_status`	char(10) NOT NULL,
+                               `pay_created_at`	timestamp NOT NULL,
+                               `pay_updated_at`	timestamp NOT NULL,
+                               `pay_method`	varchar(50) NOT NULL
+);
