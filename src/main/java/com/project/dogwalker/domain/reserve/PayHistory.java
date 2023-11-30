@@ -8,6 +8,8 @@ import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -54,6 +56,7 @@ public class PayHistory extends BaseEntity {
   //결제완료 : PY, 환불 : PR
   @Builder.Default
   @Column(name = "pay_status",nullable = false)
+  @Enumerated(EnumType.STRING)
   private PayStatus payStatus= PAY_DONE;
 
   @Column(name = "pay_method",nullable = false)

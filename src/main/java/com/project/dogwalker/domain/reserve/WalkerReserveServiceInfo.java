@@ -8,6 +8,8 @@ import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -55,6 +57,7 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   //고객 취소 = CC, 서비스 수행자 예약 수락 여부 = WY(수락), WN(거부),WP(진행중)
   @Builder.Default
   @Column(name = "walker_service_status",nullable = false)
+  @Enumerated(EnumType.STRING)
   private WalkerServiceStatus status= WALKER_CHECKING;
 
   @Column(name = "walker_reserve_service_price")
