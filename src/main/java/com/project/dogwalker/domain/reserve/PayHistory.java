@@ -53,7 +53,7 @@ public class PayHistory extends BaseEntity {
   @Column(name = "pay_price")
   private int payPrice;
 
-  //결제완료 : PY, 환불 : PR
+
   @Builder.Default
   @Column(name = "pay_status",nullable = false)
   @Enumerated(EnumType.STRING)

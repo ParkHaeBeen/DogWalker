@@ -54,7 +54,6 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_service_time_unit",nullable = false)
   private Integer timeUnit;
 
-  //고객 취소 = CC, 서비스 수행자 예약 수락 여부 = WY(수락), WN(거부),WP(진행중)
   @Builder.Default
   @Column(name = "walker_service_status",nullable = false)
   @Enumerated(EnumType.STRING)
