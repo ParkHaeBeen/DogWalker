@@ -18,9 +18,9 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ReserveServiceImpl implements ReserveService{
 
-  private final RedissonClient redissonClient;
   private final WalkerReserveServiceRepository reserveServiceRepository;
   private final PayHistoryRespository payHistoryRespository;
   private final UserRepository userRepository;
@@ -79,8 +78,11 @@ public class ReserveServiceImpl implements ReserveService{
   }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
-    reserveServiceRepository.findByWalkerUserIdAndServiceDate(walkerId,serviceDate)
-        .orElseThrow(()-> new ReserveAlreayException(RESERVE_ALREAY));
+    Optional<WalkerReserveServiceInfo> reserveService = reserveServiceRepository.findByWalkerUserIdAndServiceDate(
+        walkerId , serviceDate);
+    if(reserveService.isPresent()){
+      throw new ReserveAlreayException(RESERVE_ALREAY);
+    }
   }
 
 }

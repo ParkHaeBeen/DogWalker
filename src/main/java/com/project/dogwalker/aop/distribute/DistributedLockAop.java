@@ -39,8 +39,8 @@ public class DistributedLockAop {
     String key=getReserveParameter(joinPoint);
     RLock lock=redissonClient.getLock(key);
 
+    boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
     try{
-      boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
       if(!isLocked){
         throw  new ReserveNotAvailableException(RESERVE_NOT_AVAILABLE);
       }
@@ -50,7 +50,9 @@ public class DistributedLockAop {
       throw new LockInterruptedException(LOCK_INTERRUPTED_ERROR);
     }finally {
       try {
-        lock.unlock();
+        if (isLocked) {
+          lock.unlock();
+        }
       }catch (IllegalMonitorStateException e){
         throw  new AlreadyUnLockException(ALREADY_UNLOCK);
       }

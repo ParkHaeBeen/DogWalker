@@ -52,7 +52,8 @@ public class JwtTokenProvider {
   }
 
   private Jws<Claims> parseClaims(final String authorizationToken) {
-    return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(authorizationToken);
+    final String authToken = authorizationToken.substring(TOKEN_PREFIX.length());
+    return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(authToken);
   }
 
   private boolean isAccessToken(Jws<Claims> claims) {

@@ -43,8 +43,7 @@ public class ReserveController {
    */
   @PostMapping("/reserve")
   @Auth
-  public ResponseEntity<ReserveResponse> reserveService(@AuthMember final MemberInfo memberInfo, @RequestBody
-      ReserveRequest request){
+  public ResponseEntity<ReserveResponse> reserveService(@AuthMember final MemberInfo memberInfo,@RequestBody ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);
     return ResponseEntity.ok(reserveResponse);
   }

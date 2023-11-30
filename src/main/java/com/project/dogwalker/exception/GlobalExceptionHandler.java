@@ -10,6 +10,7 @@ import com.project.dogwalker.exception.feign.FeignServerException;
 import com.project.dogwalker.exception.member.ImgUploadFailException;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
+import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<TokenResponse> hanldeNotFoundMember(final LoginMemberNotFoundException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TokenResponse.from(e,e.getToken()));
+  }
+
+  @ExceptionHandler(TokenExpiredException.class)
+  public ResponseEntity<ExceptionResponse> handleTokenExpired(final TokenExpiredException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
   }
 }
 

@@ -1,6 +1,6 @@
 package com.project.dogwalker.domain.reserve;
 
-import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.*;
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -41,11 +42,11 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   private Long reserveId;
 
   @ManyToOne
-  @Column(name = "customer_id",nullable = false)
+  @JoinColumn(name = "customer_id",nullable = false)
   private User customer;
 
   @ManyToOne
-  @Column(name = "walker_id",nullable = false)
+  @JoinColumn(name = "walker_id",nullable = false)
   private User walker;
 
   @Column(name = "walker_service_date",nullable = false)
