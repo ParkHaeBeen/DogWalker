@@ -18,13 +18,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-@Execution(ExecutionMode.CONCURRENT)
 public class ReserveDistributeTest {
 
   @Autowired
@@ -65,7 +62,7 @@ public class ReserveDistributeTest {
     int numThreads = 200;
 
     CountDownLatch latch = new CountDownLatch(numThreads);
-    ExecutorService executorService = Executors.newFixedThreadPool(50);
+    ExecutorService executorService = Executors.newFixedThreadPool(100);
     for (int i = 0; i < numThreads; i++) {
       executorService.execute(() -> {
         try {

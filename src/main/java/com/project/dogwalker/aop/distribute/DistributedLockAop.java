@@ -20,13 +20,11 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class DistributedLockAop {
 
   private final RedissonClient redissonClient;
@@ -41,9 +39,9 @@ public class DistributedLockAop {
     String key=getReserveParameter(joinPoint);
     RLock lock=redissonClient.getLock(key);
 
-    boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
 
     try{
+      boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
 
       if(!isLocked){
         throw  new ReserveNotAvailableException(RESERVE_NOT_AVAILABLE);
@@ -54,9 +52,7 @@ public class DistributedLockAop {
       throw new LockInterruptedException(LOCK_INTERRUPTED_ERROR);
     }finally {
       try {
-        if (isLocked) {
-          lock.unlock();
-        }
+        lock.unlock();
       }catch (IllegalMonitorStateException e){
         throw  new AlreadyUnLockException(ALREADY_UNLOCK);
       }

@@ -8,7 +8,7 @@ import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.exception.reserve.ReserveAlreayException;
+import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -73,7 +73,7 @@ class ReserveServiceImplTest {
 
     //when
     //then
-    Assertions.assertThrows(ReserveAlreayException.class,()->reserveService.isReserved(request));
+    Assertions.assertThrows(ReserveAlreadyException.class,()->reserveService.isReserved(request));
 
   }
 

@@ -12,7 +12,7 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
-import com.project.dogwalker.exception.reserve.ReserveAlreayException;
+import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
@@ -81,7 +81,7 @@ public class ReserveServiceImpl implements ReserveService{
     Optional<WalkerReserveServiceInfo> reserveService = reserveServiceRepository.findByWalkerUserIdAndServiceDate(
         walkerId , serviceDate);
     if(reserveService.isPresent()){
-      throw new ReserveAlreayException(RESERVE_ALREAY);
+      throw new ReserveAlreadyException(RESERVE_ALREAY);
     }
   }
 
