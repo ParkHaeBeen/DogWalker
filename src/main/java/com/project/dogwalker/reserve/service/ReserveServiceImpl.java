@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class ReserveServiceImpl implements ReserveService{
 
   private final WalkerReserveServiceRepository reserveServiceRepository;
@@ -39,6 +38,7 @@ public class ReserveServiceImpl implements ReserveService{
    * @param request
    */
   @Override
+  @Transactional(readOnly = true)
   public void isReserved(final ReserveCheckRequest request) {
     existReserve(request.getWalkerId(),request.getServiceDate());
   }

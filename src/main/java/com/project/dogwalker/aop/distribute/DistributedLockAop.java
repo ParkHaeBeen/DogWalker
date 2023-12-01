@@ -20,11 +20,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class DistributedLockAop {
 
   private final RedissonClient redissonClient;
@@ -40,7 +42,9 @@ public class DistributedLockAop {
     RLock lock=redissonClient.getLock(key);
 
     boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
+
     try{
+
       if(!isLocked){
         throw  new ReserveNotAvailableException(RESERVE_NOT_AVAILABLE);
       }
@@ -74,6 +78,6 @@ public class DistributedLockAop {
       throw new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST);
     }
 
-    return request.getClass().getSimpleName()+":"+request.getWalkerId()+request.getServiceDate();
+    return "ReserveKey"+":"+request.getWalkerId()+":"+request.getServiceDate();
   }
 }

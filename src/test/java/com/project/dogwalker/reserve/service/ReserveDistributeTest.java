@@ -12,6 +12,7 @@ import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,11 +41,7 @@ public class ReserveDistributeTest {
   @DisplayName("예약 진행-성공")
   void reserveService_success() throws InterruptedException {
     // Mock data
-    MemberInfo member=MemberInfo.builder()
-        .role(Role.USER)
-        .email("ddd@gmail.com")
-        .build();
-
+    LocalDateTime serviceReserve=LocalDateTime.of(2023,12,12,12,30);
     User customer= User.builder()
         .userRole(Role.USER)
         .userLat(12.0)
@@ -61,24 +58,28 @@ public class ReserveDistributeTest {
         .userPhoneNumber("010-1234-1234")
         .userEmail("walker@gmail.com")
         .build();
+
     userRepository.save(customer);
-
     User walkerSave = userRepository.save(walker);
-    ReserveRequest request=ReserveRequest.builder()
-        .walkerId(walkerSave.getUserId())
-        .timeUnit(30)
-        .serviceDate(LocalDateTime.of(2023,12,12,12,30))
-        .price(1000)
-        .payMethod("card")
-        .build();
 
-    int numThreads = 10;
+    int numThreads = 200;
 
     CountDownLatch latch = new CountDownLatch(numThreads);
-    ExecutorService executorService = Executors.newFixedThreadPool(100);
+    ExecutorService executorService = Executors.newFixedThreadPool(50);
     for (int i = 0; i < numThreads; i++) {
       executorService.execute(() -> {
         try {
+          MemberInfo member=MemberInfo.builder()
+              .role(Role.USER)
+              .email("ddd@gmail.com")
+              .build();
+          ReserveRequest request=ReserveRequest.builder()
+              .walkerId(walkerSave.getUserId())
+              .timeUnit(30)
+              .serviceDate(serviceReserve)
+              .price(1000)
+              .payMethod("card")
+              .build();
           ReserveResponse reserveResponse = reserveService.reserveService(member, request);
           System.out.println(reserveResponse.toString());
         } finally {
@@ -88,9 +89,13 @@ public class ReserveDistributeTest {
     }
 
     latch.await();
+    List<WalkerReserveServiceInfo> all = walkerReserveServiceRepository.findAll();
+    for (WalkerReserveServiceInfo serviceInfo : all) {
+      System.out.println("result ="+serviceInfo.getReserveId()+" "+serviceInfo.getServiceDate()+" "+serviceInfo.getCustomer().getUserId()+" "+serviceInfo.getWalker().getUserId());
+    }
     WalkerReserveServiceInfo serviceDate = walkerReserveServiceRepository.findByWalkerUserIdAndServiceDate(
-        walkerSave.getUserId() , request.getServiceDate()).get();
-    assertThat(serviceDate.getServiceDate()).isEqualTo(request.getServiceDate());
+        walkerSave.getUserId() ,serviceReserve).get();
+    assertThat(serviceDate.getServiceDate()).isEqualTo(serviceReserve);
     assertThat(serviceDate.getCustomer().getUserEmail()).isEqualTo(customer.getUserEmail());
     assertThat(walkerReserveServiceRepository.findAll().size()).isEqualTo(1);
 
