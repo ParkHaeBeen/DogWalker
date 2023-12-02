@@ -97,7 +97,7 @@ class ReserveControllerTest {
     ReserveRequest request=ReserveRequest.builder()
         .payMethod("card")
         .price(1000)
-        .serviceDate(LocalDateTime.of(2023,12,12,12,30))
+        .serviceDateTime(LocalDateTime.of(2023,12,12,12,30))
         .timeUnit(30)
         .walkerId(1L)
         .build();

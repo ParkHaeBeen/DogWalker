@@ -18,7 +18,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class ReserveRequest {
   private Long walkerId;
-  private LocalDateTime serviceDate;
+  private LocalDateTime serviceDateTime;
   private Integer timeUnit;
   private Integer price;
   private String payMethod;

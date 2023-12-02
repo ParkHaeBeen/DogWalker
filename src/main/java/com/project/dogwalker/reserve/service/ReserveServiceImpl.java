@@ -18,7 +18,6 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,8 +52,10 @@ public class ReserveServiceImpl implements ReserveService{
    */
   @Override
   @DistributedLock
+  @Transactional
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
-    existReserve(request.getWalkerId(),request.getServiceDate());
+    log.info("reserve service start");
+    existReserve(request.getWalkerId(),request.getServiceDateTime());
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
@@ -67,7 +68,7 @@ public class ReserveServiceImpl implements ReserveService{
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
-
+    log.info("reserve service end");
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -78,11 +79,13 @@ public class ReserveServiceImpl implements ReserveService{
   }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
-    Optional<WalkerReserveServiceInfo> reserveService = reserveServiceRepository.findByWalkerUserIdAndServiceDate(
-        walkerId , serviceDate);
-    if(reserveService.isPresent()){
+    log.info("reserve exist start");
+
+    if(reserveServiceRepository.findByWalkerUserIdAndServiceDate(walkerId , serviceDate).isPresent()){
+      log.info("reserve exist true");
       throw new ReserveAlreadyException(RESERVE_ALREAY);
     }
+    log.info("reserve exist end");
   }
 
 }

@@ -35,7 +35,6 @@ public class DistributedLockAop {
     final MethodSignature signature = (MethodSignature) joinPoint.getSignature();
     final Method method = signature.getMethod();
     final DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
-
     String key=getReserveParameter(joinPoint);
     RLock lock=redissonClient.getLock(key);
 
@@ -46,6 +45,7 @@ public class DistributedLockAop {
       if(!isLocked){
         throw  new ReserveNotAvailableException(RESERVE_NOT_AVAILABLE);
       }
+      log.info("redis lock start");
 
       return aopForTransaction.proceed(joinPoint);
     }catch (InterruptedException e){
@@ -53,6 +53,8 @@ public class DistributedLockAop {
     }finally {
       try {
         lock.unlock();
+        log.info("redis unlock");
+
       }catch (IllegalMonitorStateException e){
         throw  new AlreadyUnLockException(ALREADY_UNLOCK);
       }
@@ -74,6 +76,6 @@ public class DistributedLockAop {
       throw new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST);
     }
 
-    return "ReserveKey"+":"+request.getWalkerId()+":"+request.getServiceDate();
+    return request.getClass().getSimpleName()+":"+request.getWalkerId()+":"+request.getServiceDateTime();
   }
 }

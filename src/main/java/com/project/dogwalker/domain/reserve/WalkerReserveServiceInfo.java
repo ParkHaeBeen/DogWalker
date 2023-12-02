@@ -69,7 +69,7 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
     return WalkerReserveServiceInfo.builder()
         .customer(user)
-        .serviceDate(request.getServiceDate())
+        .serviceDate(request.getServiceDateTime())
         .servicePrice(request.getPrice())
         .timeUnit(request.getTimeUnit())
         .walker(walker)

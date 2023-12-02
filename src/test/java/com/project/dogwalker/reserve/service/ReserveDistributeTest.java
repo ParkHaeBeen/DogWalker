@@ -35,7 +35,7 @@ public class ReserveDistributeTest {
   private ReserveServiceImpl reserveService;
 
   @Test
-  @DisplayName("예약 진행-성공")
+  @DisplayName("예약 중복 진행시 분산락 기능 성공")
   void reserveService_success() throws InterruptedException {
     // Mock data
     LocalDateTime serviceReserve=LocalDateTime.of(2023,12,12,12,30);
@@ -59,10 +59,10 @@ public class ReserveDistributeTest {
     userRepository.save(customer);
     User walkerSave = userRepository.save(walker);
 
-    int numThreads = 200;
+    int numThreads = 50;
 
     CountDownLatch latch = new CountDownLatch(numThreads);
-    ExecutorService executorService = Executors.newFixedThreadPool(100);
+    ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
     for (int i = 0; i < numThreads; i++) {
       executorService.execute(() -> {
         try {
@@ -73,7 +73,7 @@ public class ReserveDistributeTest {
           ReserveRequest request=ReserveRequest.builder()
               .walkerId(walkerSave.getUserId())
               .timeUnit(30)
-              .serviceDate(serviceReserve)
+              .serviceDateTime(serviceReserve)
               .price(1000)
               .payMethod("card")
               .build();

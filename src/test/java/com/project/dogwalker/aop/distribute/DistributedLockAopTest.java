@@ -50,7 +50,7 @@ class DistributedLockAopTest {
     DistributedLock distributedLockAnnotation = method.getAnnotation(DistributedLock.class);
     ReserveRequest reserveRequest = new ReserveRequest();
     reserveRequest.setWalkerId(10L);
-    reserveRequest.setServiceDate(LocalDateTime.of(2023,12,12,15,30));
+    reserveRequest.setServiceDateTime(LocalDateTime.of(2023,12,12,15,30));
     RLock lock = mock(RLock.class);
 
     ReserveResponse reserveResponse=ReserveResponse.builder().build();
@@ -80,7 +80,7 @@ class DistributedLockAopTest {
     DistributedLock distributedLockAnnotation = method.getAnnotation(DistributedLock.class);
     ReserveRequest reserveRequest = new ReserveRequest();
     reserveRequest.setWalkerId(10L);
-    reserveRequest.setServiceDate(LocalDateTime.of(2023,12,12,15,30));
+    reserveRequest.setServiceDateTime(LocalDateTime.of(2023,12,12,15,30));
     RLock lock = mock(RLock.class);
 
     ReserveResponse reserveResponse=ReserveResponse.builder().build();
