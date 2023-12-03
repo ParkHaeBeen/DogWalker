@@ -8,14 +8,15 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
+import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
-import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,22 +78,21 @@ public class ReserveDistributeTest {
               .price(1000)
               .payMethod("card")
               .build();
-          ReserveResponse reserveResponse = reserveService.reserveService(member, request);
-          System.out.println(reserveResponse.toString());
-        } finally {
+          reserveService.reserveService(member, request);
+        }catch (Exception e){
+          Assertions.assertThat(e).isInstanceOf(ReserveAlreadyException.class);
+        }finally {
           latch.countDown();
         }
       });
     }
 
     latch.await();
+
     List<WalkerReserveServiceInfo> all = walkerReserveServiceRepository.findAll();
-    for (WalkerReserveServiceInfo serviceInfo : all) {
-      System.out.println("result ="+serviceInfo.getReserveId()+" "+serviceInfo.getServiceDate()+" "+serviceInfo.getCustomer().getUserId()+" "+serviceInfo.getWalker().getUserId());
-    }
-    WalkerReserveServiceInfo serviceDate = walkerReserveServiceRepository.findByWalkerUserIdAndServiceDate(
+    WalkerReserveServiceInfo serviceDate = walkerReserveServiceRepository.findByWalkerUserIdAndServiceDateTime(
         walkerSave.getUserId() ,serviceReserve).get();
-    assertThat(serviceDate.getServiceDate()).isEqualTo(serviceReserve);
+    assertThat(serviceDate.getServiceDateTime()).isEqualTo(serviceReserve);
     assertThat(serviceDate.getCustomer().getUserEmail()).isEqualTo(customer.getUserEmail());
     assertThat(walkerReserveServiceRepository.findAll().size()).isEqualTo(1);
 

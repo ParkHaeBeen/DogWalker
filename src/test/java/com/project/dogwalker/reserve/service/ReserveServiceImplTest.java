@@ -50,7 +50,7 @@ class ReserveServiceImplTest {
         .walkerId(1L)
         .build();
 
-    given(walkerReserveServiceRepository.findByWalkerUserIdAndServiceDate(anyLong(),any()))
+    given(walkerReserveServiceRepository.findByWalkerUserIdAndServiceDateTime(anyLong(),any()))
         .willReturn(Optional.empty());
 
     //when
@@ -68,7 +68,7 @@ class ReserveServiceImplTest {
         .walkerId(1L)
         .build();
     WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder().build();
-    given(walkerReserveServiceRepository.findByWalkerUserIdAndServiceDate(anyLong(),any()))
+    given(walkerReserveServiceRepository.findByWalkerUserIdAndServiceDateTime(anyLong(),any()))
         .willReturn(Optional.of(walkerReserveServiceInfo));
 
     //when

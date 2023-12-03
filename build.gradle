@@ -38,6 +38,8 @@ dependencies {
 
 	//임시 db
 	implementation 'com.h2database:h2'
+	//implementation 'mysql:mysql-connector-java:8.0.28'
+
 
 	//flyway
 	implementation 'org.flywaydb:flyway-core'

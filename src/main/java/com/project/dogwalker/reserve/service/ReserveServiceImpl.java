@@ -52,7 +52,6 @@ public class ReserveServiceImpl implements ReserveService{
    */
   @Override
   @DistributedLock
-  @Transactional
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
     log.info("reserve service start");
     existReserve(request.getWalkerId(),request.getServiceDateTime());
@@ -72,7 +71,7 @@ public class ReserveServiceImpl implements ReserveService{
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
-        .serviceDate(reserve.getServiceDate())
+        .serviceDate(reserve.getServiceDateTime())
         .timeUnit(reserve.getTimeUnit())
         .walkerName(walker.getUserName())
         .build();
@@ -81,7 +80,7 @@ public class ReserveServiceImpl implements ReserveService{
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
     log.info("reserve exist start");
 
-    if(reserveServiceRepository.findByWalkerUserIdAndServiceDate(walkerId , serviceDate).isPresent()){
+    if(reserveServiceRepository.findByWalkerUserIdAndServiceDateTime(walkerId , serviceDate).isPresent()){
       log.info("reserve exist true");
       throw new ReserveAlreadyException(RESERVE_ALREAY);
     }
