@@ -5,9 +5,9 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ReserveAlreayException extends CustomException {
+public class ReserveAlreadyException extends CustomException {
 
-  public ReserveAlreayException(final ErrorCode errorCode) {
+  public ReserveAlreadyException(final ErrorCode errorCode) {
     super(errorCode);
   }
 }

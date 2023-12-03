@@ -38,6 +38,8 @@ dependencies {
 
 	//임시 db
 	implementation 'com.h2database:h2'
+	//implementation 'mysql:mysql-connector-java:8.0.28'
+
 
 	//flyway
 	implementation 'org.flywaydb:flyway-core'
@@ -52,11 +54,14 @@ dependencies {
 
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
+	implementation 'org.redisson:redisson-spring-boot-starter:3.19.3'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.mockito:mockito-core:4.8.0'
+	testImplementation 'org.mockito:mockito-core:4.9.0'
+	testImplementation 'org.mockito:mockito-inline:4.9.0'
+	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+	testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

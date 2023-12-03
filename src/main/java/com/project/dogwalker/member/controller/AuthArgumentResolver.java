@@ -15,6 +15,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
   private final JwtTokenProvider jwtTokenProvider;
+  public static final String TOKEN_PREFIX="Bearer ";
 
 
   @Override
@@ -28,7 +29,7 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
       final NativeWebRequest webRequest ,final WebDataBinderFactory binderFactory) throws Exception {
     final String authorizationHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-    if(authorizationHeader==null){
+    if(authorizationHeader==null||!authorizationHeader.startsWith(TOKEN_PREFIX)){
       return null;
     }
     return jwtTokenProvider.getMemberInfo(authorizationHeader);

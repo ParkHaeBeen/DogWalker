@@ -1,6 +1,6 @@
 package com.project.dogwalker.domain.reserve;
 
-import static com.project.dogwalker.domain.reserve.PayStatus.*;
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
@@ -15,7 +15,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -41,13 +40,12 @@ public class PayHistory extends BaseEntity {
   private Long payId;
 
 
-  @ManyToOne
-  @Column(name = "user_id",nullable = false)
+  @OneToOne
+  @JoinColumn(name = "user_id")
   private User customer;
 
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "walker_reserve_service_id")
-  @Column(name = "walker_reserve_service_id",nullable = false)
   private WalkerReserveServiceInfo reserveService;
 
   @Column(name = "pay_price")
