@@ -1,16 +1,21 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
+import com.project.dogwalker.batch.BatchConfig;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
+import com.project.dogwalker.exception.ErrorCode;
+import com.project.dogwalker.exception.batch.ReserveBatchException;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.member.dto.MemberInfo;
@@ -18,8 +23,18 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +46,8 @@ public class ReserveServiceImpl implements ReserveService{
   private final WalkerReserveServiceRepository reserveServiceRepository;
   private final PayHistoryRespository payHistoryRespository;
   private final UserRepository userRepository;
-
+  private final JobLauncher jobLauncher;
+  private final BatchConfig batchConfig;
   /**
    * db에 이미 예약이 되어잇는지 확인
    * @param request
@@ -68,6 +84,7 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
+    scheduleReserveStatus();
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -75,6 +92,39 @@ public class ReserveServiceImpl implements ReserveService{
         .timeUnit(reserve.getTimeUnit())
         .walkerName(walker.getUserName())
         .build();
+  }
+
+  @Override
+  public void scheduleReserveStatus(){
+    Timer timer=new Timer();
+    timer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        JobParameters jobParameters = new JobParametersBuilder()
+            .addLong("time", System.currentTimeMillis())
+            .toJobParameters();
+
+        try {
+          jobLauncher.run(batchConfig.refuseReserveJob(),jobParameters);
+        } catch (JobExecutionAlreadyRunningException | JobRestartException |
+                 JobInstanceAlreadyCompleteException
+                 | JobParametersInvalidException e) {
+          throw new ReserveBatchException(ErrorCode.BATCH_RESERVE_ERROR,e);
+        }
+      }
+    },600000);
+  }
+
+  @Override
+  public void changeReserveStatus(){
+    reserveServiceRepository.findAllByCreatedAtBeforeAndStatus(
+        LocalDateTime.now().minusMinutes(10) ,
+        WALKER_CHECKING).stream()
+        .map(service ->
+                    {service.setStatus(WalkerServiceStatus.WALKER_REFUSE);
+                      return service;})
+        .collect(Collectors.toList());
+
   }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
