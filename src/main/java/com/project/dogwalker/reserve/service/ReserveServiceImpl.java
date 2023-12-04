@@ -14,8 +14,6 @@ import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.batch.ReserveBatchException;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.member.dto.MemberInfo;
@@ -23,18 +21,10 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,7 +74,7 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
-    scheduleReserveStatus();
+    //scheduleReserveStatus();
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -94,26 +84,7 @@ public class ReserveServiceImpl implements ReserveService{
         .build();
   }
 
-  @Override
-  public void scheduleReserveStatus(){
-    Timer timer=new Timer();
-    timer.schedule(new TimerTask() {
-      @Override
-      public void run() {
-        JobParameters jobParameters = new JobParametersBuilder()
-            .addLong("time", System.currentTimeMillis())
-            .toJobParameters();
 
-        try {
-          jobLauncher.run(batchConfig.refuseReserveJob(),jobParameters);
-        } catch (JobExecutionAlreadyRunningException | JobRestartException |
-                 JobInstanceAlreadyCompleteException
-                 | JobParametersInvalidException e) {
-          throw new ReserveBatchException(ErrorCode.BATCH_RESERVE_ERROR,e);
-        }
-      }
-    },600000);
-  }
 
   @Override
   public void changeReserveStatus(){
