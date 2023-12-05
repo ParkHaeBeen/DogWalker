@@ -11,6 +11,5 @@ public interface ReserveService {
 
   ReserveResponse reserveService(MemberInfo memberInfo, ReserveRequest request);
 
-  public void scheduleReserveStatus();
   public void changeReserveStatus();
 }

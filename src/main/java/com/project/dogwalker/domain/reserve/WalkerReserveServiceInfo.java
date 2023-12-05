@@ -6,6 +6,7 @@ import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -69,7 +70,7 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
 
-  @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
   private PayHistory payHistory;
 
   public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){

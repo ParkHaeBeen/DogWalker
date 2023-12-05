@@ -11,6 +11,7 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
@@ -40,6 +41,7 @@ public class ReserveBatchTest {
   private UserRepository userRepository;
 
   @Test
+  @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
   public void reserveBatchJob_success() throws Exception {
     //given
     User user= User.builder()

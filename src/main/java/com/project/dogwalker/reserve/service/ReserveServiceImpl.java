@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,6 @@ public class ReserveServiceImpl implements ReserveService{
   private final WalkerReserveServiceRepository reserveServiceRepository;
   private final PayHistoryRespository payHistoryRespository;
   private final UserRepository userRepository;
-  private final JobLauncher jobLauncher;
 
   /**
    * db에 이미 예약이 되어잇는지 확인
@@ -74,7 +72,6 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
-    scheduleReserveStatus();
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -84,11 +81,10 @@ public class ReserveServiceImpl implements ReserveService{
         .build();
   }
 
-  @Override
-  public void scheduleReserveStatus(){
 
-  }
-
+  /**
+   * 점주에게 신규예약에 대해 10분후 수락/거절 안하면 자동 거절
+   */
   @Override
   public void changeReserveStatus(){
     reserveServiceRepository.findAllByCreatedAtBeforeAndStatus(
