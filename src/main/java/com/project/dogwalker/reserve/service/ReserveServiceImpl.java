@@ -5,9 +5,9 @@ import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
-import com.project.dogwalker.batch.BatchConfig;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
+import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
@@ -37,7 +37,7 @@ public class ReserveServiceImpl implements ReserveService{
   private final PayHistoryRespository payHistoryRespository;
   private final UserRepository userRepository;
   private final JobLauncher jobLauncher;
-  private final BatchConfig batchConfig;
+
   /**
    * db에 이미 예약이 되어잇는지 확인
    * @param request
@@ -74,7 +74,7 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
-    //scheduleReserveStatus();
+    scheduleReserveStatus();
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -84,7 +84,10 @@ public class ReserveServiceImpl implements ReserveService{
         .build();
   }
 
+  @Override
+  public void scheduleReserveStatus(){
 
+  }
 
   @Override
   public void changeReserveStatus(){
@@ -93,6 +96,7 @@ public class ReserveServiceImpl implements ReserveService{
         WALKER_CHECKING).stream()
         .map(service ->
                     {service.setStatus(WalkerServiceStatus.WALKER_REFUSE);
+                      service.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
                       return service;})
         .collect(Collectors.toList());
 
