@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WalkerReserveServiceRepository extends JpaRepository<WalkerReserveServiceInfo,Long> {
  Optional<WalkerReserveServiceInfo> findByWalkerUserIdAndServiceDateTime(Long walkerId, LocalDateTime serviceDate);
+
+ Optional<WalkerReserveServiceInfo> findByReserveIdAndStatusAndWalkerUserId(Long reserveId,WalkerServiceStatus walkerServiceStatus,Long walkerId);
 }

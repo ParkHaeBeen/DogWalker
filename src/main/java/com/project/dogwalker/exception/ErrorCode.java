@@ -22,7 +22,8 @@ public enum ErrorCode {
   LOCK_INTERRUPTED_ERROR("인터럽트로 인해 락 획득 실패"),
   ALREADY_UNLOCK("이미 락이 해제되었습니다"),
   RESERVE_ALREAY("해당 날짜는 이미 예약되었습니다"),
-  RESERVE_PROCESS("해당 날짜는 예약이 진행되고 있습니다");
+  RESERVE_PROCESS("해당 날짜는 예약이 진행되고 있습니다"),
+  RESERVE_DATE_NOT_MATCH("예약날짜와 현재날짜와 일치하지 않습니다.");
   private final String value;
 
   ErrorCode(final String value) {
