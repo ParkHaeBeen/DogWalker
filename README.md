@@ -5,7 +5,7 @@
 ## 프로젝트 기능 및 설계
 
 ### [회원가입과 로그인]
-:bulb: 회원가입
+:bulb: 회원가입 
 - OAuth(google,naver)을 통해서 회원가입
 - 서비스 이용 고객과 서비스 수행자를 role로서 구분
 - 상세 정보를 저장할 테이블 각각 생성(customer_info, walker_info)
@@ -23,6 +23,10 @@
   - AccessToken -> 만료시 RefreshToken으로 AccessToken 재지급
   - RefreshToken -> 쿠키 + db이용 + 쿠키 만료시 프론트단에서 요청
 
+<br>
+
+- [X] 회원가입
+- [X] 로그인
 <br>
 
 ### [산책 서비스 수행자 리스트, 선택, 이용 방법]
@@ -51,6 +55,13 @@
 
 <br>
 
+- [ ] 리스트
+- [ ] 수행자 상세 정보 페이지
+- [X] 서비스 예약
+- [X] 산책 서비스 결제
+- [ ] 서비스 취소
+<br>
+
 ### [산책 서비스 수행자 서비스 수행 요청]
 
 💡 산책 서비스 수행자 서비스 예약에 대해 수락 또는 거부가능
@@ -61,6 +72,12 @@
 ->  알람기능은 SSE를 이용 
 
 ->  10분후 자동 거부 기능은 스프링 배치 이용
+
+<br>
+
+- [X] 예약 수락 거부
+- [ ] 알람기능
+
 
 <br>
 
@@ -76,14 +93,19 @@
 - 서비스 수행자는 해당 알람을 받으면 고객에게 "5분뒤 나와주세요"와 같이 알람 보낼 수 있는 기능 추가
 -> SSE 이용
 
+<br>
+
+- [ ] 실시간
+- [ ] 알림기능
 
 <br>
 
 ### [산책 서비스 리뷰]
 
 💡 산책 서비스 수행 종료후 해당 산책 서비스 수행자에 대한 리뷰 남길 수 있음
+<br>
 
-
+- [ ] 리뷰
 <br>
 
 ### [산책 서비스 수행자 정산]
@@ -91,6 +113,9 @@
 💡 매월말마다 포인트에 대한 정산이 이루어짐
 - 스프링 배치 이용
 
+<br>
+
+- [ ] 정산
 
 <br>
 
@@ -125,7 +150,6 @@
   <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
   <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
   <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
-  <img src="https://img.shields.io/badge/junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white">
 </div>
 
 <div align=center> 
@@ -134,4 +158,3 @@
   <img src="https://img.shields.io/badge/junit5-25a162?style=for-the-badge&logo=junit5&logoColor=white">
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 </div>
-
