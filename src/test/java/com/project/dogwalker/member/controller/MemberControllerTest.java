@@ -14,6 +14,7 @@ import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.service.OauthServiceImpl;
+import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
 import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +45,9 @@ class MemberControllerTest {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @MockBean
+  private JwtTokenProvider jwtTokenProvider;
 
   @Test
   @DisplayName("회원 db에 존재하여 로그인 성공")

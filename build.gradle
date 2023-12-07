@@ -37,12 +37,14 @@ dependencies {
 
 
 	//임시 db
-	implementation 'com.h2database:h2'
-	//implementation 'mysql:mysql-connector-java:8.0.28'
+	//implementation 'com.h2database:h2'
+	implementation 'mysql:mysql-connector-java:8.0.28'
 
 
 	//flyway
 	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
+
 
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -56,6 +58,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.redisson:redisson-spring-boot-starter:3.19.3'
 
+	//batch
+	implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+	testImplementation 'org.springframework.batch:spring-batch-test'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.mockito:mockito-core:4.9.0'

@@ -1,13 +1,16 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
+import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
@@ -18,6 +21,7 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -75,6 +79,23 @@ public class ReserveServiceImpl implements ReserveService{
         .timeUnit(reserve.getTimeUnit())
         .walkerName(walker.getUserName())
         .build();
+  }
+
+
+  /**
+   * 점주에게 신규예약에 대해 10분후 수락/거절 안하면 자동 거절
+   */
+  @Override
+  public void changeReserveStatus(){
+    reserveServiceRepository.findAllByCreatedAtBeforeAndStatus(
+        LocalDateTime.now().minusMinutes(10) ,
+        WALKER_CHECKING).stream()
+        .map(service ->
+                    {service.setStatus(WalkerServiceStatus.WALKER_REFUSE);
+                      service.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
+                      return service;})
+        .collect(Collectors.toList());
+
   }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
