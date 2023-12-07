@@ -46,7 +46,7 @@ public class ReserveDistributeTest {
         .userLnt(15.0)
         .userName("dalbeen")
         .userPhoneNumber("010-1234-1234")
-        .userEmail("ddd@gmail.com")
+        .userEmail("ddddd@gmail.com")
         .build();
     User walker=User.builder()
         .userRole(Role.WALKER)
@@ -69,7 +69,7 @@ public class ReserveDistributeTest {
         try {
           MemberInfo member=MemberInfo.builder()
               .role(Role.USER)
-              .email("ddd@gmail.com")
+              .email("ddddd@gmail.com")
               .build();
           ReserveRequest request=ReserveRequest.builder()
               .walkerId(walkerSave.getUserId())
