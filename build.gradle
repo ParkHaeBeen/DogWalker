@@ -60,6 +60,11 @@ dependencies {
 
 	//batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
+	//elastic
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.4'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.17.4'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
 
 	testImplementation 'org.springframework.batch:spring-batch-test'
 	compileOnly 'org.projectlombok:lombok'
