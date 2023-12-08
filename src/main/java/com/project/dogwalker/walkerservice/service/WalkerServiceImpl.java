@@ -15,15 +15,13 @@ import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.util.RedisUtils;
+import com.project.dogwalker.util.RedisService;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -37,8 +35,10 @@ public class WalkerServiceImpl implements WalkerService{
 
   private final UserRepository userRepository;
   private final WalkerReserveServiceRepository reserveRepository;
-  private final RedisUtils redisUtils;
+  private final RedisService redisService;
   private final WalkerServiceRouteRepository routeRepository;
+  private final String startServicePrefix="start-";
+  private final String proceedServicePrefix="proceed-";
 
   /**
    * 해당 워커가 있는 지확인
@@ -55,9 +55,25 @@ public class WalkerServiceImpl implements WalkerService{
     if(!serviceInfo.getServiceDateTime().toLocalDate().equals(now.toLocalDate())){
       throw new ReserveDateNotMatch(ErrorCode.RESERVE_DATE_NOT_MATCH);
     }
-
+    startService(serviceInfo.getReserveId() , serviceInfo.getTimeUnit());
   }
 
+  /**
+   * 예약 유효성 확인후 redis에 서비스 수행시작되었다고 저장
+   */
+  @Override
+  @Transactional
+  public void startService(final Long reserveId,final int timeUnit) {
+    redisService.setData(startServicePrefix+reserveId,"ON",timeUnit);
+  }
+
+  /**
+   * 산책서비스가 시작되었는지 확인
+   */
+  @Override
+  public boolean isStartedService(final Long reserveId) {
+    return redisService.getStartData(startServicePrefix+reserveId);
+  }
 
   /**
    * 실시간 경로 Redis list로 저장
@@ -66,7 +82,7 @@ public class WalkerServiceImpl implements WalkerService{
   @Transactional
   public void saveRealTimeLocation(final RealTimeLocation location) {
     final String nowLocation=location.getLat()+":"+location.getLat();
-    redisUtils.addToList(String.valueOf(location.getReserveId()),nowLocation);
+    redisService.addToList(proceedServicePrefix+location.getReserveId(),nowLocation);
   }
 
   /**
@@ -80,17 +96,7 @@ public class WalkerServiceImpl implements WalkerService{
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(memberInfo ,
         request.getReserveId());
 
-    final List<Object> routeList = redisUtils.getList(String.valueOf(request.getReserveId()));
-
-    final List<Coordinate> routes = routeList.stream().filter(obj -> obj instanceof String)
-        .map(route -> {
-          final String[] latAndLnt = ((String) route).split(":");
-          final double lat = Double.parseDouble(latAndLnt[0]);
-          final double lnt = Double.parseDouble(latAndLnt[1]);
-          return new Coordinate(lat , lnt);
-        })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    final List<Coordinate> routes = redisService.getList(proceedServicePrefix+request.getReserveId());
 
     GeometryFactory geometryFactory=new GeometryFactory();
     final LineString routeLine = geometryFactory.createLineString(routes.toArray(new Coordinate[0]));
@@ -98,6 +104,9 @@ public class WalkerServiceImpl implements WalkerService{
         .routes(routeLine)
         .reserveInfo(serviceInfo)
         .build());
+
+    redisService.deleteRoutes(proceedServicePrefix+request.getReserveId());
+
     return ServiceEndResponse.builder()
         .routeId(walkerServiceRoute.getRouteId())
         .endTime(walkerServiceRoute.getCreatedAt())

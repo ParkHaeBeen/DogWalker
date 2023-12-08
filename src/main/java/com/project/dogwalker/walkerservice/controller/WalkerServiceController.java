@@ -30,13 +30,26 @@ public class WalkerServiceController {
    * 해당 walker가 수행해야하는 예약이 맞는지 확인
    * 예약 수행하는 날짜가 맞는지
    */
-  @GetMapping("/check")
+  @GetMapping("/check/service/valid")
   @Auth(isWalker = true)
-  public ResponseEntity<?> checkReserveAndWalker(@AuthMember final MemberInfo memberInfo,@RequestBody
+  public ResponseEntity<?> checkReserveAndWalker(@AuthMember final MemberInfo memberInfo,@RequestBody final
       ServiceCheckRequest request){
     walkerService.checkService(memberInfo,request);
 
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * 산책 예약자 서비스 시작되었는지 확인
+   */
+  @GetMapping("/check/service/start")
+  @Auth
+  public ResponseEntity<?> checkServiceStart(@RequestBody final Long reserveId){
+    final boolean startedService = walkerService.isStartedService(reserveId);
+    if(startedService){
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.notFound().build();
   }
 
 
