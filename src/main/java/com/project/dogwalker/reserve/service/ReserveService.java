@@ -10,4 +10,6 @@ public interface ReserveService {
   void isReserved(ReserveCheckRequest request);
 
   ReserveResponse reserveService(MemberInfo memberInfo, ReserveRequest request);
+
+  public void changeReserveStatus();
 }
