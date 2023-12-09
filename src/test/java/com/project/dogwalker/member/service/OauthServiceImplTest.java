@@ -14,6 +14,8 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
+import com.project.dogwalker.domain.user.elastic.WalkerDocument;
+import com.project.dogwalker.domain.user.elastic.WalkerSearchRepository;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
@@ -57,6 +59,8 @@ class OauthServiceImplTest {
   @Mock
   private RefreshTokenProvider refreshTokenProvider;
 
+  @Mock
+  private WalkerSearchRepository walkerSearchRepository;
   @Mock
   private RefreshTokenRepository refreshTokenRepository;
 
@@ -229,6 +233,7 @@ class OauthServiceImplTest {
     given(jwtProvider.generateToken(user.getUserEmail(),user.getUserRole())).willReturn(accessToken);
     given(refreshTokenProvider.generateRefreshToken(anyLong())).willReturn(refreshTokenObject);
     given(refreshTokenRepository.save(any())).willReturn(refreshTokenObject);
+    given(walkerSearchRepository.save(any())).willReturn(WalkerDocument.of(user));
 
     //when
     LoginResult loginResult = oauthService.joinWalker(walkerRequest);

@@ -1,3 +1,4 @@
+use walker;
 CREATE TABLE `users` (
                          `user_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                          `user_email`	varchar(100) NOT NULL,
