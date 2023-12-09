@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/api/reserve")
 @RequiredArgsConstructor
 public class ReserveController {
 
@@ -41,7 +41,7 @@ public class ReserveController {
    * @param memberInfo
    * @param request
    */
-  @PostMapping("/reserve")
+  @PostMapping()
   @Auth
   public ResponseEntity<ReserveResponse> reserveService(@AuthMember final MemberInfo memberInfo,@RequestBody ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);

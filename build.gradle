@@ -58,6 +58,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.redisson:redisson-spring-boot-starter:3.19.3'
 
+
+	//spatial
+	implementation 'org.hibernate:hibernate-spatial:5.6.5.Final'
+	implementation 'org.locationtech.jts:jts-core:1.18.2'
+
 	//batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 
