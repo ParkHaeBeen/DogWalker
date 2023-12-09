@@ -105,7 +105,7 @@ public class WalkerServiceImpl implements WalkerService{
         .reserveInfo(serviceInfo)
         .build());
 
-    redisService.deleteRoutes(proceedServicePrefix+request.getReserveId());
+    redisService.deleteRedisData(proceedServicePrefix+request.getReserveId());
 
     return ServiceEndResponse.builder()
         .routeId(walkerServiceRoute.getRouteId())

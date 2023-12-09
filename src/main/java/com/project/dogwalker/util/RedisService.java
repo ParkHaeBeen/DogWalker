@@ -45,7 +45,7 @@ public class RedisService {
         .collect(Collectors.toList());
   }
 
-  public void deleteRoutes(final String key){
+  public void deleteRedisData(final String key){
     redisTemplate.delete(key);
   }
 }
