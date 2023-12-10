@@ -2,6 +2,8 @@ package com.project.dogwalker.domain.user.elastic;
 
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

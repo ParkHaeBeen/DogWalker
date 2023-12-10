@@ -1,4 +1,4 @@
-package com.project.dogwalker.domain.user.elastic;
+package com.project.dogwalker.domain.user.walker.elastic;
 
 
 import com.project.dogwalker.domain.user.User;
