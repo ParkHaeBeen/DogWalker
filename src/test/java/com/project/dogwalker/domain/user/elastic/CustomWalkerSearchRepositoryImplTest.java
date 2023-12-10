@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.test.annotation.Rollback;
 
 
 @SpringBootTest
@@ -19,6 +20,7 @@ class CustomWalkerSearchRepositoryImplTest {
 
   @Test
   @DisplayName("elastic insert 성공")
+  @Rollback
   void elastic_insert_test(){
     //이전 데이터 영향받지 않기 위해 삭제후 테스트 진행
     walkerSearchRepository.deleteAll();

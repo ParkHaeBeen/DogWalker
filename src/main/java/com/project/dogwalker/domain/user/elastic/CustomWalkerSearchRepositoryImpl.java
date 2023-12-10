@@ -23,8 +23,8 @@ public class CustomWalkerSearchRepositoryImpl implements CustomWalkerSearchRepos
 
   private final ElasticsearchOperations elasticsearchOperations;
 
-  @Value("${spring.elastic.distance}")
-  private final int distanceMax;
+  @Value("${spring.search.distance}")
+  private Integer distanceMax;
 
   @Override
   public Page <WalkerDocument> searchByName(final WalkerInfoSearchCond walkerInfoSearchCond) {

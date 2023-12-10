@@ -22,10 +22,12 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 
 @SpringBatchTest
 @SpringBootTest
+@Rollback
 public class ReserveBatchTest {
 
   @Autowired
@@ -48,18 +50,18 @@ public class ReserveBatchTest {
         .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("hh@gmail.com")
+        .userEmail("batchuser1@gmail.com")
         .userPhoneNumber("010-1234-1234")
-        .userName("test")
+        .userName("batchuser1")
         .userRole(Role.WALKER)
         .build();
     User walker= User.builder()
         .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("ddd@gmail.com")
+        .userEmail("batchuser2@gmail.com")
         .userPhoneNumber("010-1234-1234")
-        .userName("test")
+        .userName("batchuser2")
         .userRole(Role.WALKER)
         .build();
 

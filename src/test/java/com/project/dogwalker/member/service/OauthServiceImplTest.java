@@ -87,14 +87,14 @@ class OauthServiceImplTest {
     String accessToken = "accessToken";
     String refreshToken="refreshToken";
     String idToken="idToken";
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
+    ClientResponse clientResponse = new ClientResponse("oauth1@gmail.com","oauth1",idToken);
     Optional<User> user= Optional.ofNullable(User.builder()
                                                 .userId(1L)
                                                 .userLat(12.0)
                                                 .userLnt(3.0)
                                                 .userEmail(clientResponse.getEmail())
                                                 .userPhoneNumber("010-1234-1234")
-                                                .userName("test")
+                                                .userName("oauth1")
                                                 .userRole(Role.USER)
                                             .build());
 
@@ -110,7 +110,7 @@ class OauthServiceImplTest {
 
     //then
     assertThat(result.getEmail()).isEqualTo(clientResponse.getEmail());
-    assertThat(result.getName()).isEqualTo("test");
+    assertThat(result.getName()).isEqualTo("oauth1");
     assertThat(result.getRefreshToken()).isEqualTo(refreshToken);
     assertThat(result.getAccessToken()).isEqualTo(accessToken);
   }
@@ -122,7 +122,7 @@ class OauthServiceImplTest {
     String code = "testCode";
     String type = "google";
     String idToken="idToken";
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
+    ClientResponse clientResponse = new ClientResponse("auth2@gmail.com","auth2",idToken);
     Optional<User> user= Optional.empty();
     Map<String,Oauth> map=new HashMap<>();
 
@@ -144,19 +144,19 @@ class OauthServiceImplTest {
     String idToken="idToken";
     String imgUrl="url";
 
-    ClientResponse clientResponse = new ClientResponse("test@gmail.com","test",idToken);
+    ClientResponse clientResponse = new ClientResponse("auth3@gmail.com","auth3",idToken);
     User user= User.builder()
         .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail(clientResponse.getEmail())
         .userPhoneNumber("010-1234-1234")
-        .userName("test")
+        .userName("auth2")
         .userRole(Role.USER)
         .build();
 
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
-        .name("test")
+        .name("auth2")
         .accessToken(idToken)
         .loginType(type)
         .build();
