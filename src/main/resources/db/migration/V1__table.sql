@@ -19,6 +19,12 @@ CREATE TABLE `walker_schedule` (
                                    `unavailable_time_end`	int	NOT NULL
 );
 
+CREATE TABLE `walker_schedule_temporary` (
+                                             `walker_sc_temp_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                             `walker_Id`	bigint	NOT NULL,
+                                             `unavailable_date`	timestamp	NOT NULL
+);
+
 CREATE TABLE `refresh_token` (
                                  `refresh_token`	varchar(40)	 PRIMARY KEY,
                                  `refresh_token_user_id`	bigint	NOT NULL,

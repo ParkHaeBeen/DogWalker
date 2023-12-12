@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,23 +21,18 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @ToString
-@Table(name = "walker_schedule")
-public class WalkerSchedule {
+@Table(name = "walker_schedule_temporary")
+public class WalkerScheduleTemp {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "walker_sc_id")
-  private Long walkerScId;
+  @Column(name = "walker_sc_temp_id")
+  private Long walkerScTempId;
 
   @Column(name = "walker_id",nullable = false)
   private Long walkerId;
 
-  @Column(name = "unavailable_day",nullable = false)
-  private String dayOfWeek;
+  @Column(name = "unavailable_date",nullable = false)
+  private LocalDateTime unAvailDate;
 
-  @Column(name = "unavailable_time_start",nullable = false)
-  private Integer startTime;
-
-  @Column(name = "unavailable_time_end",nullable = false)
-  private Integer endTime;
 }

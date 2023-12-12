@@ -27,7 +27,6 @@ public class ReserveController {
 
   /**
    * 결제 뷰로 넘어가기전에 해당 날짜에 예약이 되어있는지 확인
-   * @param request
    */
   @GetMapping("/reserve/check")
   @Auth
@@ -38,8 +37,6 @@ public class ReserveController {
 
   /**
    * 예약및 결제 진행
-   * @param memberInfo
-   * @param request
    */
   @PostMapping("/reserve")
   @Auth

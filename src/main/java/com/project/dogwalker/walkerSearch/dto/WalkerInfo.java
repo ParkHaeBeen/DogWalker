@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WalkerInfoList {
+public class WalkerInfo {
 
   private String walkerName;
   private Double walkerLnt;
   private Double walkerLat;
 
-  public static WalkerInfoList of(WalkerDocument document){
-    return WalkerInfoList.builder()
+  public static WalkerInfo of(WalkerDocument document){
+    return WalkerInfo.builder()
         .walkerLat(document.getLocation().getLat())
         .walkerLnt(document.getLocation().getLon())
         .walkerName(document.getWalker_name())
