@@ -1,5 +1,6 @@
 package com.project.dogwalker.walkerSearch.service;
 
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
 import com.project.dogwalker.walkerSearch.dto.WalkerReserveInfo;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface WalkerInfoService {
 
-  List <WalkerInfo> getWalkerInfoList(WalkerInfoSearchCond searchCond);
+  List <WalkerInfo> getWalkerInfoList(MemberInfo memberInfo ,WalkerInfoSearchCond searchCond);
 
   WalkerUnAvailDetail getWalkerUnAvailService(Long walkerId);
 

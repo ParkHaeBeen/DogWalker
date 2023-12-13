@@ -5,11 +5,10 @@ import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
-import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
 import com.project.dogwalker.walkerSearch.dto.WalkerPermUnAvailDate;
@@ -32,15 +31,19 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
 
   private final WalkerSearchRepository walkerSearchRepository;
   private final UserRepository userRepository;
-  private final WalkerScheduleRepository walkerScheduleRepository;
-  private final WalkerServicePriceRepository walkerServicePriceRepository;
 
   /**
    * 고객 위치 중심으로 검색 , 추가적으로 이름 겁색 가능
    */
   @Override
   @Transactional(readOnly = true)
-  public List <WalkerInfo> getWalkerInfoList(final WalkerInfoSearchCond searchCond) {
+  public List <WalkerInfo> getWalkerInfoList(final MemberInfo info ,final WalkerInfoSearchCond searchCond) {
+    final User user = userRepository.findByUserEmailAndUserRole(info.getEmail() , info.getRole())
+        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+    if(searchCond.getLat()==null||searchCond.getLnt()==null){
+      searchCond.setLat(user.getUserLat());
+      searchCond.setLnt(user.getUserLnt());
+    }
     final Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond);
 
     return walkerDocuments.stream().map(WalkerInfo::of)

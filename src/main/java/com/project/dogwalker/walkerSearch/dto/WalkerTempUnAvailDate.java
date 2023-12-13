@@ -1,7 +1,6 @@
 package com.project.dogwalker.walkerSearch.dto;
 
-import jakarta.persistence.Column;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +15,7 @@ import lombok.ToString;
 @Builder
 @ToString
 public class WalkerTempUnAvailDate {
-  @Column(name = "unavailable_date")
-  private LocalDateTime unAvailDate;
+
+  private LocalDate dateTime;
 
 }
