@@ -20,7 +20,6 @@ import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -51,8 +50,7 @@ public class WalkerServiceImpl implements WalkerService{
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(
         memberInfo , request.getReserveId());
 
-    final LocalDateTime now=LocalDateTime.now();
-    if(!serviceInfo.getServiceDateTime().toLocalDate().equals(now.toLocalDate())){
+    if(!serviceInfo.getServiceDateTime().toLocalDate().equals(request.getNowDate().toLocalDate())){
       throw new ReserveDateNotMatch(ErrorCode.RESERVE_DATE_NOT_MATCH);
     }
     startService(serviceInfo.getReserveId() , serviceInfo.getTimeUnit());
@@ -71,6 +69,7 @@ public class WalkerServiceImpl implements WalkerService{
    * 산책서비스가 시작되었는지 확인
    */
   @Override
+  @Transactional(readOnly = true)
   public boolean isStartedService(final Long reserveId) {
     return redisService.getStartData(startServicePrefix+reserveId);
   }
@@ -81,14 +80,12 @@ public class WalkerServiceImpl implements WalkerService{
   @Override
   @Transactional
   public void saveRealTimeLocation(final RealTimeLocation location) {
-    final String nowLocation=location.getLat()+":"+location.getLat();
-    redisService.addToList(proceedServicePrefix+location.getReserveId(),nowLocation);
+    final Coordinate coordinate=new Coordinate(location.getLat(),location.getLnt());
+    redisService.addToList(proceedServicePrefix+location.getReserveId(),coordinate);
   }
 
   /**
    * 서비스 종료후 redis에 저장한 경로들 db로 저장
-   *
-   * @return
    */
   @Override
   @Transactional

@@ -31,8 +31,8 @@ public class RedisService {
   }
 
   // Redis 리스트에 데이터 추가
-  public void addToList(final String key, final String value) {
-    redisTemplate.opsForList().rightPush(key,value);
+  public void addToList(final String key, final Coordinate coordinate) {
+    redisTemplate.opsForList().rightPush(key,coordinate);
   }
 
   // Redis 리스트에서 데이터 조회
