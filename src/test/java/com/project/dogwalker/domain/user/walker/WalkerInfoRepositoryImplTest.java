@@ -6,7 +6,7 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.walkerSearch.dto.WalkerPermUnAvailDate;
 import com.project.dogwalker.walkerSearch.dto.WalkerTempUnAvailDate;
 import com.project.dogwalker.walkerSearch.dto.WalkerTimePrice;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -87,11 +87,11 @@ class WalkerInfoRepositoryImplTest {
 
     WalkerScheduleTemp tempSchedule1=WalkerScheduleTemp.builder()
         .walkerId(saveWalker.getUserId())
-        .dateTime(LocalDateTime.of(2023,12,25,0,0))
+        .dateTime(LocalDate.of(2023,12,25))
         .build();
     WalkerScheduleTemp tempSchedule2=WalkerScheduleTemp.builder()
         .walkerId(saveWalker.getUserId())
-        .dateTime(LocalDateTime.of(2023,12,25,0,0))
+        .dateTime(LocalDate.of(2023,12,25))
         .build();
     walkerScheduleTempRepository.save(tempSchedule1);
     walkerScheduleTempRepository.save(tempSchedule2);
