@@ -33,6 +33,6 @@ public class WalkerScheduleTemp {
   private Long walkerId;
 
   @Column(name = "unavailable_date",nullable = false)
-  private LocalDateTime unAvailDate;
+  private LocalDateTime dateTime;
 
 }

@@ -87,11 +87,11 @@ class WalkerInfoRepositoryImplTest {
 
     WalkerScheduleTemp tempSchedule1=WalkerScheduleTemp.builder()
         .walkerId(saveWalker.getUserId())
-        .unAvailDate(LocalDateTime.of(2023,12,25,0,0))
+        .dateTime(LocalDateTime.of(2023,12,25,0,0))
         .build();
     WalkerScheduleTemp tempSchedule2=WalkerScheduleTemp.builder()
         .walkerId(saveWalker.getUserId())
-        .unAvailDate(LocalDateTime.of(2023,12,25,0,0))
+        .dateTime(LocalDateTime.of(2023,12,25,0,0))
         .build();
     walkerScheduleTempRepository.save(tempSchedule1);
     walkerScheduleTempRepository.save(tempSchedule2);
