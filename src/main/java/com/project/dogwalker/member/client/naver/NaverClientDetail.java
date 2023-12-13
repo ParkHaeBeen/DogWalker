@@ -1,6 +1,6 @@
 package com.project.dogwalker.member.client.naver;
 
-import com.project.dogwalker.config.FeignConfig;
+import com.project.dogwalker.common.config.FeignConfig;
 import com.project.dogwalker.member.dto.naver.NaverClientResponse;
 import java.util.Map;
 import org.springframework.cloud.openfeign.FeignClient;

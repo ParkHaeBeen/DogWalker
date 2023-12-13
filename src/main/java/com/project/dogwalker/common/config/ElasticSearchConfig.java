@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import org.springframework.beans.factory.annotation.Value;

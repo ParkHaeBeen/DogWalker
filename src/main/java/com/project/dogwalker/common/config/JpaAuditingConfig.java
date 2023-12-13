@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

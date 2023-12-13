@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -1,4 +1,4 @@
-package com.project.dogwalker.util;
+package com.project.dogwalker.common.service;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

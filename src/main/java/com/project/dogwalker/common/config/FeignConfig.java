@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.dogwalker.exception.feign.FeignErrorDecoder;

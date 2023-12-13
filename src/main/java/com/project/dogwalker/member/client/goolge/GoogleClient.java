@@ -1,6 +1,6 @@
 package com.project.dogwalker.member.client.goolge;
 
-import com.project.dogwalker.config.FeignConfig;
+import com.project.dogwalker.common.config.FeignConfig;
 import com.project.dogwalker.member.dto.ClientResponse;
 import com.project.dogwalker.member.dto.google.GoogleInfRequest;
 import com.project.dogwalker.member.dto.google.GoogleRequest;

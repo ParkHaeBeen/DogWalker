@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import com.project.dogwalker.member.controller.AuthArgumentResolver;
 import com.project.dogwalker.member.controller.AuthInterceptor;

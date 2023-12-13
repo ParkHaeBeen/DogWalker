@@ -1,4 +1,4 @@
-package com.project.dogwalker.config;
+package com.project.dogwalker.common.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
