@@ -27,11 +27,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(MemberController.class)
+@Rollback
 class MemberControllerTest {
 
   @MockBean
@@ -56,7 +58,7 @@ class MemberControllerTest {
     String code="code";
     String type="naver";
     String name="hello";
-    String email="hello@hello.com";
+    String email="member1@hello.com";
     String accessToken="accessToken";
     String refreshToken="refreshToken";
 
@@ -110,7 +112,7 @@ class MemberControllerTest {
   void newCustomer() throws Exception {
     //given
     String name="hello";
-    String email="hello@hello.com";
+    String email="member2@hello.com";
     String accessToken="accessToken";
     String refreshToken="refreshToken";
     LoginResult result=LoginResult.builder()
@@ -156,7 +158,7 @@ class MemberControllerTest {
   void newServiceWalker() throws Exception {
     //given
     String name="hello";
-    String email="hello@hello.com";
+    String email="member3@hello.com";
     String accessToken="accessToken";
     String refreshToken="refreshToken";
     LoginResult loginResult=LoginResult.builder()

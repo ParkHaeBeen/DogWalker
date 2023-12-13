@@ -12,6 +12,8 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfo;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.domain.user.walker.WalkerSchedule;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
@@ -57,6 +59,7 @@ public class OauthServiceImpl implements OauthService{
   private final WalkerServicePriceRepository walkerServicePriceRepository;
   private final AwsService awsService;
   private final CustomerDogInfoRepository customerDogInfoRepository;
+  private final WalkerSearchRepository walkerSearchRepository;
 
   /**
    * 해당 type 로그인 url로 이동하게
@@ -156,8 +159,28 @@ public class OauthServiceImpl implements OauthService{
     newUser.setUserRole(Role.WALKER);
     final User joinUser = userRepository.save(newUser);
 
+    insertWalkerServiceInfo(request , joinUser);
+
+    //토큰 생성
+    final String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
+    final RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
+    final String refreshToken=token.getRefreshToken();
+    refreshTokenRepository.save(token);
+
+    //elastic에 저장
+    walkerSearchRepository.save(WalkerDocument.of(joinUser));
+
+    return LoginResult.builder()
+        .name(joinUser.getUserName())
+        .email(joinUser.getUserEmail())
+        .accessToken(accessToken)
+        .refreshToken(refreshToken)
+        .build();
+  }
+
+  private void insertWalkerServiceInfo(JoinWalkerRequest request , User joinUser) {
     //워커 예약 불가 날짜 저장
-    log.info("shedule = {}, size = {}",request.getSchedules(),request.getSchedules().size());
+    log.info("shedule = {}, size = {}", request.getSchedules(), request.getSchedules().size());
     if(request.getSchedules().size()!=0) {
 
       List<WalkerSchedule> walkerSchedules = request.getSchedules().stream()
@@ -187,19 +210,6 @@ public class OauthServiceImpl implements OauthService{
     }else{
       throw new WalkerNotWritePriceException(NOT_WRITE_SERVICE_PRICE);
     }
-
-    //토큰 생성
-    final String accessToken= jwtProvider.generateToken(joinUser.getUserEmail(),joinUser.getUserRole());
-    final RefreshToken token=refreshTokenProvider.generateRefreshToken(joinUser.getUserId());
-    final String refreshToken=token.getRefreshToken();
-    refreshTokenRepository.save(token);
-
-    return LoginResult.builder()
-        .name(joinUser.getUserName())
-        .email(joinUser.getUserEmail())
-        .accessToken(accessToken)
-        .refreshToken(refreshToken)
-        .build();
   }
 
   @Override

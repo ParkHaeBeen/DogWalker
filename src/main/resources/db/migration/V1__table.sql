@@ -1,3 +1,4 @@
+use walker;
 CREATE TABLE `users` (
                          `user_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                          `user_email`	varchar(100) NOT NULL,
@@ -16,6 +17,12 @@ CREATE TABLE `walker_schedule` (
                                    `unavailable_day`	varchar(4) NOT NULL,
                                    `unavailable_time_start`	int	NOT NULL,
                                    `unavailable_time_end`	int	NOT NULL
+);
+
+CREATE TABLE `walker_schedule_temporary` (
+                                             `walker_sc_temp_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                             `walker_Id`	bigint	NOT NULL,
+                                             `unavailable_date`	timestamp	NOT NULL
 );
 
 CREATE TABLE `refresh_token` (

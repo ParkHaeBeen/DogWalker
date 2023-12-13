@@ -38,7 +38,6 @@ public class ReserveServiceImpl implements ReserveService{
 
   /**
    * db에 이미 예약이 되어잇는지 확인
-   * @param request
    */
   @Override
   @Transactional(readOnly = true)
@@ -51,8 +50,6 @@ public class ReserveServiceImpl implements ReserveService{
    * db에 해당 예약있는지 확인
    * user,walker 존재하는지 확인후
    * 예약 및 결제 진행
-   * @param memberInfo 
-   * @param request
    */
   @Override
   @DistributedLock
