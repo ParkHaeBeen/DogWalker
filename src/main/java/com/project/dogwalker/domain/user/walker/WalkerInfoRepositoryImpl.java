@@ -47,7 +47,7 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
   public List<WalkerTempUnAvailDate> walkerTempUnAvailFindByWalkerId(final Long walkerId){
     return queryFactory
         .select(Projections.constructor(WalkerTempUnAvailDate.class,
-            walkerScheduleTemp.unAvailDate
+            walkerScheduleTemp.dateTime
             ))
         .from(user)
         .leftJoin(walkerScheduleTemp).on(walkerScheduleTemp.walkerId.eq(user.userId))
