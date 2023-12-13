@@ -1,5 +1,8 @@
 package com.project.dogwalker.walkerSearch.controller;
 
+import com.project.dogwalker.member.controller.Auth;
+import com.project.dogwalker.member.controller.AuthMember;
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfo;
 import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
 import com.project.dogwalker.walkerSearch.dto.WalkerReserveInfo;
@@ -24,8 +27,10 @@ public class WalkerInfoController {
    * walker list 기본으로 위치기준 검색 추가적으로 이름 검색 가능
    */
   @GetMapping("/list")
-  public ResponseEntity<List <WalkerInfo>> getWalkerInfoList(@RequestBody final WalkerInfoSearchCond searchCond){
-    return ResponseEntity.ok(walkerInfoService.getWalkerInfoList(searchCond));
+  @Auth
+  public ResponseEntity<List <WalkerInfo>> getWalkerInfoList(@AuthMember final MemberInfo memberInfo
+      ,@RequestBody final WalkerInfoSearchCond searchCond){
+    return ResponseEntity.ok(walkerInfoService.getWalkerInfoList(memberInfo,searchCond));
   }
 
   /**
@@ -40,7 +45,7 @@ public class WalkerInfoController {
    * 해당날짜에 예약이 있는 날짜 전송
    */
   @GetMapping("/detail/check/reserve")
-  public ResponseEntity<?> getWalkerAlreadyReserveDate(@RequestBody final WalkerReserveInfo.Request reserveInfo){
+  public ResponseEntity<List<WalkerReserveInfo.Response>> getWalkerAlreadyReserveDate(@RequestBody final WalkerReserveInfo.Request reserveInfo){
     return ResponseEntity.ok(walkerInfoService.getReserveDate(reserveInfo));
   }
 

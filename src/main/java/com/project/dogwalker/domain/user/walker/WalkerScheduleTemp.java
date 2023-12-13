@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +33,6 @@ public class WalkerScheduleTemp {
   private Long walkerId;
 
   @Column(name = "unavailable_date",nullable = false)
-  private LocalDateTime dateTime;
+  private LocalDate dateTime;
 
 }
