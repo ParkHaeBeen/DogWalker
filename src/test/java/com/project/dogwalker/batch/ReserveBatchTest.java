@@ -95,6 +95,7 @@ public class ReserveBatchTest {
     //when
     JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
+
     //then
     assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
