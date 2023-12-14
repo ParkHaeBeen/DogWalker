@@ -1,14 +1,21 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.user.Role.USER;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.user.Role;
+import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
+import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -77,6 +84,43 @@ class ReserveServiceImplTest {
     //then
     Assertions.assertThrows(ReserveAlreadyException.class,()->reserveService.isReserved(request));
 
+  }
+
+
+  @Test
+  @DisplayName("하루 전날까지 취소 가능 - 성공")
+  void cancel_success(){
+    //given
+    User customer= User.builder()
+        .userRole(Role.USER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userName("dis1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("dis1@gmail.com")
+        .build();
+    WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
+        .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
+        .build();
+
+    ReserveCancel.Request request=ReserveCancel.Request.builder()
+        .reserveId(1L)
+        .now(LocalDateTime.of(2023,12,10,16,0))
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(customer.getUserEmail())
+        .role(USER)
+        .build();
+
+    given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.of(customer));
+    given(walkerReserveServiceRepository.findById(anyLong())).willReturn(Optional.of(walkerReserveServiceInfo));
+
+    //when
+    ReserveCancel.Response response = reserveService.reserveCancel(memberInfo , request);
+
+    //then
+    assertThat(response.getServiceDate()).isEqualTo(walkerReserveServiceInfo.getServiceDateTime());
   }
 
 }
