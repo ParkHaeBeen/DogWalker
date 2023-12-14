@@ -131,7 +131,7 @@ public class ReserveServiceImpl implements ReserveService{
     }
 
     reserveInfo.setStatus(CUSTOMER_CANCEL);
-
+    reserveInfo.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
     return ReserveCancel.Response.builder()
         .serviceDate(reserveInfo.getServiceDateTime())
         .cancelDate(reserveInfo.getUpdatedAt())

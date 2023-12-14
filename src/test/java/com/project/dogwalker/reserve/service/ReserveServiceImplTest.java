@@ -7,7 +7,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
+import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -101,8 +103,15 @@ class ReserveServiceImplTest {
         .userPhoneNumber("010-1234-1234")
         .userEmail("dis1@gmail.com")
         .build();
+    PayHistory payHistory=PayHistory.builder()
+        .payPrice(10000)
+        .customer(customer)
+        .payMethod("CARD")
+        .payStatus(PayStatus.PAY_REFUND)
+        .build();
     WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
+        .payHistory(payHistory)
         .build();
 
     ReserveCancel.Request request=ReserveCancel.Request.builder()
@@ -117,7 +126,6 @@ class ReserveServiceImplTest {
 
     given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.of(customer));
     given(walkerReserveServiceRepository.findById(anyLong())).willReturn(Optional.of(walkerReserveServiceInfo));
-
     //when
     ReserveCancel.Response response = reserveService.reserveCancel(memberInfo , request);
 
