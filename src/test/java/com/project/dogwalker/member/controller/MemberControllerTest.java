@@ -2,6 +2,7 @@ package com.project.dogwalker.member.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -10,13 +11,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.service.OauthServiceImpl;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
+import jakarta.servlet.http.Cookie;
 import java.time.Duration;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,4 +198,81 @@ class MemberControllerTest {
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
         .andDo(print());
   }
+
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급-성공")
+  void getNewToken_success() throws Exception {
+    //given
+    String accessToken="accessToken";
+    String refreshToken="refreshToken";
+    IssueToken issueToken=IssueToken.builder()
+        .refreshToken(refreshToken)
+        .accessToken(accessToken)
+        .build();
+    ResponseCookie cookie=ResponseCookie.from("RefreshToken",refreshToken)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite(SameSite.NONE.attributeValue())
+        .maxAge(Duration.ofMillis(604800))
+        .build();
+
+    given(oauthService.generateToken(refreshToken)).willReturn(issueToken);
+    given(refreshTokenCookieProvider.generateCookie(refreshToken)).willReturn(cookie);
+
+    Cookie cookie1=new Cookie("RefreshToken",refreshToken);
+    //when
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/newtoken")
+            .contentType(MediaType.APPLICATION_JSON)
+                .cookie(cookie1));
+
+
+
+    //then
+    resultActions.andExpect(status().isOk())
+        .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
+        .andDo(print());
+  }
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급-실패 : RefreshToken  존재하지 않아")
+  void getNewToken_fail_notFoundRefreshToken() throws Exception {
+    //given
+    //when
+    //then
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/newtoken")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(result ->
+            Assertions.assertThat(result.getResolvedException()).isInstanceOf(
+                RefreshTokenNotExistException.class)
+        );
+  }
+
+  @Test
+  @DisplayName("refreshToken 만료시 프론트단에서 재발급 요청 - 성공")
+  void reIssueRefreshToken_success() throws Exception {
+    //given
+    String accessToken="accessToken";
+    String refreshToken="refreshToken";
+    ResponseCookie cookie=ResponseCookie.from("RefreshToken",refreshToken)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite(SameSite.NONE.attributeValue())
+        .maxAge(Duration.ofMillis(604800))
+        .build();
+
+    given(oauthService.generateNewRefreshToken(anyString())).willReturn(refreshToken);
+    given(refreshTokenCookieProvider.generateCookie(refreshToken)).willReturn(cookie);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refreshtoken")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(accessToken)));
+
+    //then
+    resultActions.andExpect(status().isOk())
+        .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
+        .andDo(print());
+  }
+
 }
