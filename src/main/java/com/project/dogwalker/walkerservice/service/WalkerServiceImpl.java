@@ -6,6 +6,7 @@ import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIS
 
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
@@ -92,7 +93,6 @@ public class WalkerServiceImpl implements WalkerService{
   public ServiceEndResponse saveServiceRoute(final MemberInfo memberInfo ,final ServiceEndRequest request) {
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(memberInfo ,
         request.getReserveId());
-
     final List<Coordinate> routes = redisService.getList(proceedServicePrefix+request.getReserveId());
 
     GeometryFactory geometryFactory=new GeometryFactory();
@@ -103,6 +103,7 @@ public class WalkerServiceImpl implements WalkerService{
         .build());
 
     redisService.deleteRedisData(proceedServicePrefix+request.getReserveId());
+    serviceInfo.setStatus(WalkerServiceStatus.FINISH);
 
     return ServiceEndResponse.builder()
         .routeId(walkerServiceRoute.getRouteId())
