@@ -3,6 +3,7 @@ package com.project.dogwalker.reserve.controller;
 import com.project.dogwalker.member.controller.Auth;
 import com.project.dogwalker.member.controller.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
@@ -38,10 +39,19 @@ public class ReserveController {
   /**
    * 예약및 결제 진행
    */
-  @PostMapping()
+  @PostMapping
   @Auth
   public ResponseEntity<ReserveResponse> reserveService(@AuthMember final MemberInfo memberInfo,@RequestBody ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);
     return ResponseEntity.ok(reserveResponse);
+  }
+
+  /**
+   * 예약 하루전까지 취소 가능
+   */
+  @PostMapping("/cancel")
+  @Auth
+  public ResponseEntity<?> reserveCancel(@AuthMember final MemberInfo memberInfo, @RequestBody final ReserveCancel.Request request ){
+    return ResponseEntity.ok(reserveService.reserveCancel(memberInfo,request));
   }
 }
