@@ -5,7 +5,6 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CH
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
-import com.project.dogwalker.reserve.service.ReserveService;
 import jakarta.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
@@ -28,6 +26,7 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Configuration
@@ -37,17 +36,22 @@ public class BatchConfig{
 
   private final JobRepository jobRepository;
   private final PlatformTransactionManager platformManager;
-  private final ReserveService reserveService;
   private final EntityManagerFactory entityManagerFactory;
 
   private int chunkSize=10;
 
   @Bean
-  @JobScope
   public Job refuseReserveJob(){
 
     return new JobBuilder("reserveJob",jobRepository)
         .start(reserveStep())
+        .build();
+  }
+
+  @Bean
+  public Job adjustWalkerFee(){
+    return new JobBuilder("adjustJob",jobRepository)
+        .start(adjustStep())
         .build();
   }
 
@@ -81,6 +85,7 @@ public class BatchConfig{
   }
 
   @Bean
+  @Transactional
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
       reserveService.setStatus(WALKER_REFUSE);
@@ -96,5 +101,14 @@ public class BatchConfig{
         .build();
   }
 
+  @Bean
+  @StepScope
+  public Step adjustStep(){
+
+    return new StepBuilder("adjustStep",jobRepository)
+        .<WalkerReserveServiceInfo,WalkerReserveServiceInfo>chunk(chunkSize,platformManager)
+        .build();
+
+  }
 
 }
