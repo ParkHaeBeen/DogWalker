@@ -114,7 +114,7 @@ public class MemberController {
    * @param accessToken
    */
   @PostMapping("/auth/refreshtoken")
-  public ResponseEntity<?> reIssueRefreshToken(final String accessToken){
+  public ResponseEntity<?> reIssueRefreshToken(@RequestBody final String accessToken){
     final String newRefreshToken = oauthService.generateNewRefreshToken(accessToken);
     final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(newRefreshToken);
 

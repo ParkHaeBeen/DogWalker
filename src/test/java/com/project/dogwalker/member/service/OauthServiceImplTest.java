@@ -1,5 +1,6 @@
 package com.project.dogwalker.member.service;
 
+import static com.project.dogwalker.domain.user.Role.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,16 +15,22 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
-import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
-import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.client.Oauth;
 import com.project.dogwalker.member.dto.ClientResponse;
+import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
+import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerPrice;
@@ -31,10 +38,12 @@ import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerSchedule;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenProvider;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,7 +104,7 @@ class OauthServiceImplTest {
                                                 .userEmail(clientResponse.getEmail())
                                                 .userPhoneNumber("010-1234-1234")
                                                 .userName("oauth1")
-                                                .userRole(Role.USER)
+                                                .userRole(USER)
                                             .build());
 
     given(oauthClients.login(type,code)).willReturn(clientResponse);
@@ -152,7 +161,7 @@ class OauthServiceImplTest {
         .userEmail(clientResponse.getEmail())
         .userPhoneNumber("010-1234-1234")
         .userName("auth2")
-        .userRole(Role.USER)
+        .userRole(USER)
         .build();
 
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
@@ -243,5 +252,234 @@ class OauthServiceImplTest {
     assertThat(loginResult.getEmail()).isEqualTo(clientResponse.getEmail());
     assertThat(loginResult.getAccessToken()).isEqualTo(accessToken);
     assertThat(loginResult.getRefreshToken()).isEqualTo(refreshToken);
+  }
+
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 성공")
+  void generateToken_success(){
+    //given
+    String accessToken = "accessToken";
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+
+    User user= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail(email)
+        .userPhoneNumber("010-1234-1234")
+        .userName("test")
+        .userRole(Role.WALKER)
+        .build();
+
+    RefreshToken refreshTokenObject=RefreshToken.builder()
+        .refreshToken(refreshToken)
+        .userId(user.getUserId())
+        .expiredAt(LocalDateTime.now().plusDays(10))
+        .build();
+
+    given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.of(refreshTokenObject));
+    given(userRepository.findById(refreshTokenObject.getUserId())).willReturn(Optional.of(user));
+    given(jwtProvider.generateToken(anyString(),any())).willReturn(accessToken);
+    given(refreshTokenProvider.generateRefreshToken(anyLong())).willReturn(refreshTokenObject);
+    given(refreshTokenRepository.save(any())).willReturn(refreshTokenObject);
+
+    //when
+    IssueToken issueToken = oauthService.generateToken(refreshToken);
+
+    //then
+    assertThat(issueToken.getAccessToken()).isEqualTo(accessToken);
+    assertThat(issueToken.getRefreshToken()).isEqualTo(refreshTokenObject.getRefreshToken());
+  }
+
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 실패 : refresh token not exist")
+  void generateToken_fail_notExist(){
+    //given
+    String refreshToken="refreshToken";
+
+    given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.empty());
+
+
+    //when
+    //then
+    assertThrows(RefreshTokenNotExistException.class,()->oauthService.generateToken(refreshToken));
+
+  }
+
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 실패 : refreshtoken 만료기한 지남")
+  void generateToken_fail_expired(){
+    //given
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+
+    User user= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail(email)
+        .userPhoneNumber("010-1234-1234")
+        .userName("test")
+        .userRole(Role.WALKER)
+        .build();
+
+    RefreshToken refreshTokenObject=RefreshToken.builder()
+        .refreshToken(refreshToken)
+        .userId(user.getUserId())
+        .expiredAt(LocalDateTime.now().minusDays(10))
+        .build();
+
+    given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.of(refreshTokenObject));
+    //when
+    //then
+    assertThrows(RefreshTokenExpiredException.class,()->oauthService.generateToken(refreshToken));
+  }
+  @Test
+  @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 실패 : user db에 없음")
+  void generateToken_fail_notMember(){
+    //given
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+
+    User user= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail(email)
+        .userPhoneNumber("010-1234-1234")
+        .userName("test")
+        .userRole(Role.WALKER)
+        .build();
+
+    RefreshToken refreshTokenObject=RefreshToken.builder()
+        .refreshToken(refreshToken)
+        .userId(user.getUserId())
+        .expiredAt(LocalDateTime.now().plusDays(10))
+        .build();
+
+    given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.of(refreshTokenObject));
+    given(userRepository.findById(refreshTokenObject.getUserId())).willReturn(Optional.empty());
+
+    //when
+    //then
+    assertThrows(MemberNotFoundException.class,()->oauthService.generateToken(refreshToken));
+  }
+
+  @Test
+  @DisplayName("RefreshToken 재발급 - 성공")
+  void generateNewRefreshToken_success(){
+    //given
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+    String accessToken = "accessToken";
+
+
+    User user= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail(email)
+        .userPhoneNumber("010-1234-1234")
+        .userName("test")
+        .userRole(Role.WALKER)
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(USER)
+        .build();
+
+    RefreshToken refreshTokenObject=RefreshToken.builder()
+        .refreshToken(refreshToken)
+        .userId(user.getUserId())
+        .expiredAt(LocalDateTime.now().plusDays(10))
+        .build();
+
+    given(jwtProvider.validateToken(anyString())).willReturn(true);
+    given(jwtProvider.getMemberInfo(anyString())).willReturn(memberInfo);
+    given(userRepository.findByUserEmail(anyString())).willReturn(Optional.of(user));
+    given(refreshTokenRepository.findByUserId(anyLong())).willReturn(Optional.of(refreshTokenObject));
+    given(refreshTokenProvider.generateRefreshToken(anyLong())).willReturn(refreshTokenObject);
+    given(refreshTokenRepository.save(any())).willReturn(refreshTokenObject);
+
+    //when
+    String newRefreshToken = oauthService.generateNewRefreshToken(accessToken);
+
+    //then
+    Assertions.assertThat(newRefreshToken).isEqualTo(refreshToken);
+  }
+
+  @Test
+  @DisplayName("RefreshToken 재발급 - 실패 : 토큰 만료기간 지남")
+  void generateNewRefreshToken_fail(){
+    //given
+    String refreshToken="refreshToken";
+    String accessToken = "accessToken";
+
+
+    given(jwtProvider.validateToken(anyString())).willReturn(false);
+
+    //when
+    //then
+    assertThrows(TokenExpiredException.class,()->oauthService.generateNewRefreshToken(accessToken));
+  }
+
+  @Test
+  @DisplayName("RefreshToken 재발급 - 실패 : User 못찾음")
+  void generateNewRefreshToken_fail_notFoundUser(){
+    //given
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+    String accessToken = "accessToken";
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(USER)
+        .build();
+
+
+    given(jwtProvider.validateToken(anyString())).willReturn(true);
+    given(jwtProvider.getMemberInfo(anyString())).willReturn(memberInfo);
+    given(userRepository.findByUserEmail(anyString())).willReturn(Optional.empty());
+
+    //when
+    //then
+    assertThrows(MemberNotFoundException.class,()->oauthService.generateNewRefreshToken(accessToken));
+  }
+
+  @Test
+  @DisplayName("RefreshToken 재발급 - 실패 : refreshtoken이 db에 없음")
+  void generateNewRefreshToken_fail_refreshTokenNotFound(){
+    //given
+    String refreshToken="refreshToken";
+    String email="test@gmail.com";
+    String accessToken = "accessToken";
+
+
+    User user= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail(email)
+        .userPhoneNumber("010-1234-1234")
+        .userName("test")
+        .userRole(Role.WALKER)
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(USER)
+        .build();
+
+
+    given(jwtProvider.validateToken(anyString())).willReturn(true);
+    given(jwtProvider.getMemberInfo(anyString())).willReturn(memberInfo);
+    given(userRepository.findByUserEmail(anyString())).willReturn(Optional.of(user));
+    given(refreshTokenRepository.findByUserId(anyLong())).willReturn(Optional.empty());
+
+    //when
+    //then
+    assertThrows(RefreshTokenNotExistException.class,()->oauthService.generateNewRefreshToken(accessToken));
   }
 }

@@ -15,6 +15,7 @@ import com.project.dogwalker.exception.reserve.LockInterruptedException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -109,6 +110,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ExceptionResponse> handleReserveRequestNotExist(final ReserveRequestNotExistException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(RefreshTokenNotExistException.class)
+  public ResponseEntity<ExceptionResponse> handleRefreshTokenNotExistToken(final RefreshTokenNotExistException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
   }
 
 }
