@@ -169,15 +169,24 @@ class WalkerInfoRepositoryImplTest {
         .userId(2L)
         .userLat(12.0)
         .userLnt(3.0)
+        .userEmail("query6@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("query6")
+        .userRole(Role.USER)
+        .build();
+    User walker2= User.builder()
+        .userId(3L)
+        .userLat(12.0)
+        .userLnt(3.0)
         .userEmail("query5@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("query5")
-        .userRole(Role.USER)
+        .userRole(Role.WALKER)
         .build();
-
 
     User saveWalker = userRepository.save(walker);
     User saveCustomer = userRepository.save(customer);
+    User saveWalker2 = userRepository.save(walker2);
     WalkerReserveServiceInfo serviceInfo1=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,16,0))
         .walker(walker)
@@ -194,8 +203,17 @@ class WalkerInfoRepositoryImplTest {
         .timeUnit(30)
         .status(WALKER_ACCEPT)
         .build();
+    WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
+        .serviceDateTime(LocalDateTime.of(2023,12,15,12,0))
+        .walker(walker2)
+        .customer(saveCustomer)
+        .servicePrice(10000)
+        .timeUnit(30)
+        .status(WALKER_ACCEPT)
+        .build();
     walkerReserveServiceRepository.save(serviceInfo1);
     walkerReserveServiceRepository.save(serviceInfo2);
+    walkerReserveServiceRepository.save(serviceInfo3);
     //when
     List <Response> responses = userRepository.walkerReserveDate(saveWalker.getUserId() ,
         LocalDate.of(2023 , 12 , 15));

@@ -84,13 +84,12 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
             walkerReserveServiceInfo.serviceDateTime
         ))
         .from(walkerReserveServiceInfo)
-        .leftJoin(walkerReserveServiceInfo.walker)
+        .rightJoin(walkerReserveServiceInfo.walker)
         .on(walkerReserveServiceInfo.walker.userId.eq(walkerId))
-        .where(walkerReserveServiceInfo.walker.userId.eq(walkerId)
-            .and(walkerReserveServiceInfo.status.eq(WALKER_ACCEPT)
+        .where(walkerReserveServiceInfo.status.eq(WALKER_ACCEPT)
                 .and(walkerReserveServiceInfo.serviceDateTime.between(
                     checkReserveDate.atStartOfDay(), checkReserveDate.plusDays(1).atStartOfDay().minusSeconds(1)
-                )))
+                ))
         ).fetch();
   }
 
