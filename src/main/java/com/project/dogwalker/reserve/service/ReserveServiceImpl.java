@@ -22,6 +22,7 @@ import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
 import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
@@ -42,6 +43,7 @@ public class ReserveServiceImpl implements ReserveService{
   private final WalkerReserveServiceRepository reserveServiceRepository;
   private final PayHistoryRespository payHistoryRespository;
   private final UserRepository userRepository;
+  private final NoticeService noticeService;
 
   /**
    * db에 이미 예약이 되어잇는지 확인
@@ -77,6 +79,8 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
+
+    noticeService.sendReservationEvent(walker.getUserEmail() , "새로운 예약이 들어왔습니다.");
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
