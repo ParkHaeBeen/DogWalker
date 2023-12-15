@@ -22,10 +22,10 @@ public class BatchAdjustScheduler {
   private final JobLauncher jobLauncher;
   private final BatchConfig batchConfig;
 
-  @Scheduled(cron = "0 0 0 * * ?")
+  @Scheduled(cron = "0 50 23 L * ?")
   public void adjustMethod(){
     JobParameters jobParameters=new JobParametersBuilder()
-        .addLong("adjustBatch",System.currentTimeMillis())
+        .addLong("time",System.currentTimeMillis())
         .toJobParameters();
 
     try {

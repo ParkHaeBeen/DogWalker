@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -32,6 +33,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 @Table(name = "walker_reserve_service",uniqueConstraints={
     @UniqueConstraint(
         name="unique_walker_datetime",

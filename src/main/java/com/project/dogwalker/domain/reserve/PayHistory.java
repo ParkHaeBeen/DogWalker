@@ -1,6 +1,5 @@
 package com.project.dogwalker.domain.reserve;
 
-import static com.project.dogwalker.domain.reserve.AdjustStatus.*;
 import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 
 import com.project.dogwalker.domain.BaseEntity;
@@ -61,10 +60,6 @@ public class PayHistory extends BaseEntity {
   @Column(name = "pay_method",nullable = false)
   private String payMethod;
 
-  @Builder.Default
-  @Column(name = "adjust_status",nullable = false)
-  @Enumerated(EnumType.STRING)
-  private AdjustStatus adjustStatus= ADJUST_YET;
 
   public static PayHistory of(final ReserveRequest request,final WalkerReserveServiceInfo service){
     return PayHistory.builder()
