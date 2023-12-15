@@ -157,26 +157,26 @@ public class BatchConfig{
   @Bean
   public ItemProcessor<AdjustWalkerInfo, WalkerAdjust> adjustProcessor(){
     return adjustWalkerInfo -> {
-      System.out.println("adjustWalkerInfo = " + adjustWalkerInfo);
+      log.info("adjustWalkerInfo = {} " ,adjustWalkerInfo);
       Long userId=adjustWalkerInfo.getWalker().getUserId();
-      System.out.println("-------findOrCreteWalker-------");
+      log.info("-------findOrCreteWalker-------");
       WalkerAdjust walkerAdjust=findOrCreateWalkerAdjust(userId);
-      System.out.println("-----findOrCreteWalker END------");
+      log.info("-----findOrCreteWalker END------");
       walkerAdjust.setWalkerTtlPrice(walkerAdjust.getWalkerTtlPrice()+adjustWalkerInfo.getPayHistory()
           .getPayPrice());
-      System.out.println("---------payHistory");
+      log.info("---------payHistory");
       WalkerAdjustDetail adjustDetail=WalkerAdjustDetail.builder()
           .walkerAdjustPrice(adjustWalkerInfo.getPayHistory().getPayPrice())
           .walkerAdjust(walkerAdjust)
           .walkerReserveServiceId(adjustWalkerInfo.getReserveServiceInfo().getReserveId())
           .build();
       walkerAdjust.addAdjustDetail(adjustDetail);
-      System.out.println("walkerAdjust = " + walkerAdjust);
+      log.info("walkerAdjust = {} " ,walkerAdjust);
       PayHistory payHistory = adjustWalkerInfo.getPayHistory();
       payHistory.setPayStatus(PayStatus.ADJUST_DONE);
-      System.out.println("--------- payHistory End");
+      log.info("--------- payHistory End");
       manager.merge(payHistory);
-      System.out.println("-------- payHistory ?");
+      log.info("-------- payHistory ?");
       return manager.merge(walkerAdjust);
     };
   }
@@ -187,7 +187,7 @@ public class BatchConfig{
     Optional <WalkerAdjust> walkerAdjustDate = adjustRepository.findByUserIdAndAndWalkerAdjustDate(
         walkerId , LocalDate.now());
 
-    System.out.println("walkerAdjustDate = " + walkerAdjustDate);
+    log.info("walkerAdjustDate = {} ", walkerAdjustDate);
     return walkerAdjustDate.orElseGet( ()->{
          return WalkerAdjust.builder()
               .userId(walkerId)
