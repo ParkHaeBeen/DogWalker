@@ -33,13 +33,13 @@ class RedisServiceTest {
     String key=startServicePrefix+1;
     String value="ON";
     int timeUnit=30;
-    redisTemplate.opsForValue().set(key,value,timeUnit);
+    objectRedisTemplate.opsForValue().set(key,value,timeUnit);
 
-    Object isStarted = redisTemplate.opsForValue().get(key);
+    Object isStarted = objectRedisTemplate.opsForValue().get(key);
 
     Assertions.assertThat(isStarted).isNotNull();
     Assertions.assertThat(isStarted.toString().trim()).isEqualTo(value);
-    redisTemplate.delete(key);
+    objectRedisTemplate.delete(key);
   }
 
   @Test

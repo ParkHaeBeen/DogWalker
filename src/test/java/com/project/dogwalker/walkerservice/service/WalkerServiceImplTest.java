@@ -18,7 +18,7 @@ import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRouteRepository;
 import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.common.service.RedisService;
+import com.project.dogwalker.common.service.redis.RedisService;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;

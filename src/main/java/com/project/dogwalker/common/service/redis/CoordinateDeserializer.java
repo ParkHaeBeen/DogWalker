@@ -1,4 +1,4 @@
-package com.project.dogwalker.common.service;
+package com.project.dogwalker.common.service.redis;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
