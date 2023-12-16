@@ -2,6 +2,7 @@ package com.project.dogwalker.common.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -46,12 +47,16 @@ class RedisServiceTest {
 
   @Test
   void addToList() throws JsonProcessingException {
+
     String key=proceedServicePrefix+1;
+    redisTemplate.delete(key);
     Coordinate coordinate1=new Coordinate(12.0,3.0);
     Coordinate coordinate2=new Coordinate(15.0,12.0);
     objectRedisTemplate.opsForList().rightPush(key,objectMapper.writeValueAsString(coordinate1));
     objectRedisTemplate.opsForList().rightPush(key,objectMapper.writeValueAsString(coordinate2));
-
+    SimpleModule module = new SimpleModule();
+    module.addDeserializer(Coordinate.class, new CoordinateDeserializer(Coordinate.class));
+    objectMapper.registerModule(module);
     RedisOperations <String, Object > operations = objectRedisTemplate.opsForList().getOperations();
     List <Object > list = operations.opsForList().range(key , 0 , -1);
     for (Object o : list) {
@@ -72,10 +77,12 @@ class RedisServiceTest {
       System.out.println(coordinate.toString());
     }
     redisTemplate.delete(key);
+
   }
 
   @Test
   void getList() {
+
   }
 
   @Test

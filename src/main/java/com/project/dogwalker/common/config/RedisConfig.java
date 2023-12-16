@@ -49,7 +49,7 @@ public class RedisConfig {
 
     RedisTemplate<String, Object > redisTemplate=new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
-    redisTemplate.setKeySerializer(jsonSerializer);
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(jsonSerializer);
     return redisTemplate;
   }

@@ -58,4 +58,5 @@ public class RedisService {
   public void deleteRedisData(final String key){
     redisTemplate.delete(key);
   }
+
 }
