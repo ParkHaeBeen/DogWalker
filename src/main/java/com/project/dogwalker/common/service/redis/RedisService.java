@@ -1,5 +1,6 @@
 package com.project.dogwalker.common.service.redis;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +37,11 @@ public class RedisService {
 
   // Redis 리스트에 데이터 추가
   public void addToList(final String key, final Coordinate coordinate) {
-    redisTemplate.opsForList().rightPush(key,coordinate);
+    try {
+      redisTemplate.opsForList().rightPush(key,objectMapper.writeValueAsString(coordinate));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   // Redis 리스트에서 데이터 조회
@@ -44,12 +49,17 @@ public class RedisService {
     final RedisOperations<String, Object> routes = redisTemplate.opsForList().getOperations();
     final List <Object> list = routes.opsForList().range(key , 0 , -1);
     return list.stream()
-        .filter(obj -> obj instanceof Coordinate)
-        .map(obj->(Coordinate) obj)
+        .map(obj-> {
+          try {
+            return objectMapper.readValue(obj.toString(),Coordinate.class);
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+          }
+        })
         .collect(Collectors.toList());
   }
 
-  public void deleteRedisDataObject(final String key){
+  public void deleteRedis(final String key){
     redisTemplate.delete(key);
   }
 
