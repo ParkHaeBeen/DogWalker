@@ -1,8 +1,6 @@
 package com.project.dogwalker.common.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -10,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,25 +16,21 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
   private final RedisTemplate<String,Object> redisTemplate;
+  private final StringRedisTemplate stringRedisTemplate;
   private final ObjectMapper objectMapper;
 
 
   //Redis 서비스 시작시 데이터 추가
   public void setData(final String key,final String value,final int expiredTime){
-    try {
-      String data= Arrays.toString(value.getBytes("UTF-8"));
-      redisTemplate.opsForValue().set(key, data, expiredTime, TimeUnit.MINUTES);
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    stringRedisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MINUTES);
   }
 
   //Redis 서비스 시작되었는지 확인
   public boolean getStartData(final String key){
-    final Object isStarted = redisTemplate.opsForValue().get(key);
+    final Object isStarted = stringRedisTemplate.opsForValue().get(key);
     if(isStarted !=null){
-      String s = isStarted.toString().trim();
-      return String.valueOf(isStarted).equals("ON");
+      String start = isStarted.toString().trim();
+      return start.equals("ON");
     }
 
     return false;
@@ -56,8 +51,12 @@ public class RedisService {
         .collect(Collectors.toList());
   }
 
-  public void deleteRedisData(final String key){
+  public void deleteRedisDataObject(final String key){
     redisTemplate.delete(key);
+  }
+
+  public void deleteRedisData(final String key){
+    stringRedisTemplate.delete(key);
   }
 
 }
