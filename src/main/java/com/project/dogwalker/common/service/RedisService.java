@@ -1,5 +1,8 @@
 package com.project.dogwalker.common.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -14,16 +17,24 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
   private final RedisTemplate<String,Object> redisTemplate;
+  private final ObjectMapper objectMapper;
+
 
   //Redis 서비스 시작시 데이터 추가
   public void setData(final String key,final String value,final int expiredTime){
-    redisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MINUTES);
+    try {
+      String data= Arrays.toString(value.getBytes("UTF-8"));
+      redisTemplate.opsForValue().set(key, data, expiredTime, TimeUnit.MINUTES);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   //Redis 서비스 시작되었는지 확인
   public boolean getStartData(final String key){
     final Object isStarted = redisTemplate.opsForValue().get(key);
     if(isStarted !=null){
+      String s = isStarted.toString().trim();
       return String.valueOf(isStarted).equals("ON");
     }
 
@@ -48,4 +59,5 @@ public class RedisService {
   public void deleteRedisData(final String key){
     redisTemplate.delete(key);
   }
+
 }
