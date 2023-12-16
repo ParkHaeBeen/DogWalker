@@ -31,7 +31,7 @@ class RedisServiceTest {
   @DisplayName("Redis에 서비스 시작했다고 저장 테스트 - 성공")
   void setServiceStart_success() throws JsonProcessingException {
     String key=startServicePrefix+1;
-    String value="SERVICE_ON";
+    String value="ON";
     int timeUnit=30;
     redisTemplate.opsForValue().set(key,value,timeUnit);
 

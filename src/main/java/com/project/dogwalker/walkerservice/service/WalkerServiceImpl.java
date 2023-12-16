@@ -102,7 +102,7 @@ public class WalkerServiceImpl implements WalkerService{
         .reserveInfo(serviceInfo)
         .build());
 
-    redisService.deleteRedisData(proceedServicePrefix+request.getReserveId());
+    redisService.deleteRedisDataObject(proceedServicePrefix+request.getReserveId());
     serviceInfo.setStatus(WalkerServiceStatus.FINISH);
 
     return ServiceEndResponse.builder()
