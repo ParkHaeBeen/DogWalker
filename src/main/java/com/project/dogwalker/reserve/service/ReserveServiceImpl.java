@@ -8,11 +8,13 @@ import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
+import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
@@ -22,6 +24,7 @@ import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
 import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
@@ -80,7 +83,13 @@ public class ReserveServiceImpl implements ReserveService{
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
     log.info("reserve service end");
 
-    noticeService.sendReservationEvent(walker.getUserEmail() , "새로운 예약이 들어왔습니다.");
+    noticeService.send(NoticeRequest.builder()
+            .noticeType(NoticeType.RESERVE)
+            .receiver(walker)
+            .senderName(customer.getUserName())
+            .path("/api/reserve/request/"+reserveService.getReserveId())
+        .build());
+
     return ReserveResponse.builder()
         .payDate(pay.getCreatedAt())
         .price(pay.getPayPrice())
@@ -140,5 +149,18 @@ public class ReserveServiceImpl implements ReserveService{
         .serviceDate(reserveInfo.getServiceDateTime())
         .cancelDate(reserveInfo.getUpdatedAt())
         .build();
+  }
+
+  @Override
+  @Transactional
+  public void changeRequestServiceStatus(final MemberInfo memberInfo ,final Long reserveId) {
+    final User walker = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
+            memberInfo.getRole())
+        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+
+    WalkerReserveServiceInfo serviceInfo = reserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(
+            reserveId , WALKER_CHECKING , walker.getUserId())
+        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+    serviceInfo.setStatus(WalkerServiceStatus.WALKER_ACCEPT);
   }
 }
