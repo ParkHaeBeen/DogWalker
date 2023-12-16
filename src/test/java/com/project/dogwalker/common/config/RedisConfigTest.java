@@ -1,4 +1,4 @@
-package com.project.dogwalker.common.service;
+package com.project.dogwalker.common.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,13 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 @SpringBootTest
-class RedisServiceTest {
-
-  @Autowired
-  private StringRedisTemplate redisTemplate;
+class RedisConfigTest {
 
   @Autowired
   private RedisTemplate<String,Object> objectRedisTemplate;
@@ -26,6 +22,7 @@ class RedisServiceTest {
   private ObjectMapper objectMapper;
   private final String startServicePrefix="start-";
   private final String proceedServicePrefix="proceed-";
+
 
   @Test
   @DisplayName("Redis에 서비스 시작했다고 저장 테스트 - 성공")
