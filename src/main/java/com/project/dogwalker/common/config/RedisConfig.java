@@ -1,8 +1,10 @@
 package com.project.dogwalker.common.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.project.dogwalker.common.service.CoordinateDeserializer;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -44,13 +46,16 @@ public class RedisConfig {
 
   @Bean
   public RedisTemplate<String,Object> redisTemplate(){
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    SimpleModule module = new SimpleModule();
+    module.addDeserializer(Coordinate.class, new CoordinateDeserializer(Coordinate.class));
+    objectMapper.registerModule(module);
     RedisSerializer <Object> jsonSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
     RedisTemplate<String, Object > redisTemplate=new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(jsonSerializer);
+    redisTemplate.setValueSerializer(new StringRedisSerializer());
     return redisTemplate;
   }
   @Bean

@@ -2,9 +2,10 @@ package com.project.dogwalker.common.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,41 +28,34 @@ class RedisServiceTest {
   private final String proceedServicePrefix="proceed-";
 
   @Test
-  void setData() throws JsonProcessingException {
+  @DisplayName("Redis에 서비스 시작했다고 저장 테스트 - 성공")
+  void setServiceStart_success() throws JsonProcessingException {
     String key=startServicePrefix+1;
-    String value="ON";
+    String value="SERVICE_ON";
     int timeUnit=30;
     redisTemplate.opsForValue().set(key,value,timeUnit);
 
-    String isStarted = redisTemplate.opsForValue().get(key);
+    Object isStarted = redisTemplate.opsForValue().get(key);
 
-    if(isStarted !=null){
-      System.out.println(objectMapper.writeValueAsString(isStarted));
-    }
+    Assertions.assertThat(isStarted).isNotNull();
+    Assertions.assertThat(isStarted.toString().trim()).isEqualTo(value);
     redisTemplate.delete(key);
   }
 
   @Test
-  void getStartData() {
-  }
-
-  @Test
-  void addToList() throws JsonProcessingException {
+  @DisplayName("Redis에 서비스 중 수행자 위치 저장 테스트 - 성공")
+  void addLocation_success() throws JsonProcessingException {
 
     String key=proceedServicePrefix+1;
-    redisTemplate.delete(key);
+    objectRedisTemplate.delete(key);
     Coordinate coordinate1=new Coordinate(12.0,3.0);
     Coordinate coordinate2=new Coordinate(15.0,12.0);
     objectRedisTemplate.opsForList().rightPush(key,objectMapper.writeValueAsString(coordinate1));
     objectRedisTemplate.opsForList().rightPush(key,objectMapper.writeValueAsString(coordinate2));
-    SimpleModule module = new SimpleModule();
-    module.addDeserializer(Coordinate.class, new CoordinateDeserializer(Coordinate.class));
-    objectMapper.registerModule(module);
+
     RedisOperations <String, Object > operations = objectRedisTemplate.opsForList().getOperations();
     List <Object > list = operations.opsForList().range(key , 0 , -1);
-    for (Object o : list) {
-      System.out.println("o = " + o);
-    }
+
     List <Coordinate> collect = list.stream()
         .map(obj -> {
           try {
@@ -71,21 +65,10 @@ class RedisServiceTest {
           }
         })
         .collect(Collectors.toList());
-    System.out.println(list.size()+" "+collect.size());
-    
-    for (Coordinate coordinate : collect) {
-      System.out.println(coordinate.toString());
-    }
-    redisTemplate.delete(key);
+
+    Assertions.assertThat(collect.size()).isEqualTo(2);
+    objectRedisTemplate.delete(key);
 
   }
 
-  @Test
-  void getList() {
-
-  }
-
-  @Test
-  void deleteRedisData() {
-  }
 }

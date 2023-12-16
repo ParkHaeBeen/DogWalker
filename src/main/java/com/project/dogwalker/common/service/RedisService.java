@@ -34,6 +34,7 @@ public class RedisService {
   public boolean getStartData(final String key){
     final Object isStarted = redisTemplate.opsForValue().get(key);
     if(isStarted !=null){
+      String s = isStarted.toString().trim();
       return String.valueOf(isStarted).equals("ON");
     }
 
