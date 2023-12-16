@@ -26,3 +26,17 @@
 상세링크
 
 [블로그 - aop 분산락과 트랜젝션](https://haebing.tistory.com/100)
+
+<br>
+
+### 3. Redis 역직렬화 문제
+
+문제 상황
+- Coordinate 객체를 저장하던중 ClassCastException,JsonMappingException 예외 발생 
+
+문제 해결
+- Redis역직렬화 방법 변경 및 직렬/역직렬변환기 생성
+
+상세링크
+
+[블로그 - Redis 역직렬화 문제](https://haebing.tistory.com/105)
