@@ -5,6 +5,7 @@ import com.project.dogwalker.domain.notice.Notice;
 import com.project.dogwalker.domain.notice.NoticeRepository;
 import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.exception.ErrorCode;
+import com.project.dogwalker.exception.notice.NoticeNotFoundException;
 import com.project.dogwalker.exception.notice.SseException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.dto.NoticeRequest;
@@ -15,6 +16,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
@@ -94,6 +96,14 @@ public class NoticeServiceImpl implements NoticeService{
     }
 
     return null;
+  }
+
+  @Override
+  @Transactional
+  public void readNotification(Long id) {
+    Notice notice = noticeRepository.findById(id)
+        .orElseThrow(() -> new NoticeNotFoundException(ErrorCode.NOTICE_NOT_FOUND));
+    notice.setCheckDate(LocalDateTime.now());
   }
 }
 

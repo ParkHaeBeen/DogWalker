@@ -9,4 +9,6 @@ public interface NoticeService {
   SseEmitter addEmitter(MemberInfo memberInfo,String lastEventId);
 
   void send(NoticeRequest request);
+
+  void readNotification(Long id);
 }

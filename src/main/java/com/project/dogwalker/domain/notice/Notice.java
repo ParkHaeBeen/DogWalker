@@ -12,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,5 +46,5 @@ public class Notice extends BaseEntity {
   private String path;
 
   @Column(name = "notice_check_date")
-  private LocalDate checkDate;
+  private LocalDateTime checkDate;
 }
