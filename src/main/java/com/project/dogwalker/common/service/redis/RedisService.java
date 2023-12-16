@@ -1,4 +1,4 @@
-package com.project.dogwalker.common.service;
+package com.project.dogwalker.common.service.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,18 +15,17 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
   private final RedisTemplate<String,Object> redisTemplate;
-  private final StringRedisTemplate stringRedisTemplate;
   private final ObjectMapper objectMapper;
 
 
   //Redis 서비스 시작시 데이터 추가
   public void setData(final String key,final String value,final int expiredTime){
-    stringRedisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MINUTES);
+    redisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MINUTES);
   }
 
   //Redis 서비스 시작되었는지 확인
   public boolean getStartData(final String key){
-    final Object isStarted = stringRedisTemplate.opsForValue().get(key);
+    final Object isStarted = redisTemplate.opsForValue().get(key);
     if(isStarted !=null){
       String start = isStarted.toString().trim();
       return start.equals("ON");
@@ -55,8 +53,5 @@ public class RedisService {
     redisTemplate.delete(key);
   }
 
-  public void deleteRedisData(final String key){
-    stringRedisTemplate.delete(key);
-  }
 
 }
