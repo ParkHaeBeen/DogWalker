@@ -83,13 +83,13 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
         .select(Projections.constructor(WalkerReserveInfo.Response.class,
             walkerReserveServiceInfo.serviceDateTime
         ))
-        .from(user)
-        .leftJoin(walkerReserveServiceInfo.walker,user)
-        .where(user.userId.eq(walkerId)
-            .and(walkerReserveServiceInfo.status.eq(WALKER_ACCEPT)
+        .from(walkerReserveServiceInfo)
+        .rightJoin(walkerReserveServiceInfo.walker)
+        .on(walkerReserveServiceInfo.walker.userId.eq(walkerId))
+        .where(walkerReserveServiceInfo.status.eq(WALKER_ACCEPT)
                 .and(walkerReserveServiceInfo.serviceDateTime.between(
-                    checkReserveDate.atStartOfDay(),checkReserveDate.plusDays(1).atStartOfDay().minusSeconds(1)
-                )))
+                    checkReserveDate.atStartOfDay(), checkReserveDate.plusDays(1).atStartOfDay().minusSeconds(1)
+                ))
         ).fetch();
   }
 

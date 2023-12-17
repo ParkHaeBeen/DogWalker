@@ -73,7 +73,10 @@ public class AuthInterceptor implements HandlerInterceptor {
   }
 
   private Auth getLoginAnnotation(final Object handler) {
-    HandlerMethod handlerMethod= (HandlerMethod) handler;
-    return handlerMethod.getMethodAnnotation(Auth.class);
+    if (handler instanceof HandlerMethod) {
+      HandlerMethod handlerMethod = (HandlerMethod) handler;
+      return handlerMethod.getMethodAnnotation(Auth.class);
+    }
+    return null;
   }
 }

@@ -25,7 +25,11 @@ public enum ErrorCode {
   RESERVE_PROCESS("해당 날짜는 예약이 진행되고 있습니다"),
   RESERVE_DATE_NOT_MATCH("예약날짜와 현재날짜와 일치하지 않습니다."),
   BATCH_RESERVE_ERROR("예약 거절 배치 기능 에러"),
-  BATCH_ADJUST_ERROR("서비스 수행자 정산 중 배치 에러");
+  BATCH_ADJUST_ERROR("서비스 수행자 정산 중 배치 에러"),
+  RESERVE_CANCEL_UNAVAIL("서비스 취소는 하루전날까지 가능합니다"),
+  SSE_ERROR("sse 관련 오류 발생"),
+  NOTICE_NOT_FOUND("해당 알림을 찾을 수 없습니다");
+
   private final String value;
 
   ErrorCode(final String value) {

@@ -1,5 +1,6 @@
 package com.project.dogwalker.exception;
 
+import com.project.dogwalker.exception.batch.ReserveBatchException;
 import com.project.dogwalker.exception.dto.ExceptionResponse;
 import com.project.dogwalker.exception.dto.TokenResponse;
 import com.project.dogwalker.exception.feign.FeignBadRequestException;
@@ -9,13 +10,19 @@ import com.project.dogwalker.exception.feign.FeignNotFoundException;
 import com.project.dogwalker.exception.feign.FeignServerException;
 import com.project.dogwalker.exception.member.ImgUploadFailException;
 import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.NotWalkerException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
 import com.project.dogwalker.exception.reserve.AlreadyUnLockException;
 import com.project.dogwalker.exception.reserve.LockInterruptedException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
+import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
+import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
+import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.exception.unauth.TokenExpiredException;
+import com.project.dogwalker.exception.unauth.TokenNotExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,11 +83,18 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TokenResponse.from(e,e.getToken()));
   }
 
-  @ExceptionHandler(TokenExpiredException.class)
-  public ResponseEntity<ExceptionResponse> handleTokenExpired(final TokenExpiredException e){
+  @ExceptionHandler(MemberNotFoundException.class)
+  public ResponseEntity<ExceptionResponse> handleMemberNotFound(final MemberNotFoundException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+    return ResponseEntity.badRequest().body(ExceptionResponse.from(e));
   }
+
+  @ExceptionHandler(NotWalkerException.class)
+  public ResponseEntity<ExceptionResponse> handleNotWalker(final NotWalkerException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
+    return ResponseEntity.badRequest().body(ExceptionResponse.from(e));
+  }
+
 
   @ExceptionHandler(AlreadyUnLockException.class)
   public ResponseEntity<ExceptionResponse> handleAlreadyUnLock(final AlreadyUnLockException e){
@@ -111,5 +125,39 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
   }
 
+  @ExceptionHandler(ReserveUnAvailCancelException.class)
+  public ResponseEntity<ExceptionResponse> handleReserveUnAvailCancel(final ReserveUnAvailCancelException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponse.from(e));
+  }
+  @ExceptionHandler(ReserveBatchException.class)
+  public ResponseEntity<ExceptionResponse> handleReserveBatch(final ReserveBatchException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(TokenExpiredException.class)
+  public ResponseEntity<ExceptionResponse> handleTokenExpired(final TokenExpiredException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(RefreshTokenExpiredException.class)
+  public ResponseEntity<ExceptionResponse> handleTRefreshTokenExpired(final RefreshTokenExpiredException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(RefreshTokenNotExistException.class)
+  public ResponseEntity<ExceptionResponse> handleRefreshTokenNotExistToken(final RefreshTokenNotExistException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(TokenNotExistException.class)
+  public ResponseEntity<ExceptionResponse> handleTokenNotExist(final TokenNotExistException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+  }
 }
 

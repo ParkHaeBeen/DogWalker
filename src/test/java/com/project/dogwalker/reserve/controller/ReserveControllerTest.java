@@ -1,10 +1,12 @@
 package com.project.dogwalker.reserve.controller;
 
 import static com.project.dogwalker.domain.user.Role.USER;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -14,6 +16,7 @@ import com.project.dogwalker.common.config.WebConfig;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.token.JwtTokenProvider;
+import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.service.ReserveServiceImpl;
@@ -125,6 +128,70 @@ class ReserveControllerTest {
         .andDo(print());
 
     verify(reserveService).reserveService(memberInfo,request);
+  }
+
+  @Test
+  @DisplayName("서비스 수행자 예약 요청 수락/ 거부")
+  void changeRequestServiceStatus_success() throws Exception{
+    //given
+    String authorization="Bearer token";
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email("request@gmail.com")
+        .role(Role.WALKER)
+        .build();
+
+    given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+    given(jwtTokenProvider.getMemberInfo(anyString())).willReturn(memberInfo);
+    given(jwtTokenProvider.isWalker(anyString())).willReturn(true);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        patch("/api/reserve/request/{reserveId}" ,1)
+            .content(objectMapper.writeValueAsString(memberInfo))
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    //then
+    resultActions.andExpect(status().isOk());
+
+  }
+
+  @Test
+  @DisplayName("예약 하루전까지 취소 가능")
+  void reserveCancel_success() throws Exception {
+    //given
+    String email="dal@gmail.com";
+    Role role= USER;
+    String authorization ="Bearer Token";
+    ReserveCancel.Request request=ReserveCancel.Request.builder()
+        .reserveId(1L)
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(role)
+        .build();
+
+    given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
+    given(jwtTokenProvider.getMemberInfo(authorization)).willReturn(memberInfo);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        post("/api/reserve/cancel")
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .content(objectMapper.writeValueAsString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+
+    //then
+    verify(jwtTokenProvider, times(1)).getMemberInfo(authorization);
+
+    resultActions.andExpect(status().isOk())
+        .andDo(print());
+
+    verify(reserveService).reserveCancel(memberInfo,request);
   }
 
 

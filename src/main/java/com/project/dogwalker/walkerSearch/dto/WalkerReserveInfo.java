@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 public class WalkerReserveInfo {
 
@@ -24,6 +25,7 @@ public class WalkerReserveInfo {
   @AllArgsConstructor
   @NoArgsConstructor
   @Builder
+  @ToString
   public static class Response{
     private LocalDateTime reserveDate;
   }

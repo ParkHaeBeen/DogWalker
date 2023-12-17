@@ -1,12 +1,18 @@
 package com.project.dogwalker.domain.user.walker;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
+
+import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
+import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.walkerSearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkerSearch.dto.WalkerReserveInfo.Response;
 import com.project.dogwalker.walkerSearch.dto.WalkerTempUnAvailDate;
 import com.project.dogwalker.walkerSearch.dto.WalkerTimePrice;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +33,9 @@ class WalkerInfoRepositoryImplTest {
   private WalkerScheduleTempRepository walkerScheduleTempRepository;
   @Autowired
   private WalkerServicePriceRepository walkerServicePriceRepository;
+  @Autowired
+  private WalkerReserveServiceRepository walkerReserveServiceRepository;
+
 
   @Test
   @Rollback
@@ -140,5 +149,76 @@ class WalkerInfoRepositoryImplTest {
 
     //then
     Assertions.assertThat(WalkerTimePrice.size()).isEqualTo(2);
+  }
+
+  @Test
+  @Rollback
+  @DisplayName("해당 날짜 예약된 날짜+시간 보내기")
+  void walkerReserveDate(){
+    //given
+    User walker= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("query4@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("query4")
+        .userRole(Role.WALKER)
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("query6@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("query6")
+        .userRole(Role.USER)
+        .build();
+    User walker2= User.builder()
+        .userId(3L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("query5@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("query5")
+        .userRole(Role.WALKER)
+        .build();
+
+    User saveWalker = userRepository.save(walker);
+    User saveCustomer = userRepository.save(customer);
+    User saveWalker2 = userRepository.save(walker2);
+    WalkerReserveServiceInfo serviceInfo1=WalkerReserveServiceInfo.builder()
+        .serviceDateTime(LocalDateTime.of(2023,12,15,16,0))
+        .walker(walker)
+        .customer(saveCustomer)
+        .servicePrice(10000)
+        .timeUnit(30)
+        .status(WALKER_ACCEPT)
+        .build();
+    WalkerReserveServiceInfo serviceInfo2=WalkerReserveServiceInfo.builder()
+        .serviceDateTime(LocalDateTime.of(2023,12,15,18,0))
+        .walker(walker)
+        .customer(saveCustomer)
+        .servicePrice(10000)
+        .timeUnit(30)
+        .status(WALKER_ACCEPT)
+        .build();
+    WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
+        .serviceDateTime(LocalDateTime.of(2023,12,15,12,0))
+        .walker(walker2)
+        .customer(saveCustomer)
+        .servicePrice(10000)
+        .timeUnit(30)
+        .status(WALKER_ACCEPT)
+        .build();
+    walkerReserveServiceRepository.save(serviceInfo1);
+    walkerReserveServiceRepository.save(serviceInfo2);
+    walkerReserveServiceRepository.save(serviceInfo3);
+    //when
+    List <Response> responses = userRepository.walkerReserveDate(saveWalker.getUserId() ,
+        LocalDate.of(2023 , 12 , 15));
+    //then
+    Assertions.assertThat(responses.size()).isEqualTo(2);
   }
 }

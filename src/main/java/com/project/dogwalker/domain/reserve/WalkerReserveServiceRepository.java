@@ -12,4 +12,5 @@ public interface WalkerReserveServiceRepository extends JpaRepository<WalkerRese
 
  List<WalkerReserveServiceInfo> findAllByCreatedAtBeforeAndStatus(LocalDateTime now,WalkerServiceStatus status);
  Optional<WalkerReserveServiceInfo> findByReserveIdAndStatusAndWalkerUserId(Long reserveId,WalkerServiceStatus status, Long userId);
+
 }

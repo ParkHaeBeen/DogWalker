@@ -15,4 +15,6 @@ public interface WalkerService {
   boolean isStartedService(Long reserveId);
 
   ServiceEndResponse saveServiceRoute(MemberInfo memberInfo, ServiceEndRequest request);
+
+  void noticeCustomer(Long reserveId);
 }

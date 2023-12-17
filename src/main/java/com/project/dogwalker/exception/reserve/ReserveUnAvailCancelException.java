@@ -5,9 +5,9 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ReserveProcessException extends CustomException {
+public class ReserveUnAvailCancelException extends CustomException {
 
-  public ReserveProcessException(final ErrorCode errorCode) {
+  public ReserveUnAvailCancelException(final ErrorCode errorCode) {
     super(errorCode);
   }
 }
