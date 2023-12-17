@@ -1,7 +1,6 @@
 package com.project.dogwalker.domain.reserve;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
-import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
@@ -87,8 +86,4 @@ public class WalkerReserveServiceInfo extends BaseEntity {
         .build();
   }
 
-  public void setStatus(){
-    this.setStatus(WALKER_REFUSE);
-    this.payHistory.setPayStatus(PayStatus.PAY_REFUND);
-  }
 }
