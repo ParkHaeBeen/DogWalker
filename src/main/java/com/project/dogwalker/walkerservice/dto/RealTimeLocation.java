@@ -1,5 +1,6 @@
 package com.project.dogwalker.walkerservice.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -14,7 +15,10 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class RealTimeLocation {
+  @NotNull
   private Long reserveId;
+  @NotNull
   private Double lat;
+  @NotNull
   private Double lnt;
 }

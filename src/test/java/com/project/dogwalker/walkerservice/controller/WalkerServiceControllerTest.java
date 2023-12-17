@@ -187,7 +187,7 @@ class WalkerServiceControllerTest {
         .build();
 
     ServiceEndRequest request=ServiceEndRequest.builder()
-        .reserveId(1L)
+        .reserveId(2L)
         .build();
     Map <String, Object> params = new HashMap <>();
     params.put("memberInfo", info);

@@ -1,6 +1,5 @@
-package com.project.dogwalker.walkerSearch.dto;
+package com.project.dogwalker.walkersearch.dto;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +9,12 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AllArgsConstructor
 @ToString
-public class WalkerTempUnAvailDate {
+public class WalkerTimePrice {
 
-  private LocalDate dateTime;
-
+  private Integer timeUnit;
+  private Integer serviceFee;
 }

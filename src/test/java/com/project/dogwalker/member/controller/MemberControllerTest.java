@@ -14,6 +14,7 @@ import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
+import com.project.dogwalker.member.dto.join.JoinCommonRequest;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.service.OauthServiceImpl;
@@ -21,6 +22,7 @@ import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
 import jakarta.servlet.http.Cookie;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,7 +129,13 @@ class MemberControllerTest {
         .accessToken(accessToken)
         .build();
 
-    JoinUserRequest joinUserRequest=JoinUserRequest.builder().build();
+    JoinUserRequest joinUserRequest=JoinUserRequest.builder()
+        .commonRequest(new JoinCommonRequest())
+        .dogBirth(LocalDateTime.of(2022,01,01,0,0))
+        .dogType("푸들")
+        .dogName("달빈")
+        .dogDescription("귀여웡")
+        .build();
     String joinRequest=objectMapper.writeValueAsString(joinUserRequest);
 
     MockMultipartFile file = new MockMultipartFile("dogImg", "dog-image.jpg", "image/jpeg", "dog image content".getBytes());
@@ -181,7 +189,9 @@ class MemberControllerTest {
         .maxAge(Duration.ofMillis(604800))
         .build();
 
-    JoinWalkerRequest request=JoinWalkerRequest.builder().build();
+    JoinWalkerRequest request=JoinWalkerRequest.builder()
+        .commonRequest(new JoinCommonRequest())
+        .build();
 
 
     given(oauthService.joinWalker(any(JoinWalkerRequest.class))).willReturn(loginResult);

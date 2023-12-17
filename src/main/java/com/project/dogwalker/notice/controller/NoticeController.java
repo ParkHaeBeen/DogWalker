@@ -3,6 +3,7 @@ package com.project.dogwalker.notice.controller;
 import com.project.dogwalker.member.controller.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.service.NoticeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class NoticeController {
   private final NoticeService noticeService;
 
   @GetMapping(value = "/connect",produces = "text/event-stream")
-  public ResponseEntity<String> subscribeSse(@AuthMember MemberInfo memberInfo,
+  public ResponseEntity<String> subscribeSse(@AuthMember @Valid MemberInfo memberInfo,
         @RequestParam(value = "lastEventId",required = false,defaultValue = "")final String lastEventId){
     noticeService.addEmitter(memberInfo,lastEventId);
     return ResponseEntity.ok().build();
   }
 
   @PatchMapping("/read/{id}")
-  public ResponseEntity<Void> readNotification(@PathVariable Long id) {
+  public ResponseEntity<Void> readNotification(@PathVariable(required = true) Long id) {
     noticeService.readNotification(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }

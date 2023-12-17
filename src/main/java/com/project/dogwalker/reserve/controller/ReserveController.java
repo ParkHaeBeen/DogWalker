@@ -8,6 +8,7 @@ import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import com.project.dogwalker.reserve.service.ReserveService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class ReserveController {
    */
   @GetMapping("/check")
   @Auth
-  public ResponseEntity<?> isReservedCheck(@RequestBody final ReserveCheckRequest request){
+  public ResponseEntity<?> isReservedCheck(@RequestBody @Valid final ReserveCheckRequest request){
     reserveService.isReserved(request);
     return ResponseEntity.ok().build();
   }
@@ -43,7 +44,7 @@ public class ReserveController {
    */
   @PostMapping
   @Auth
-  public ResponseEntity<ReserveResponse> reserveService(@AuthMember final MemberInfo memberInfo,@RequestBody ReserveRequest request){
+  public ResponseEntity<ReserveResponse> reserveService(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);
     return ResponseEntity.ok(reserveResponse);
   }
@@ -53,7 +54,7 @@ public class ReserveController {
    */
   @PatchMapping("/request/{reserveId}")
   @Auth(isWalker = true)
-  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember final MemberInfo memberInfo,@PathVariable Long reserveId){
+  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,@PathVariable Long reserveId){
     reserveService.changeRequestServiceStatus(memberInfo,reserveId);
     return ResponseEntity.ok().build();
   }
@@ -62,7 +63,7 @@ public class ReserveController {
    */
   @PostMapping("/cancel")
   @Auth
-  public ResponseEntity<?> reserveCancel(@AuthMember final MemberInfo memberInfo, @RequestBody final ReserveCancel.Request request ){
+  public ResponseEntity<?> reserveCancel(@AuthMember @Valid final MemberInfo memberInfo, @RequestBody @Valid final ReserveCancel.Request request ){
     return ResponseEntity.ok(reserveService.reserveCancel(memberInfo,request));
   }
 }

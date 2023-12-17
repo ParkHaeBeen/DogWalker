@@ -9,6 +9,7 @@ import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.service.OauthService;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +37,7 @@ public class MemberController {
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   @GetMapping("/login/{type}/view")
-  public ResponseEntity<String> getLoginView(@PathVariable final String type){
+  public ResponseEntity<String> getLoginView(@PathVariable(required = true) final String type){
     return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
         .body(oauthService.requestUrl(type));
   }
@@ -48,8 +49,7 @@ public class MemberController {
    * @param type
    */
   @GetMapping("/login/{type}")
-  public ResponseEntity<LoginResponse> loginInfo(@RequestParam final String code,@PathVariable final String type){
-    log.info("login result = {}",code);
+  public ResponseEntity<LoginResponse> loginInfo(@RequestParam final String code,@PathVariable(required = true) final String type){
     final LoginResult result = oauthService.login(code , type);
     final String refreshToken=result.getRefreshToken();
 
@@ -65,7 +65,8 @@ public class MemberController {
    * @param joinRequest
    */
   @PostMapping( "/join/user")
-  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest")final JoinUserRequest joinRequest,@RequestPart("dogImg") final MultipartFile dogImg){
+  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") @Valid final JoinUserRequest joinRequest
+      ,@RequestPart(name = "dogImg",required = true) final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
     final LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
@@ -82,7 +83,7 @@ public class MemberController {
    * @param request
    */
   @PostMapping("/join/walker")
-  public ResponseEntity<LoginResponse> joinWalker(@RequestBody final JoinWalkerRequest request){
+  public ResponseEntity<LoginResponse> joinWalker(@RequestBody @Valid final JoinWalkerRequest request){
     log.info("join walker request = {}",request);
     final LoginResult joinResult = oauthService.joinWalker(request);
 

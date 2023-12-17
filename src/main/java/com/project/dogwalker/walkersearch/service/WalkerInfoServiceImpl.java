@@ -1,4 +1,4 @@
-package com.project.dogwalker.walkerSearch.service;
+package com.project.dogwalker.walkersearch.service;
 
 import static com.project.dogwalker.domain.user.Role.WALKER;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
@@ -9,13 +9,13 @@ import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
-import com.project.dogwalker.walkerSearch.dto.WalkerPermUnAvailDate;
-import com.project.dogwalker.walkerSearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkerSearch.dto.WalkerTimePrice;
-import com.project.dogwalker.walkerSearch.dto.WalkerUnAvailDetail;
+import com.project.dogwalker.walkersearch.dto.WalkerInfo;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
+import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

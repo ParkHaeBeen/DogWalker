@@ -1,7 +1,7 @@
 package com.project.dogwalker.domain.user.walker.elastic;
 
 
-import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

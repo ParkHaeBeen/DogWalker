@@ -12,6 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class ServiceEndRequest {
+
   private Long reserveId;
 
 }

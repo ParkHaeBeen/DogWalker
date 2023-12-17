@@ -13,9 +13,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class JoinCommonRequest {
+  @NotNull
   private String phoneNumber;
+  @NotNull
   private Double lat;
+  @NotNull
   private Double lnt;
+  @NotNull
   private String name;
 
   @NotNull
