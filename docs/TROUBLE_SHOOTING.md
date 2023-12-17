@@ -71,7 +71,7 @@
 
 <br>
 
-### 6. 
+### 6. 영속성 컨텍스트와 프록시
 
 문제 상황
 - 테스트코드에서 LazyInitializationException 영속성 컨텍스트에서 벗어남
