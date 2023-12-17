@@ -54,3 +54,18 @@
 상세링크
 
 [블로그 - OneToOne N+1 문제](https://haebing.tistory.com/106)
+
+<br>
+
+### 5. CascadeType 미설정
+
+문제 상황
+- oneToone 연관관계 부모에서 자식의 값을 바꿨는데 반영이 안됨
+
+문제 해결
+- cascadeType 설정
+
+상세링크
+
+[블로그 - cascade 타입](https://haebing.tistory.com/107)
+
