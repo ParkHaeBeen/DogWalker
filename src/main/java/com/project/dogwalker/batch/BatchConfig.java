@@ -114,7 +114,7 @@ public class BatchConfig{
   }
 
   @Bean
-  public JpaItemWriter<WalkerReserveServiceInfo> reserveWriter(){
+  public JpaItemWriter<WalkerReserveServiceInfo> reserveWriter(){;
     return new JpaItemWriterBuilder<WalkerReserveServiceInfo>()
         .entityManagerFactory(entityManagerFactory)
         .build();

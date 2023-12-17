@@ -49,11 +49,11 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_reserve_service_id")
   private Long reserveId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id",nullable = false)
   private User customer;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "walker_id",nullable = false)
   private User walker;
 

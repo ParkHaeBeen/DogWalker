@@ -67,7 +67,6 @@ public class ReserveServiceImpl implements ReserveService{
   @Override
   @DistributedLock
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
-    log.info("reserve service start");
     existReserve(request.getWalkerId(),request.getServiceDateTime());
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
@@ -81,7 +80,6 @@ public class ReserveServiceImpl implements ReserveService{
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
-    log.info("reserve service end");
 
     noticeService.send(NoticeRequest.builder()
             .noticeType(NoticeType.RESERVE)
@@ -117,13 +115,9 @@ public class ReserveServiceImpl implements ReserveService{
   }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
-    log.info("reserve exist start");
-
     if(reserveServiceRepository.findByWalkerUserIdAndServiceDateTime(walkerId , serviceDate).isPresent()){
-      log.info("reserve exist true");
       throw new ReserveAlreadyException(RESERVE_ALREAY);
     }
-    log.info("reserve exist end");
   }
 
   /**

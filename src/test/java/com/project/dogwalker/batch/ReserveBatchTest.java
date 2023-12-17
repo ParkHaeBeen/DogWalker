@@ -57,7 +57,7 @@ public class ReserveBatchTest {
         .userRole(Role.WALKER)
         .build();
     User walker= User.builder()
-        .userId(1L)
+        .userId(2L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("batchuser3@gmail.com")
@@ -69,7 +69,7 @@ public class ReserveBatchTest {
     userRepository.save(user);
     userRepository.save(walker);
 
-    WalkerReserveServiceInfo reserveServiceInfo = WalkerReserveServiceInfo.builder()
+    WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
         .customer(user)
         .walker(walker)
         .serviceDateTime(LocalDateTime.now())
@@ -77,17 +77,35 @@ public class ReserveBatchTest {
         .status(WalkerServiceStatus.WALKER_CHECKING)
         .servicePrice(100)
         .build();
-
-    WalkerReserveServiceInfo saveService = reserveServiceRepository.save(reserveServiceInfo);
-    PayHistory payHistory = PayHistory.builder()
+    WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
         .customer(user)
-        .reserveService(saveService)
+        .walker(walker)
+        .serviceDateTime(LocalDateTime.now().plusDays(1))
+        .timeUnit(60)
+        .status(WalkerServiceStatus.WALKER_CHECKING)
+        .servicePrice(100)
+        .build();
+
+    WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
+    WalkerReserveServiceInfo saveService2 = reserveServiceRepository.save(reserveServiceInfo2);
+    PayHistory payHistory1 = PayHistory.builder()
+        .customer(user)
+        .reserveService(saveService1)
         .payPrice(100)
         .payMethod("Credit Card")
         .build();
-    payHistoryRespository.save(payHistory);
-    saveService.setCreatedAt(LocalDateTime.now().minusMinutes(20));
-    reserveServiceRepository.saveAndFlush(saveService);
+    PayHistory payHistory2 = PayHistory.builder()
+        .customer(user)
+        .reserveService(saveService2)
+        .payPrice(100)
+        .payMethod("Credit Card")
+        .build();
+    payHistoryRespository.save(payHistory1);
+    payHistoryRespository.save(payHistory2);
+    saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(20));
+    saveService2.setCreatedAt(LocalDateTime.now().minusMinutes(20));
+    reserveServiceRepository.saveAndFlush(saveService1);
+    reserveServiceRepository.saveAndFlush(saveService2);
     JobParameters jobParameters=new JobParametersBuilder()
         .addString("jobName","reserveJob")
         .addLong("time",System.currentTimeMillis())

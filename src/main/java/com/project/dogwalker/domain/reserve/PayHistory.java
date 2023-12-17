@@ -40,11 +40,11 @@ public class PayHistory extends BaseEntity {
   private Long payId;
 
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User customer;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "walker_reserve_service_id")
   private WalkerReserveServiceInfo reserveService;
 
