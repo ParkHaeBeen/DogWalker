@@ -3,7 +3,6 @@ package com.project.dogwalker.exception.dto;
 import java.util.Map;
 
 public class FeignResponseError {
-  public String result;
   public Object data;
   public ErrorData error;
 
