@@ -69,9 +69,22 @@ public class ReserveBatchTest {
     userRepository.save(user);
     userRepository.save(walker);
 
+    PayHistory payHistory1 = PayHistory.builder()
+        .customer(user)
+        .payPrice(100)
+        .payMethod("Credit Card")
+        .build();
+    PayHistory payHistory2 = PayHistory.builder()
+        .customer(user)
+        .payPrice(100)
+        .payMethod("Credit Card")
+        .build();
+    PayHistory savePayHistory1 = payHistoryRespository.save(payHistory1);
+    PayHistory savePayHistory2 = payHistoryRespository.save(payHistory2);
     WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
         .customer(user)
         .walker(walker)
+        .payHistory(savePayHistory1)
         .serviceDateTime(LocalDateTime.now())
         .timeUnit(60)
         .status(WalkerServiceStatus.WALKER_CHECKING)
@@ -80,6 +93,7 @@ public class ReserveBatchTest {
     WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
         .customer(user)
         .walker(walker)
+        .payHistory(savePayHistory2)
         .serviceDateTime(LocalDateTime.now().plusDays(1))
         .timeUnit(60)
         .status(WalkerServiceStatus.WALKER_CHECKING)
@@ -88,20 +102,6 @@ public class ReserveBatchTest {
 
     WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
     WalkerReserveServiceInfo saveService2 = reserveServiceRepository.save(reserveServiceInfo2);
-    PayHistory payHistory1 = PayHistory.builder()
-        .customer(user)
-        .reserveService(saveService1)
-        .payPrice(100)
-        .payMethod("Credit Card")
-        .build();
-    PayHistory payHistory2 = PayHistory.builder()
-        .customer(user)
-        .reserveService(saveService2)
-        .payPrice(100)
-        .payMethod("Credit Card")
-        .build();
-    payHistoryRespository.save(payHistory1);
-    payHistoryRespository.save(payHistory2);
     saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(20));
     saveService2.setCreatedAt(LocalDateTime.now().minusMinutes(20));
     reserveServiceRepository.saveAndFlush(saveService1);

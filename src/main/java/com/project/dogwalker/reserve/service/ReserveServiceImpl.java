@@ -2,7 +2,6 @@ package com.project.dogwalker.reserve.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_CANCEL;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
-import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
@@ -32,7 +31,6 @@ import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -97,22 +95,6 @@ public class ReserveServiceImpl implements ReserveService{
         .build();
   }
 
-
-  /**
-   * 점주에게 신규예약에 대해 10분후 수락/거절 안하면 자동 거절 - spring batch
-   */
-  @Override
-  public void changeReserveStatus(){
-    reserveServiceRepository.findAllByCreatedAtBeforeAndStatus(
-        LocalDateTime.now().minusMinutes(10) ,
-        WALKER_CHECKING).stream()
-        .map(service ->
-                    {service.setStatus(WALKER_REFUSE);
-                      service.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
-                      return service;})
-        .collect(Collectors.toList());
-
-  }
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
     if(reserveServiceRepository.findByWalkerUserIdAndServiceDateTime(walkerId , serviceDate).isPresent()){

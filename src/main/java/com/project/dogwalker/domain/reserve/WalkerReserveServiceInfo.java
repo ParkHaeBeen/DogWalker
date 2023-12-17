@@ -1,11 +1,13 @@
 package com.project.dogwalker.domain.reserve;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -71,7 +73,8 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
 
-  @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+  @JoinColumn(name = "pay_history_id")
   private PayHistory payHistory;
 
   public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
@@ -82,5 +85,10 @@ public class WalkerReserveServiceInfo extends BaseEntity {
         .timeUnit(request.getTimeUnit())
         .walker(walker)
         .build();
+  }
+
+  public void setStatus(){
+    this.setStatus(WALKER_REFUSE);
+    this.payHistory.setPayStatus(PayStatus.PAY_REFUND);
   }
 }

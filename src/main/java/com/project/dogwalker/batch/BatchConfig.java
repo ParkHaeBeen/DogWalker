@@ -1,6 +1,5 @@
 package com.project.dogwalker.batch;
 
-import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
@@ -40,7 +39,6 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Configuration
@@ -97,6 +95,7 @@ public class BatchConfig{
         .entityManagerFactory(entityManagerFactory)
         .pageSize(chunkSize)
         .queryString("SELECT w FROM WalkerReserveServiceInfo w "
+            + "Join Fetch w.payHistory p "
             + "WHERE w.createdAt < :createdAt "
             + "AND w.status = :status")
         .parameterValues(parameter)
@@ -104,12 +103,16 @@ public class BatchConfig{
   }
 
   @Bean
-  @Transactional
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
+      System.out.println("dddddddddd");
       reserveService.setStatus(WALKER_REFUSE);
-      reserveService.getPayHistory().setPayStatus(PAY_REFUND);
+      PayHistory payHistory = reserveService.getPayHistory();
+      payHistory.setPayStatus(PayStatus.PAY_REFUND);
+      System.out.println(payHistory.getPayStatus()+" "+payHistory.getPayId());
       return entityManagerFactory.createEntityManager().merge(reserveService);
+
+
     };
   }
 
@@ -145,11 +148,11 @@ public class BatchConfig{
         .entityManagerFactory(entityManagerFactory)
         .pageSize(chunkSize)
         .queryString("SELECT NEW com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo(u, ph, w) "
-            + "FROM WalkerReserveServiceInfo w "
-            + "JOIN FETCH PayHistory ph ON w.reserveId = ph.reserveService.reserveId "
-            + "JOIN FETCH User u ON w.walker.userId = u.userId "
-            + "WHERE w.status = :status "
-            + "AND ph.payStatus = :payStatus")
+        + "FROM WalkerReserveServiceInfo w "
+        + "JOIN FETCH w.payHistory ph "
+        + "JOIN FETCH w.walker u "
+        + "WHERE w.status = :status "
+        + "AND ph.payStatus = :payStatus")
         .parameterValues(parameter)
         .build();
   }

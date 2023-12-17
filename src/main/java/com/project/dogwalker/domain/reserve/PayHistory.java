@@ -44,8 +44,7 @@ public class PayHistory extends BaseEntity {
   @JoinColumn(name = "user_id")
   private User customer;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "walker_reserve_service_id")
+  @OneToOne(mappedBy = "payHistory",fetch = FetchType.LAZY)
   private WalkerReserveServiceInfo reserveService;
 
   @Column(name = "pay_price")
