@@ -69,3 +69,17 @@
 
 [블로그 - cascade 타입](https://haebing.tistory.com/107)
 
+<br>
+
+### 6. 
+
+문제 상황
+- 테스트코드에서 LazyInitializationException 영속성 컨텍스트에서 벗어남
+
+문제 해결
+- lazy엔티티를 eager Type으로 변경
+- 또는 테스트 코드 메서드에 @Transactional 붙이기
+
+상세링크
+
+[블로그 - cascade 타입](https://haebing.tistory.com/108)
