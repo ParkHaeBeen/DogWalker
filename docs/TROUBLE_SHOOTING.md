@@ -40,3 +40,17 @@
 상세링크
 
 [블로그 - Redis 역직렬화 문제](https://haebing.tistory.com/105)
+
+<br>
+
+### 4. OneToOne관계 N+1문제
+
+문제 상황
+- OneToOne관계를 가진 테이블을 조회하던중 N+1문제 발견
+
+문제 해결
+- 연관관계 (부모,자식) 관계 다시 설정
+
+상세링크
+
+[블로그 - OneToOne N+1 문제](https://haebing.tistory.com/106)
