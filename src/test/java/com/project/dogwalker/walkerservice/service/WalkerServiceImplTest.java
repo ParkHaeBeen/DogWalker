@@ -1,12 +1,13 @@
 package com.project.dogwalker.walkerservice.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import com.project.dogwalker.common.service.RedisService;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
@@ -17,7 +18,9 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRouteRepository;
 import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
+import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.common.service.redis.RedisService;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
@@ -56,6 +59,9 @@ class WalkerServiceImplTest {
 
   @Mock
   private WalkerServiceRouteRepository serviceRouteRepository;
+
+  @Mock
+  private NoticeService noticeService;
 
   @InjectMocks
   private WalkerServiceImpl walkerService;
@@ -144,8 +150,58 @@ class WalkerServiceImplTest {
     Assertions.assertThrows(ReserveDateNotMatch.class,()-> walkerService.checkService(info,request));
   }
 
+  @Test
+  @DisplayName("고객에게 서비스 종료 5분전 알림 - 성공")
+  void noticeCustomer_success(){
+    //given
+    User walker= User.builder()
+        .userId(1L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService1")
+        .userRole(Role.USER)
+        .build();
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
 
+    WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
+        .reserveId(1L)
+        .walker(walker)
+        .customer(customer)
+        .serviceDateTime(LocalDateTime.now())
+        .timeUnit(40)
+        .status(WALKER_ACCEPT)
+        .servicePrice(10000)
+        .build();
 
+    given(reserveRepository.findById(anyLong()))
+        .willReturn(Optional.of(serviceInfo));
+    //when
+    //then
+    walkerService.noticeCustomer(1L);
+  }
+
+  @Test
+  @DisplayName("고객에게 서비스 종료 5분전 알림 - 실패 : 해당 예약이 존재하지 않아")
+  void noticeCustomer_fail_notReserveFound(){
+    //given
+    given(reserveRepository.findById(anyLong()))
+        .willReturn(Optional.empty());
+
+    //when
+    //then
+    Assertions.assertThrows(ReserveRequestNotExistException.class,()->walkerService.noticeCustomer(1L));
+
+  }
   @Test
   @DisplayName("서비스 종료후 redis에 저장한 경로들 db 저장 성공")
   void saveServiceRoute() {

@@ -1,6 +1,7 @@
 package com.project.dogwalker.walkerservice.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -154,6 +155,26 @@ class WalkerServiceControllerTest {
     resultActions.andExpect(status().isOk());
   }
 
+  @Test
+  @DisplayName("고객에게 산책 서비스 완료 5분전 알림 - 성공")
+  void noticeCustomer() throws Exception{
+    //given
+    String authorization ="Bearer Token";
+
+    given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+    given(jwtTokenProvider.isWalker(anyString())).willReturn(true);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        post("/api/service/notice/customer")
+            .content(objectMapper.writeValueAsString(1L))
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    //then
+    resultActions.andExpect(status().isOk());
+  }
 
   @Test
   @DisplayName("서비스 완료후 이동경로 내역 저장")

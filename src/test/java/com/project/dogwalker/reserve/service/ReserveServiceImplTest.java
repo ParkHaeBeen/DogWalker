@@ -1,7 +1,8 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.user.Role.USER;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,6 +16,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
+import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
@@ -200,5 +202,134 @@ class ReserveServiceImplTest {
     //then
     Assertions.assertThrows(
         ReserveUnAvailCancelException.class,()->reserveService.reserveCancel(memberInfo,request));
+  }
+
+
+  @Test
+  @DisplayName("서비스 수행자 요청 수락/거부 -성공")
+  void changeRequestServiceStatus_success(){
+    //given
+    User walker= User.builder()
+        .userRole(Role.WALKER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userId(1L)
+        .userName("request1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("request1@gmail.com")
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
+
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+
+    WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
+        .reserveId(1L)
+        .customer(customer)
+        .walker(walker)
+        .serviceDateTime(LocalDateTime.now())
+        .timeUnit(40)
+        .status(WALKER_CHECKING)
+        .servicePrice(10000)
+        .build();
+
+    //when
+    given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
+    given(walkerReserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(anyLong(), any(),anyLong()))
+        .willReturn(Optional.of(serviceInfo));
+
+    //then
+    reserveService.changeRequestServiceStatus(memberInfo,1L);
+  }
+
+  @Test
+  @DisplayName("서비스 수행자 요청 수락/거부 - 실패 : reserveInfo 존재하지 않음")
+  void changeRequestServiceStatus_fail_notFoundReserve(){
+    //given
+    User walker= User.builder()
+        .userRole(Role.WALKER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userId(1L)
+        .userName("request1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("request1@gmail.com")
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
+
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+    //when
+    given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
+    given(walkerReserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(anyLong(), any(),anyLong()))
+        .willReturn(Optional.empty());
+
+    //then
+    Assertions.assertThrows(ReserveRequestNotExistException.class,()->reserveService.changeRequestServiceStatus(memberInfo,1L));
+  }
+
+  @Test
+  @DisplayName("서비스 수행자 요청 수락/거부 - 실패 : 해당 유저 없음")
+  void changeRequestServiceStatus_fail_notFoundUser(){
+    //given
+    User walker= User.builder()
+        .userRole(Role.WALKER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userId(1L)
+        .userName("request1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("request1@gmail.com")
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
+
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+    //when
+    given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.empty());
+
+
+    //then
+    Assertions.assertThrows(
+        MemberNotFoundException.class,()->reserveService.changeRequestServiceStatus(memberInfo,1L));
   }
 }

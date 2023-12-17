@@ -15,4 +15,6 @@ public interface ReserveService {
   public void changeReserveStatus();
 
   ReserveCancel.Response reserveCancel(MemberInfo memberInfo , ReserveCancel.Request reserveId);
+
+  void changeRequestServiceStatus(MemberInfo memberInfo , Long reserveId);
 }

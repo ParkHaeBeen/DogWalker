@@ -1,10 +1,12 @@
 package com.project.dogwalker.reserve.controller;
 
 import static com.project.dogwalker.domain.user.Role.USER;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -126,6 +128,33 @@ class ReserveControllerTest {
         .andDo(print());
 
     verify(reserveService).reserveService(memberInfo,request);
+  }
+
+  @Test
+  @DisplayName("서비스 수행자 예약 요청 수락/ 거부")
+  void changeRequestServiceStatus_success() throws Exception{
+    //given
+    String authorization="Bearer token";
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email("request@gmail.com")
+        .role(Role.WALKER)
+        .build();
+
+    given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+    given(jwtTokenProvider.getMemberInfo(anyString())).willReturn(memberInfo);
+    given(jwtTokenProvider.isWalker(anyString())).willReturn(true);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        patch("/api/reserve/request/{reserveId}" ,1)
+            .content(objectMapper.writeValueAsString(memberInfo))
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    //then
+    resultActions.andExpect(status().isOk());
+
   }
 
   @Test

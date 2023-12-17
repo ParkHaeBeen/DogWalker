@@ -4,6 +4,7 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_AC
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
+import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
@@ -16,6 +17,9 @@ import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.member.dto.MemberInfo;
+
+import com.project.dogwalker.notice.dto.NoticeRequest;
+import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.common.service.redis.RedisService;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
@@ -37,6 +41,7 @@ public class WalkerServiceImpl implements WalkerService{
   private final WalkerReserveServiceRepository reserveRepository;
   private final RedisService redisService;
   private final WalkerServiceRouteRepository routeRepository;
+  private final NoticeService noticeService;
   private final String startServicePrefix="start-";
   private final String proceedServicePrefix="proceed-";
 
@@ -83,6 +88,18 @@ public class WalkerServiceImpl implements WalkerService{
   public void saveRealTimeLocation(final RealTimeLocation location) {
     final Coordinate coordinate=new Coordinate(location.getLat(),location.getLnt());
     redisService.addToList(proceedServicePrefix+location.getReserveId(),coordinate);
+  }
+
+  @Override
+  public void noticeCustomer(final Long reserveId) {
+    final WalkerReserveServiceInfo serviceInfo = reserveRepository.findById(reserveId)
+        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+    noticeService.send(NoticeRequest.builder()
+            .path(null)
+            .noticeType(NoticeType.SERVICE)
+            .senderName(serviceInfo.getWalker().getUserName())
+            .receiver(serviceInfo.getCustomer())
+        .build());
   }
 
   /**
