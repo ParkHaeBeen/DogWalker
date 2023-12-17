@@ -60,6 +60,7 @@ public class PayHistory extends BaseEntity {
   @Column(name = "pay_method",nullable = false)
   private String payMethod;
 
+
   public static PayHistory of(final ReserveRequest request,final WalkerReserveServiceInfo service){
     return PayHistory.builder()
         .customer(service.getCustomer())
