@@ -62,6 +62,9 @@ public class WalkerServiceController {
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * 고객에게 서비스 완료 5분전이라 알림
+   */
   @PostMapping("/notice/customer")
   @Auth(isWalker = true)
   public ResponseEntity<?> noticeCustomer(@RequestBody final Long reserveId){

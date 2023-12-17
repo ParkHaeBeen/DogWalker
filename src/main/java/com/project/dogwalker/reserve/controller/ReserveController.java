@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +48,10 @@ public class ReserveController {
     return ResponseEntity.ok(reserveResponse);
   }
 
-  @PostMapping("/request/{reserveId}")
+  /**
+   * 서비스 수행자 예약 요청 수락/거부
+   */
+  @PatchMapping("/request/{reserveId}")
   @Auth(isWalker = true)
   public ResponseEntity<?> changeRequestServiceStatus(@AuthMember final MemberInfo memberInfo,@PathVariable Long reserveId){
     reserveService.changeRequestServiceStatus(memberInfo,reserveId);

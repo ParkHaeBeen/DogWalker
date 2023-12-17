@@ -65,7 +65,7 @@ class NoticeControllerTest {
     //given
     //when
     ResultActions resultActions = mockMvc.perform(
-        patch("/api/sse/read/"+1)
+        patch("/api/sse/read/{id}",1)
     );
 
     //then
