@@ -1,5 +1,6 @@
-package com.project.dogwalker.walkerSearch.dto;
+package com.project.dogwalker.walkersearch.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,9 @@ public class WalkerReserveInfo {
   @NoArgsConstructor
   @Builder
   public static class Request{
+    @NotNull
     private Long walkerId;
+    @NotNull
     private LocalDate checkReserveDate;
   }
   @Getter
@@ -27,6 +30,7 @@ public class WalkerReserveInfo {
   @Builder
   @ToString
   public static class Response{
+    @NotNull
     private LocalDateTime reserveDate;
   }
 }

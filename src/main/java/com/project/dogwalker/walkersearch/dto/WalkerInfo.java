@@ -1,4 +1,4 @@
-package com.project.dogwalker.walkerSearch.dto;
+package com.project.dogwalker.walkersearch.dto;
 
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import lombok.AllArgsConstructor;

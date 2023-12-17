@@ -75,7 +75,10 @@ class ReserveControllerTest {
     //given
     String authorization ="Bearer Token";
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
-    ReserveCheckRequest request=ReserveCheckRequest.builder().build();
+    ReserveCheckRequest request=ReserveCheckRequest.builder()
+        .walkerId(1L)
+        .serviceDate(LocalDateTime.of(2023,12,25,15,0))
+        .build();
 
     //when
     ResultActions resultActions = mockMvc.perform(

@@ -1,4 +1,4 @@
-package com.project.dogwalker.walkerSearch.dto;
+package com.project.dogwalker.walkersearch.dto;
 
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;

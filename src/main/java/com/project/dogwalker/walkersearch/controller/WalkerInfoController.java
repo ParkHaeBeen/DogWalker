@@ -1,13 +1,15 @@
-package com.project.dogwalker.walkerSearch.controller;
+package com.project.dogwalker.walkersearch.controller;
 
 import com.project.dogwalker.member.controller.Auth;
 import com.project.dogwalker.member.controller.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerInfoSearchCond;
-import com.project.dogwalker.walkerSearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkerSearch.dto.WalkerUnAvailDetail;
-import com.project.dogwalker.walkerSearch.service.WalkerInfoService;
+import com.project.dogwalker.walkersearch.dto.WalkerInfo;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
+import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
+import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
+import com.project.dogwalker.walkersearch.service.WalkerInfoService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class WalkerInfoController {
    */
   @GetMapping("/list")
   @Auth
-  public ResponseEntity<List <WalkerInfo>> getWalkerInfoList(@AuthMember final MemberInfo memberInfo
+  public ResponseEntity<List <WalkerInfo>> getWalkerInfoList(@AuthMember @Valid final MemberInfo memberInfo
       ,@RequestBody final WalkerInfoSearchCond searchCond){
     return ResponseEntity.ok(walkerInfoService.getWalkerInfoList(memberInfo,searchCond));
   }
@@ -45,7 +47,7 @@ public class WalkerInfoController {
    * 해당날짜에 예약이 있는 날짜 전송
    */
   @GetMapping("/detail/check/reserve")
-  public ResponseEntity<List<WalkerReserveInfo.Response>> getWalkerAlreadyReserveDate(@RequestBody final WalkerReserveInfo.Request reserveInfo){
+  public ResponseEntity<List<WalkerReserveInfo.Response>> getWalkerAlreadyReserveDate(@RequestBody @NotNull final WalkerReserveInfo.Request reserveInfo){
     return ResponseEntity.ok(walkerInfoService.getReserveDate(reserveInfo));
   }
 

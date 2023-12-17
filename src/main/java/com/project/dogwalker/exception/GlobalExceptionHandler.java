@@ -13,6 +13,8 @@ import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
 import com.project.dogwalker.exception.member.NotWalkerException;
 import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
+import com.project.dogwalker.exception.notice.NoticeNotFoundException;
+import com.project.dogwalker.exception.notice.SseException;
 import com.project.dogwalker.exception.reserve.AlreadyUnLockException;
 import com.project.dogwalker.exception.reserve.LockInterruptedException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
@@ -26,6 +28,7 @@ import com.project.dogwalker.exception.unauth.TokenNotExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -158,6 +161,24 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ExceptionResponse> handleTokenNotExist(final TokenNotExistException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(NoticeNotFoundException.class)
+  public ResponseEntity<ExceptionResponse> handleNoticeNotFound(final NoticeNotFoundException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(SseException.class)
+  public ResponseEntity<ExceptionResponse> handleSse(final SseException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionResponse.from(e));
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<?> handleArgumentNotValue(final MethodArgumentNotValidException e){
+    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getStatusCode(),e.getMessage());
+    return ResponseEntity.status(e.getStatusCode()).body(e);
   }
 }
 

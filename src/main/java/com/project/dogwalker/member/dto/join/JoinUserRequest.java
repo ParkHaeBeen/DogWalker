@@ -28,7 +28,4 @@ public class JoinUserRequest {
   @NotNull
   private String dogDescription;
 
-
-
-
 }

@@ -8,6 +8,8 @@ import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import com.project.dogwalker.walkerservice.service.WalkerService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +34,7 @@ public class WalkerServiceController {
    */
   @GetMapping("/check/valid")
   @Auth(isWalker = true)
-  public ResponseEntity<?> checkReserveAndWalker(@AuthMember final MemberInfo memberInfo,@RequestBody final
+  public ResponseEntity<?> checkReserveAndWalker(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @NotNull final
       ServiceCheckRequest request){
     walkerService.checkService(memberInfo,request);
 
@@ -57,7 +59,7 @@ public class WalkerServiceController {
    * 프론트 쪽에서 10초마다 해당 위치에 대해서 엔드포인트 호출
    */
   @PostMapping("/location")
-  public ResponseEntity<?> realTimeLocation(@RequestBody final RealTimeLocation location){
+  public ResponseEntity<?> realTimeLocation(@RequestBody @Valid final RealTimeLocation location){
     walkerService.saveRealTimeLocation(location);
     return ResponseEntity.ok().build();
   }
@@ -76,8 +78,8 @@ public class WalkerServiceController {
    */
   @PostMapping("/finish")
   @Auth(isWalker = true)
-  public ResponseEntity<ServiceEndResponse> endService(@AuthMember final MemberInfo memberInfo, @RequestBody
-      ServiceEndRequest request){
+  public ResponseEntity<ServiceEndResponse> endService(@AuthMember @Valid final MemberInfo memberInfo,
+      @RequestBody @Valid ServiceEndRequest request){
     final ServiceEndResponse serviceEndResponse = walkerService.saveServiceRoute(memberInfo , request);
     return ResponseEntity.ok(serviceEndResponse);
   }
