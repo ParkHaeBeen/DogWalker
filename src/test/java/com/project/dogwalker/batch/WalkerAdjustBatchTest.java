@@ -77,49 +77,18 @@ public class WalkerAdjustBatchTest {
     userRepository.save(user);
     userRepository.save(walker);
 
-    WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now())
-        .timeUnit(50)
-        .status(WalkerServiceStatus.FINISH)
-        .servicePrice(1000)
-        .build();
-
-    WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
-        .timeUnit(50)
-        .status(WalkerServiceStatus.FINISH)
-        .servicePrice(1000)
-        .build();
-    WalkerReserveServiceInfo reserveServiceInfo3 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
-        .timeUnit(50)
-        .status(WalkerServiceStatus.CUSTOMER_CANCEL)
-        .servicePrice(1000)
-        .build();
-    WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
-    WalkerReserveServiceInfo saveService2 = reserveServiceRepository.save(reserveServiceInfo2);
-    WalkerReserveServiceInfo saveService3 = reserveServiceRepository.save(reserveServiceInfo3);
     PayHistory payHistory1 = PayHistory.builder()
         .customer(user)
-        .reserveService(saveService1)
         .payPrice(1000)
         .payMethod("CARD")
         .build();
     PayHistory payHistory2 = PayHistory.builder()
         .customer(user)
-        .reserveService(saveService2)
         .payPrice(1000)
         .payMethod("CARD")
         .build();
     PayHistory payHistory3 = PayHistory.builder()
         .customer(user)
-        .reserveService(saveService3)
         .payPrice(1000)
         .payStatus(PayStatus.PAY_REFUND)
         .payMethod("CARD")
@@ -127,6 +96,9 @@ public class WalkerAdjustBatchTest {
     LocalDate startOfMonth = LocalDate.now().with(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
     LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
 
+    PayHistory savePayHistory1 = payHistoryRespository.save(payHistory1);
+    PayHistory savePayHistory2 = payHistoryRespository.save(payHistory2);
+    PayHistory savePayHistory3 = payHistoryRespository.save(payHistory3);
     WalkerAdjust adjust=WalkerAdjust.builder()
         .walkerAdjustDate(LocalDate.now())
         .userId(walker.getUserId())
@@ -135,9 +107,37 @@ public class WalkerAdjustBatchTest {
         .walkerAdjustPeriodStart(startOfMonth)
         .build();
 
-    payHistoryRespository.save(payHistory1);
-    payHistoryRespository.save(payHistory2);
-    payHistoryRespository.save(payHistory3);
+    WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
+        .customer(user)
+        .walker(walker)
+        .payHistory(savePayHistory1)
+        .serviceDateTime(LocalDateTime.now())
+        .timeUnit(50)
+        .status(WalkerServiceStatus.FINISH)
+        .servicePrice(1000)
+        .build();
+
+    WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
+        .customer(user)
+        .payHistory(savePayHistory2)
+        .walker(walker)
+        .serviceDateTime(LocalDateTime.now().plusDays(1))
+        .timeUnit(50)
+        .status(WalkerServiceStatus.FINISH)
+        .servicePrice(1000)
+        .build();
+    WalkerReserveServiceInfo reserveServiceInfo3 = WalkerReserveServiceInfo.builder()
+        .customer(user)
+        .payHistory(savePayHistory3)
+        .walker(walker)
+        .serviceDateTime(LocalDateTime.now().plusDays(1))
+        .timeUnit(50)
+        .status(WalkerServiceStatus.CUSTOMER_CANCEL)
+        .servicePrice(1000)
+        .build();
+    reserveServiceRepository.save(reserveServiceInfo1);
+    reserveServiceRepository.save(reserveServiceInfo2);
+    reserveServiceRepository.save(reserveServiceInfo3);
     adjustRepository.saveAndFlush(adjust);
 
 

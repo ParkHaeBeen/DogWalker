@@ -1,7 +1,5 @@
 package com.project.dogwalker.reserve.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
@@ -11,8 +9,8 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +32,9 @@ public class ReserveDistributeTest {
 
   @Autowired
   private ReserveServiceImpl reserveService;
+
+  @Autowired
+  private EntityManager entityManager;
 
   @Test
   @DisplayName("예약 중복 진행시 분산락 기능 성공")
@@ -58,7 +59,7 @@ public class ReserveDistributeTest {
         .build();
 
     userRepository.save(customer);
-    User walkerSave = userRepository.save(walker);
+    User walkerSave = userRepository.saveAndFlush(walker);
 
     int numThreads = 50;
 
@@ -89,12 +90,19 @@ public class ReserveDistributeTest {
 
     latch.await();
 
-    List<WalkerReserveServiceInfo> all = walkerReserveServiceRepository.findAll();
-    WalkerReserveServiceInfo serviceDate = walkerReserveServiceRepository.findByWalkerUserIdAndServiceDateTime(
-        walkerSave.getUserId() ,serviceReserve).get();
-    assertThat(serviceDate.getServiceDateTime()).isEqualTo(serviceReserve);
-    assertThat(serviceDate.getCustomer().getUserEmail()).isEqualTo(customer.getUserEmail());
+    WalkerReserveServiceInfo singleResult = entityManager.createQuery(
+            "SELECT w FROM WalkerReserveServiceInfo w "
+                + "JOIN fetch w.customer "
+                + "JOIN fetch w.walker " +
+                "WHERE w.walker = :walkerId " +
+                "AND w.serviceDateTime = :serviceDate" , WalkerReserveServiceInfo.class)
+        .setParameter("walkerId" , walkerSave)
+        .setParameter("serviceDate" , serviceReserve)
+        .getSingleResult();
 
+    Assertions.assertThat(singleResult.getServiceDateTime()).isEqualTo(serviceReserve);
+    Assertions.assertThat(singleResult.getCustomer().getUserEmail()).isEqualTo(customer.getUserEmail());
+    Assertions.assertThat(singleResult.getWalker().getUserEmail()).isEqualTo(walker.getUserEmail());
 
   }
 }

@@ -6,6 +6,7 @@ import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -49,11 +50,11 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_reserve_service_id")
   private Long reserveId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id",nullable = false)
   private User customer;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "walker_id",nullable = false)
   private User walker;
 
@@ -71,7 +72,8 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
 
-  @OneToOne(mappedBy = "reserveService",fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+  @JoinColumn(name = "pay_history_id")
   private PayHistory payHistory;
 
   public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
@@ -83,4 +85,5 @@ public class WalkerReserveServiceInfo extends BaseEntity {
         .walker(walker)
         .build();
   }
+
 }

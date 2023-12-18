@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -25,6 +26,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 @Table(name = "users",
       uniqueConstraints = {@UniqueConstraint(name = "users_email_unique",columnNames = {"user_email"})})
 @AttributeOverride(name = "createdAt", column = @Column(name = "user_created_at"))

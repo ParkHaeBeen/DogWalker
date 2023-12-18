@@ -1,5 +1,7 @@
 package com.project.dogwalker.batch;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.ADJUST_DONE;
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
@@ -10,7 +12,6 @@ import com.project.dogwalker.domain.adjust.WalkerAdjust;
 import com.project.dogwalker.domain.adjust.WalkerAdjustDetail;
 import com.project.dogwalker.domain.adjust.WalkerAdjustRepository;
 import com.project.dogwalker.domain.reserve.PayHistory;
-import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import jakarta.persistence.EntityManager;
@@ -40,7 +41,6 @@ import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Configuration
@@ -97,6 +97,7 @@ public class BatchConfig{
         .entityManagerFactory(entityManagerFactory)
         .pageSize(chunkSize)
         .queryString("SELECT w FROM WalkerReserveServiceInfo w "
+            + "Join Fetch w.payHistory p "
             + "WHERE w.createdAt < :createdAt "
             + "AND w.status = :status")
         .parameterValues(parameter)
@@ -104,7 +105,6 @@ public class BatchConfig{
   }
 
   @Bean
-  @Transactional
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
       reserveService.setStatus(WALKER_REFUSE);
@@ -138,18 +138,18 @@ public class BatchConfig{
   public JpaPagingItemReader<AdjustWalkerInfo> adjustReader(){
     Map<String, Object> parameter = new HashMap<>();
     parameter.put("status", WalkerServiceStatus.FINISH);
-    parameter.put("payStatus", PayStatus.PAY_DONE);
+    parameter.put("payStatus", PAY_DONE);
 
     return new JpaPagingItemReaderBuilder<AdjustWalkerInfo>()
         .name("adjustReader")
         .entityManagerFactory(entityManagerFactory)
         .pageSize(chunkSize)
         .queryString("SELECT NEW com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo(u, ph, w) "
-            + "FROM WalkerReserveServiceInfo w "
-            + "JOIN FETCH PayHistory ph ON w.reserveId = ph.reserveService.reserveId "
-            + "JOIN FETCH User u ON w.walker.userId = u.userId "
-            + "WHERE w.status = :status "
-            + "AND ph.payStatus = :payStatus")
+        + "FROM WalkerReserveServiceInfo w "
+        + "JOIN FETCH w.payHistory ph "
+        + "JOIN FETCH w.walker u "
+        + "WHERE w.status = :status "
+        + "AND ph.payStatus = :payStatus")
         .parameterValues(parameter)
         .build();
   }
@@ -157,26 +157,19 @@ public class BatchConfig{
   @Bean
   public ItemProcessor<AdjustWalkerInfo, WalkerAdjust> adjustProcessor(){
     return adjustWalkerInfo -> {
-      log.info("adjustWalkerInfo = {} " ,adjustWalkerInfo);
       Long userId=adjustWalkerInfo.getWalker().getUserId();
-      log.info("-------findOrCreteWalker-------");
       WalkerAdjust walkerAdjust=findOrCreateWalkerAdjust(userId);
-      log.info("-----findOrCreteWalker END------");
       walkerAdjust.setWalkerTtlPrice(walkerAdjust.getWalkerTtlPrice()+adjustWalkerInfo.getPayHistory()
           .getPayPrice());
-      log.info("---------payHistory");
       WalkerAdjustDetail adjustDetail=WalkerAdjustDetail.builder()
           .walkerAdjustPrice(adjustWalkerInfo.getPayHistory().getPayPrice())
           .walkerAdjust(walkerAdjust)
           .walkerReserveServiceId(adjustWalkerInfo.getReserveServiceInfo().getReserveId())
           .build();
       walkerAdjust.addAdjustDetail(adjustDetail);
-      log.info("walkerAdjust = {} " ,walkerAdjust);
       PayHistory payHistory = adjustWalkerInfo.getPayHistory();
-      payHistory.setPayStatus(PayStatus.ADJUST_DONE);
-      log.info("--------- payHistory End");
+      payHistory.setPayStatus(ADJUST_DONE);
       manager.merge(payHistory);
-      log.info("-------- payHistory ?");
       return manager.merge(walkerAdjust);
     };
   }

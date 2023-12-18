@@ -2,7 +2,6 @@ package com.project.dogwalker.reserve.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_CANCEL;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
-import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
@@ -32,7 +31,6 @@ import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,7 +65,6 @@ public class ReserveServiceImpl implements ReserveService{
   @Override
   @DistributedLock
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
-    log.info("reserve service start");
     existReserve(request.getWalkerId(),request.getServiceDateTime());
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
@@ -77,11 +74,10 @@ public class ReserveServiceImpl implements ReserveService{
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
-    final PayHistory payHistory = PayHistory.of(request , reserveService);
+    final PayHistory payHistory = PayHistory.of(request , customer);
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
-    log.info("reserve service end");
 
     noticeService.send(NoticeRequest.builder()
             .noticeType(NoticeType.RESERVE)
@@ -100,30 +96,10 @@ public class ReserveServiceImpl implements ReserveService{
   }
 
 
-  /**
-   * 점주에게 신규예약에 대해 10분후 수락/거절 안하면 자동 거절 - spring batch
-   */
-  @Override
-  public void changeReserveStatus(){
-    reserveServiceRepository.findAllByCreatedAtBeforeAndStatus(
-        LocalDateTime.now().minusMinutes(10) ,
-        WALKER_CHECKING).stream()
-        .map(service ->
-                    {service.setStatus(WALKER_REFUSE);
-                      service.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
-                      return service;})
-        .collect(Collectors.toList());
-
-  }
-
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
-    log.info("reserve exist start");
-
     if(reserveServiceRepository.findByWalkerUserIdAndServiceDateTime(walkerId , serviceDate).isPresent()){
-      log.info("reserve exist true");
       throw new ReserveAlreadyException(RESERVE_ALREAY);
     }
-    log.info("reserve exist end");
   }
 
   /**
