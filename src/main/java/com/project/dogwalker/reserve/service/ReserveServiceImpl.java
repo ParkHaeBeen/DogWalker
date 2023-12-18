@@ -74,7 +74,7 @@ public class ReserveServiceImpl implements ReserveService{
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
-    final PayHistory payHistory = PayHistory.of(request , reserveService);
+    final PayHistory payHistory = PayHistory.of(request , customer);
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);

@@ -44,8 +44,6 @@ public class PayHistory extends BaseEntity {
   @JoinColumn(name = "user_id")
   private User customer;
 
-  @OneToOne(mappedBy = "payHistory",fetch = FetchType.LAZY)
-  private WalkerReserveServiceInfo reserveService;
 
   @Column(name = "pay_price")
   private int payPrice;
@@ -60,11 +58,10 @@ public class PayHistory extends BaseEntity {
   private String payMethod;
 
 
-  public static PayHistory of(final ReserveRequest request,final WalkerReserveServiceInfo service){
+  public static PayHistory of(final ReserveRequest request,final User customer){
     return PayHistory.builder()
-        .customer(service.getCustomer())
+        .customer(customer)
         .payMethod(request.getPayMethod())
-        .reserveService(service)
         .payPrice(request.getPrice())
         .build();
   }

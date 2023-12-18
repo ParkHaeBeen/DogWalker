@@ -1,5 +1,8 @@
 package com.project.dogwalker.batch;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.ADJUST_DONE;
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
@@ -9,7 +12,6 @@ import com.project.dogwalker.domain.adjust.WalkerAdjust;
 import com.project.dogwalker.domain.adjust.WalkerAdjustDetail;
 import com.project.dogwalker.domain.adjust.WalkerAdjustRepository;
 import com.project.dogwalker.domain.reserve.PayHistory;
-import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import jakarta.persistence.EntityManager;
@@ -105,19 +107,16 @@ public class BatchConfig{
   @Bean
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
-      System.out.println("dddddddddd");
+      System.out.println("dddddddddd"+reserveService.getReserveId());
       reserveService.setStatus(WALKER_REFUSE);
-      PayHistory payHistory = reserveService.getPayHistory();
-      payHistory.setPayStatus(PayStatus.PAY_REFUND);
-      System.out.println(payHistory.getPayStatus()+" "+payHistory.getPayId());
+      reserveService.getPayHistory().setPayStatus(PAY_REFUND);
+      System.out.println("dfdfdfdfdfd");
       return entityManagerFactory.createEntityManager().merge(reserveService);
-
-
     };
   }
 
   @Bean
-  public JpaItemWriter<WalkerReserveServiceInfo> reserveWriter(){;
+  public JpaItemWriter<WalkerReserveServiceInfo> reserveWriter(){
     return new JpaItemWriterBuilder<WalkerReserveServiceInfo>()
         .entityManagerFactory(entityManagerFactory)
         .build();
@@ -141,7 +140,7 @@ public class BatchConfig{
   public JpaPagingItemReader<AdjustWalkerInfo> adjustReader(){
     Map<String, Object> parameter = new HashMap<>();
     parameter.put("status", WalkerServiceStatus.FINISH);
-    parameter.put("payStatus", PayStatus.PAY_DONE);
+    parameter.put("payStatus", PAY_DONE);
 
     return new JpaPagingItemReaderBuilder<AdjustWalkerInfo>()
         .name("adjustReader")
@@ -176,7 +175,7 @@ public class BatchConfig{
       walkerAdjust.addAdjustDetail(adjustDetail);
       log.info("walkerAdjust = {} " ,walkerAdjust);
       PayHistory payHistory = adjustWalkerInfo.getPayHistory();
-      payHistory.setPayStatus(PayStatus.ADJUST_DONE);
+      payHistory.setPayStatus(ADJUST_DONE);
       log.info("--------- payHistory End");
       manager.merge(payHistory);
       log.info("-------- payHistory ?");
