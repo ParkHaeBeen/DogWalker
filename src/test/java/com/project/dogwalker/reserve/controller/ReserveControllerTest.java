@@ -13,12 +13,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.dogwalker.common.config.WebConfig;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import com.project.dogwalker.reserve.service.ReserveServiceImpl;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -143,15 +145,21 @@ class ReserveControllerTest {
         .role(Role.WALKER)
         .build();
 
+    ReserveStatusRequest request=ReserveStatusRequest.builder()
+        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .reserveId(1L)
+        .build();
+
+
     given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
     given(jwtTokenProvider.getMemberInfo(anyString())).willReturn(memberInfo);
     given(jwtTokenProvider.isWalker(anyString())).willReturn(true);
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        patch("/api/reserve/request/{reserveId}" ,1)
-            .content(objectMapper.writeValueAsString(memberInfo))
+        patch("/api/reserve/request" )
             .header(HttpHeaders.AUTHORIZATION , authorization)
+            .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
