@@ -25,10 +25,6 @@
 
 <br>
 
-- [X] 회원가입
-- [X] 로그인
-<br>
-
 ### [산책 서비스 수행자 리스트, 선택, 이용 방법]
 
 💡 산책 서비스 수행자 리스트 보여주기
@@ -54,13 +50,6 @@
 
 <br>
 
-- [X] 리스트
-- [X] 수행자 상세 정보 페이지
-- [X] 서비스 예약
-- [X] 산책 서비스 결제
-- [X] 서비스 취소
-<br>
-
 ### [산책 서비스 수행자 서비스 수행 요청]
 
 💡 산책 서비스 수행자 서비스 예약에 대해 수락 또는 거부가능
@@ -71,12 +60,6 @@
 ->  알람기능은 SSE를 이용 
 
 ->  10분후 자동 거부 기능은 스프링 배치 이용
-
-<br>
-
-- [X] 예약 수락 거부
-- [X] 알람기능
-
 
 <br>
 
@@ -94,11 +77,6 @@
 
 <br>
 
-- [X] 실시간
-- [X] 알림기능
-
-<br>
-
 
 ### [산책 서비스 수행자 정산]
 
@@ -107,17 +85,11 @@
 
 <br>
 
-- [X] 정산
-
-<br>
-
-
 <hr>
 
 ### ERD
 
-![image](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/bf9504d0-4289-4116-80a3-7279029df0cf)
-
+![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/de8b34a5-38ea-4b47-8f12-1cebf271b412)
 
 <hr>
 
@@ -134,12 +106,12 @@
   <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> 
   <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
   <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
+  <img src="https://img.shields.io/badge/flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white">
 </div>
 
 <div align=center> 
+  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
   <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
   <img src="https://img.shields.io/badge/elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white">
   <img src="https://img.shields.io/badge/junit5-25a162?style=for-the-badge&logo=junit5&logoColor=white">
-  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 </div>
