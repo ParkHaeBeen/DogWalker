@@ -107,10 +107,8 @@ public class BatchConfig{
   @Bean
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
-      System.out.println("dddddddddd"+reserveService.getReserveId());
       reserveService.setStatus(WALKER_REFUSE);
       reserveService.getPayHistory().setPayStatus(PAY_REFUND);
-      System.out.println("dfdfdfdfdfd");
       return entityManagerFactory.createEntityManager().merge(reserveService);
     };
   }
@@ -159,26 +157,19 @@ public class BatchConfig{
   @Bean
   public ItemProcessor<AdjustWalkerInfo, WalkerAdjust> adjustProcessor(){
     return adjustWalkerInfo -> {
-      log.info("adjustWalkerInfo = {} " ,adjustWalkerInfo);
       Long userId=adjustWalkerInfo.getWalker().getUserId();
-      log.info("-------findOrCreteWalker-------");
       WalkerAdjust walkerAdjust=findOrCreateWalkerAdjust(userId);
-      log.info("-----findOrCreteWalker END------");
       walkerAdjust.setWalkerTtlPrice(walkerAdjust.getWalkerTtlPrice()+adjustWalkerInfo.getPayHistory()
           .getPayPrice());
-      log.info("---------payHistory");
       WalkerAdjustDetail adjustDetail=WalkerAdjustDetail.builder()
           .walkerAdjustPrice(adjustWalkerInfo.getPayHistory().getPayPrice())
           .walkerAdjust(walkerAdjust)
           .walkerReserveServiceId(adjustWalkerInfo.getReserveServiceInfo().getReserveId())
           .build();
       walkerAdjust.addAdjustDetail(adjustDetail);
-      log.info("walkerAdjust = {} " ,walkerAdjust);
       PayHistory payHistory = adjustWalkerInfo.getPayHistory();
       payHistory.setPayStatus(ADJUST_DONE);
-      log.info("--------- payHistory End");
       manager.merge(payHistory);
-      log.info("-------- payHistory ?");
       return manager.merge(walkerAdjust);
     };
   }

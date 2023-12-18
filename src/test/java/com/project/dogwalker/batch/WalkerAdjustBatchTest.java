@@ -110,7 +110,7 @@ public class WalkerAdjustBatchTest {
     WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
         .customer(user)
         .walker(walker)
-        .payHistory(payHistory1)
+        .payHistory(savePayHistory1)
         .serviceDateTime(LocalDateTime.now())
         .timeUnit(50)
         .status(WalkerServiceStatus.FINISH)
@@ -119,7 +119,7 @@ public class WalkerAdjustBatchTest {
 
     WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
         .customer(user)
-        .payHistory(payHistory2)
+        .payHistory(savePayHistory2)
         .walker(walker)
         .serviceDateTime(LocalDateTime.now().plusDays(1))
         .timeUnit(50)
@@ -128,7 +128,7 @@ public class WalkerAdjustBatchTest {
         .build();
     WalkerReserveServiceInfo reserveServiceInfo3 = WalkerReserveServiceInfo.builder()
         .customer(user)
-        .payHistory(payHistory3)
+        .payHistory(savePayHistory3)
         .walker(walker)
         .serviceDateTime(LocalDateTime.now().plusDays(1))
         .timeUnit(50)
@@ -147,7 +147,6 @@ public class WalkerAdjustBatchTest {
         .toJobParameters();
 
     //when
-    System.out.println("--------------");
     jobLauncherTestUtils.setJob(batchConfig.adjustWalkerFee());
     JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
