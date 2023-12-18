@@ -9,7 +9,6 @@ import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
 import com.project.dogwalker.walkersearch.service.WalkerInfoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,7 @@ public class WalkerInfoController {
   @GetMapping("/list")
   @Auth
   public ResponseEntity<List <WalkerInfo>> getWalkerInfoList(@AuthMember @Valid final MemberInfo memberInfo
-      ,@RequestBody final WalkerInfoSearchCond searchCond){
+      ,@RequestBody @Valid final WalkerInfoSearchCond searchCond){
     return ResponseEntity.ok(walkerInfoService.getWalkerInfoList(memberInfo,searchCond));
   }
 
@@ -47,7 +46,7 @@ public class WalkerInfoController {
    * 해당날짜에 예약이 있는 날짜 전송
    */
   @GetMapping("/detail/check/reserve")
-  public ResponseEntity<List<WalkerReserveInfo.Response>> getWalkerAlreadyReserveDate(@RequestBody @NotNull final WalkerReserveInfo.Request reserveInfo){
+  public ResponseEntity<List<WalkerReserveInfo.Response>> getWalkerAlreadyReserveDate(@RequestBody @Valid final WalkerReserveInfo.Request reserveInfo){
     return ResponseEntity.ok(walkerInfoService.getReserveDate(reserveInfo));
   }
 

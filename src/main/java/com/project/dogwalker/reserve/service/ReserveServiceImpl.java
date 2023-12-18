@@ -1,7 +1,6 @@
 package com.project.dogwalker.reserve.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_CANCEL;
-import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
@@ -29,8 +28,11 @@ import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
+import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -79,10 +81,13 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
 
+    Map <String, String > params=new HashMap <>();
+    params.put("senderName",walker.getUserName());
+
     noticeService.send(NoticeRequest.builder()
             .noticeType(NoticeType.RESERVE)
             .receiver(walker)
-            .senderName(customer.getUserName())
+            .params(params)
             .path("/api/reserve/request/"+reserveService.getReserveId())
         .build());
 
@@ -129,14 +134,25 @@ public class ReserveServiceImpl implements ReserveService{
 
   @Override
   @Transactional
-  public void changeRequestServiceStatus(final MemberInfo memberInfo ,final Long reserveId) {
+  public void changeRequestServiceStatus(final MemberInfo memberInfo ,final ReserveStatusRequest request) {
     final User walker = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
 
     WalkerReserveServiceInfo serviceInfo = reserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(
-            reserveId , WALKER_CHECKING , walker.getUserId())
+            request.getReserveId() ,request.getStatus() , walker.getUserId())
         .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+
+    Map <String, String > params=new HashMap <>();
+    params.put("senderName",walker.getUserName());
+    params.put("requestType",request.getStatus().toString());
+    noticeService.send(NoticeRequest.builder()
+        .noticeType(NoticeType.REQUEST_CONFIRM)
+        .receiver(serviceInfo.getCustomer())
+        .params(params)
+        .path(null)
+        .build());
+
     serviceInfo.setStatus(WalkerServiceStatus.WALKER_ACCEPT);
   }
 }

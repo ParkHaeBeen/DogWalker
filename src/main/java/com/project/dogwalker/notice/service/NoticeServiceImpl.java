@@ -85,7 +85,8 @@ public class NoticeServiceImpl implements NoticeService{
   }
 
   private String createMessage(NoticeRequest request){
-    String senderName = request.getSenderName();
+    final Map <String, String> params = request.getParams();
+    String senderName = params.get("senderName");
 
     if(request.getNoticeType()== NoticeType.SERVICE){
       return senderName+"님 산책 종료 5분전입니다. 대기해주세요.";
@@ -93,6 +94,10 @@ public class NoticeServiceImpl implements NoticeService{
 
     if(request.getNoticeType()==NoticeType.RESERVE){
       return senderName+"님이 예약을 요청했습니다. 10분안에 확인해주세요.";
+    }
+
+    if(request.getNoticeType()==NoticeType.REQUEST_CONFIRM){
+      return senderName+"님이 예약을 "+params.get("requestType")+"을 하셨습니다.";
     }
 
     return null;
