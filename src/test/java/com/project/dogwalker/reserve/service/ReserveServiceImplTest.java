@@ -13,6 +13,7 @@ import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
@@ -21,8 +22,10 @@ import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
 import com.project.dogwalker.member.dto.MemberInfo;
+import com.project.dogwalker.notice.service.NoticeServiceImpl;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
+import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -51,6 +54,8 @@ class ReserveServiceImplTest {
 
   @MockBean
   private RedissonClient redissonClient;
+  @Mock
+  private NoticeServiceImpl noticeService;
 
   @InjectMocks
   private ReserveServiceImpl reserveService;
@@ -230,12 +235,6 @@ class ReserveServiceImplTest {
         .build();
 
 
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email(walker.getUserEmail())
-        .role(walker.getUserRole())
-        .build();
-
-
     WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
         .reserveId(1L)
         .customer(customer)
@@ -246,13 +245,23 @@ class ReserveServiceImplTest {
         .servicePrice(10000)
         .build();
 
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+    ReserveStatusRequest request=ReserveStatusRequest.builder()
+        .reserveId(1L)
+        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .build();
+
     //when
     given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
     given(walkerReserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(anyLong(), any(),anyLong()))
         .willReturn(Optional.of(serviceInfo));
 
     //then
-    reserveService.changeRequestServiceStatus(memberInfo,1L);
+    reserveService.changeRequestServiceStatus(memberInfo,request);
   }
 
   @Test
@@ -285,13 +294,18 @@ class ReserveServiceImplTest {
         .role(walker.getUserRole())
         .build();
 
+    ReserveStatusRequest request=ReserveStatusRequest.builder()
+        .reserveId(1L)
+        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .build();
+
     //when
     given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
     given(walkerReserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(anyLong(), any(),anyLong()))
         .willReturn(Optional.empty());
 
     //then
-    Assertions.assertThrows(ReserveRequestNotExistException.class,()->reserveService.changeRequestServiceStatus(memberInfo,1L));
+    Assertions.assertThrows(ReserveRequestNotExistException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
   }
 
   @Test
@@ -324,12 +338,17 @@ class ReserveServiceImplTest {
         .role(walker.getUserRole())
         .build();
 
+    ReserveStatusRequest request=ReserveStatusRequest.builder()
+        .reserveId(1L)
+        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .build();
+
     //when
     given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.empty());
 
 
     //then
     Assertions.assertThrows(
-        MemberNotFoundException.class,()->reserveService.changeRequestServiceStatus(memberInfo,1L));
+        MemberNotFoundException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
   }
 }

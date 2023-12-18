@@ -23,9 +23,7 @@ import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
 import com.project.dogwalker.walkersearch.service.WalkerInfoServiceImpl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,15 +84,11 @@ class WalkerInfoControllerTest {
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
     given(walkerInfoService.getWalkerInfoList(memberInfo,cond)).willReturn(walkerInfos);
 
-    Map <String,Object> params=new HashMap <>();
-    params.put("memberInfo",memberInfo);
-    params.put("searchCond",cond);
-
     //when
     ResultActions resultActions = mockMvc.perform(
         get("/api/walkerinfo/list")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(params))
+            .content(objectMapper.writeValueAsString(cond))
             .contentType(MediaType.APPLICATION_JSON)
     );
 

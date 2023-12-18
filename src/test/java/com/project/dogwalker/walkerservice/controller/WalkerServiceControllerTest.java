@@ -56,17 +56,11 @@ class WalkerServiceControllerTest {
   void checkReserveAndWalker() throws Exception {
     //given
     String authorization ="Bearer Token";
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.WALKER)
-        .build();
+
     ServiceCheckRequest request=ServiceCheckRequest.builder()
         .nowDate(LocalDateTime.now().minusMinutes(10))
         .reserveId(1L)
         .build();
-    Map <String, Object> params = new HashMap <>();
-    params.put("memberInfo", info);
-    params.put("request", request);
 
 
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
@@ -75,7 +69,7 @@ class WalkerServiceControllerTest {
     ResultActions resultActions = mockMvc.perform(
         get("/api/service/check/valid")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(params))
+            .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -88,10 +82,7 @@ class WalkerServiceControllerTest {
   void checkServiceStart_success() throws Exception {
     //given
     String authorization ="Bearer Token";
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.USER)
-        .build();
+
    Long reserveId=1L;
 
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
@@ -113,10 +104,7 @@ class WalkerServiceControllerTest {
   void checkServiceStart_fail() throws Exception {
     //given
     String authorization ="Bearer Token";
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.USER)
-        .build();
+
     Long reserveId=1L;
 
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);

@@ -5,6 +5,7 @@ import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
+import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 
 public interface ReserveService {
 
@@ -14,5 +15,5 @@ public interface ReserveService {
 
   ReserveCancel.Response reserveCancel(MemberInfo memberInfo , ReserveCancel.Request reserveId);
 
-  void changeRequestServiceStatus(MemberInfo memberInfo , Long reserveId);
+  void changeRequestServiceStatus(MemberInfo memberInfo , ReserveStatusRequest request);
 }

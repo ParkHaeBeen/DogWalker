@@ -25,7 +25,9 @@ import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -94,10 +96,14 @@ public class WalkerServiceImpl implements WalkerService{
   public void noticeCustomer(final Long reserveId) {
     final WalkerReserveServiceInfo serviceInfo = reserveRepository.findById(reserveId)
         .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+
+    Map <String, String > params=new HashMap <>();
+    params.put("senderName",serviceInfo.getWalker().getUserName());
+
     noticeService.send(NoticeRequest.builder()
             .path(null)
             .noticeType(NoticeType.SERVICE)
-            .senderName(serviceInfo.getWalker().getUserName())
+            .params(params)
             .receiver(serviceInfo.getCustomer())
         .build());
   }

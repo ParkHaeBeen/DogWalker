@@ -7,6 +7,7 @@ import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
+import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import com.project.dogwalker.reserve.service.ReserveService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,7 @@ public class ReserveController {
    */
   @PostMapping
   @Auth
-  public ResponseEntity<ReserveResponse> reserveService(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid ReserveRequest request){
+  public ResponseEntity<ReserveResponse> reserveService(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid final ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);
     return ResponseEntity.ok(reserveResponse);
   }
@@ -52,10 +52,10 @@ public class ReserveController {
   /**
    * 서비스 수행자 예약 요청 수락/거부
    */
-  @PatchMapping("/request/{reserveId}")
+  @PatchMapping("/request")
   @Auth(isWalker = true)
-  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,@PathVariable Long reserveId){
-    reserveService.changeRequestServiceStatus(memberInfo,reserveId);
+  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid ReserveStatusRequest request){
+    reserveService.changeRequestServiceStatus(memberInfo,request);
     return ResponseEntity.ok().build();
   }
   /**

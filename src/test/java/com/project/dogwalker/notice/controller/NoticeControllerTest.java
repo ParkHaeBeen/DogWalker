@@ -6,8 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.dogwalker.common.config.WebConfig;
-import com.project.dogwalker.domain.user.Role;
-import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.notice.service.NoticeServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -42,17 +40,10 @@ class NoticeControllerTest {
   @Test
   @DisplayName("sse 연결")
   void subscribeSse() throws Exception {
-    //given
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email("userInfo@gmail.com")
-        .role(Role.USER)
-        .build();
-
     //when
     ResultActions resultActions = mockMvc.perform(
         get("/api/sse/connect")
             .accept(MediaType.TEXT_EVENT_STREAM)
-            .content(objectMapper.writeValueAsString(memberInfo))
             .header("Last_Event_ID" , "1_12345679"));
 
     //then
