@@ -8,6 +8,7 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.member.controller.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
@@ -37,7 +38,7 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
    */
   @Override
   @Transactional(readOnly = true)
-  public List <WalkerInfo> getWalkerInfoList(final MemberInfo info ,final WalkerInfoSearchCond searchCond) {
+  public List <WalkerInfo> getWalkerInfoList(@AuthMember final MemberInfo info ,final WalkerInfoSearchCond searchCond) {
     final User user = userRepository.findByUserEmailAndUserRole(info.getEmail() , info.getRole())
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
     if(searchCond.getLat()==null||searchCond.getLnt()==null){

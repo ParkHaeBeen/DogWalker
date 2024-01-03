@@ -22,6 +22,7 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 
 @SpringBatchTest
@@ -45,6 +46,7 @@ public class ReserveBatchTest {
 
   @Test
   @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
+  @Rollback(value = false)
   public void reserveBatchJob_success() throws Exception {
     //given
     User user= User.builder()
@@ -102,8 +104,8 @@ public class ReserveBatchTest {
 
     WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
     WalkerReserveServiceInfo saveService2 = reserveServiceRepository.save(reserveServiceInfo2);
-    saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(20));
-    saveService2.setCreatedAt(LocalDateTime.now().minusMinutes(20));
+    saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(15));
+    saveService2.setCreatedAt(LocalDateTime.now().minusMinutes(15));
     reserveServiceRepository.saveAndFlush(saveService1);
     reserveServiceRepository.saveAndFlush(saveService2);
     JobParameters jobParameters=new JobParametersBuilder()

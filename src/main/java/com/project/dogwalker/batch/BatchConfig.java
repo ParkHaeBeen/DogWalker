@@ -89,19 +89,25 @@ public class BatchConfig{
 
   @Bean
   public JpaPagingItemReader<WalkerReserveServiceInfo> reserveReader(){
+    JpaPagingItemReader<WalkerReserveServiceInfo> reader=new JpaPagingItemReader <>(){
+      @Override
+      public int getPage(){
+        return 0;
+      }
+    };
     Map<String, Object> parameter=new HashMap<>();
     parameter.put("createdAt", LocalDateTime.now().minusMinutes(10));
     parameter.put("status", WALKER_CHECKING);
-    return new JpaPagingItemReaderBuilder<WalkerReserveServiceInfo>()
-        .name("reserveReader")
-        .entityManagerFactory(entityManagerFactory)
-        .pageSize(chunkSize)
-        .queryString("SELECT w FROM WalkerReserveServiceInfo w "
-            + "Join Fetch w.payHistory p "
-            + "WHERE w.createdAt < :createdAt "
-            + "AND w.status = :status")
-        .parameterValues(parameter)
-        .build();
+    reader.setName("reserveReader");
+    reader.setEntityManagerFactory(entityManagerFactory);
+    reader.setPageSize(chunkSize);
+    reader.setQueryString("SELECT w FROM WalkerReserveServiceInfo w "
+        + "Join Fetch w.payHistory p "
+        + "WHERE w.createdAt < :createdAt "
+        + "AND w.status = :status "
+        + "ORDER BY w.reserveId");
+    reader.setParameterValues(parameter);
+    return reader;
   }
 
   @Bean
@@ -109,7 +115,7 @@ public class BatchConfig{
     return reserveService -> {
       reserveService.setStatus(WALKER_REFUSE);
       reserveService.getPayHistory().setPayStatus(PAY_REFUND);
-      return entityManagerFactory.createEntityManager().merge(reserveService);
+      return reserveService;
     };
   }
 

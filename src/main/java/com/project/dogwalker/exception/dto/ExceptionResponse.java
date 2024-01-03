@@ -9,8 +9,6 @@ public class ExceptionResponse {
   private String message;
   private ErrorCode errorCode;
 
-  private ExceptionResponse() {
-  }
 
   private ExceptionResponse(final String message, final ErrorCode errorCode) {
     this.message = message;
