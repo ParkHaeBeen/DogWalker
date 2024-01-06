@@ -22,6 +22,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
+    - name: Make application.yml
+      run : |
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.yml
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
+        cat ./src/main/resources/application.yml
+        
     - name: Setup MySQL
       uses: samin/mysql-action@v1
       with:
@@ -33,15 +40,7 @@ jobs:
       uses: supercharge/redis-github-action@1.1.0
       with:
         redis-version: 6
-
-    - name: Make application.yml
-      run : |
-        mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.yml
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
-        cat ./src/main/resources/application.yml
         
-
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
       
