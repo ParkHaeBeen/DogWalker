@@ -2,9 +2,9 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/deployTest" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" , "feature/deployTest" ]
 
 permissions:
   contents: read
@@ -33,6 +33,15 @@ jobs:
       uses: supercharge/redis-github-action@1.1.0
       with:
         redis-version: 6
+
+    - name: Make application.yml
+      run : |
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.yml
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
+        cat ./src/main/resources/application.yml
+        
+
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
       
