@@ -33,7 +33,7 @@ jobs:
       uses: samin/mysql-action@v1
       with:
         mysql database: 'walker'
-        mysql user: 'walker'
+        mysql user: 'dogWalker'
         mysql password: ${{ secrets.MYSQL_PASSWORD }}
     - name: Start Redis
       uses: supercharge/redis-github-action@1.1.0
