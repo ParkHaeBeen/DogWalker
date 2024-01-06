@@ -28,6 +28,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+
+    - name: Make application.yml
+      run : |
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.yml
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
+        cat ./src/main/resources/application.yml
+        
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
       
