@@ -22,12 +22,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Make application.yml
+    - name: Make application.properties
       run : |
         mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.yml
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
-        cat ./src/main/resources/application.yml
+        touch ./src/main/resources/application.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
+        cat ./src/main/resources/application.properties
         
     - name: Setup MySQL
       uses: samin/mysql-action@v1
