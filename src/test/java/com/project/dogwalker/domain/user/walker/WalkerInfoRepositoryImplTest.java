@@ -2,6 +2,8 @@ package com.project.dogwalker.domain.user.walker;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 
+import com.project.dogwalker.domain.reserve.PayHistory;
+import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -185,12 +187,34 @@ class WalkerInfoRepositoryImplTest {
     User saveWalker = userRepository.save(walker);
     User saveCustomer = userRepository.save(customer);
     User saveWalker2 = userRepository.save(walker2);
+
+    PayHistory payHistory1 = PayHistory.builder()
+        .customer(saveCustomer)
+        .payPrice(1000)
+        .payId(1L)
+        .payMethod("CARD")
+        .build();
+    PayHistory payHistory2 = PayHistory.builder()
+        .customer(saveCustomer)
+        .payPrice(1000)
+        .payId(2L)
+        .payMethod("CARD")
+        .build();
+    PayHistory payHistory3 = PayHistory.builder()
+        .customer(saveCustomer)
+        .payPrice(1000)
+        .payId(3L)
+        .payStatus(PayStatus.PAY_REFUND)
+        .payMethod("CARD")
+        .build();
+
     WalkerReserveServiceInfo serviceInfo1=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,16,0))
         .walker(saveWalker)
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)
+        .payHistory(payHistory1)
         .status(WALKER_ACCEPT)
         .build();
     WalkerReserveServiceInfo serviceInfo2=WalkerReserveServiceInfo.builder()
@@ -199,6 +223,7 @@ class WalkerInfoRepositoryImplTest {
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)
+        .payHistory(payHistory2)
         .status(WALKER_ACCEPT)
         .build();
     WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
@@ -207,6 +232,7 @@ class WalkerInfoRepositoryImplTest {
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)
+        .payHistory(payHistory3)
         .status(WALKER_ACCEPT)
         .build();
     walkerReserveServiceRepository.save(serviceInfo1);
