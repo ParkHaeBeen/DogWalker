@@ -76,11 +76,12 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @JoinColumn(name = "pay_history_id")
   private PayHistory payHistory;
 
-  public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
+  public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker, final PayHistory payHistory){
     return WalkerReserveServiceInfo.builder()
         .customer(user)
+        .payHistory(payHistory)
         .serviceDateTime(request.getServiceDateTime())
-        .servicePrice(request.getPrice())
+        .servicePrice(payHistory.getPayPrice())
         .timeUnit(request.getTimeUnit())
         .walker(walker)
         .build();
