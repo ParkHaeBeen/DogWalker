@@ -29,7 +29,7 @@ import lombok.ToString;
 @ToString
 @Table(name = "users",
       uniqueConstraints = {@UniqueConstraint(name = "users_email_unique",columnNames = {"user_email"})})
-@AttributeOverride(name = "createdAt", column = @Column(name = "user_created_at"))
+@AttributeOverride(name = "createdAt", column = @Column(name = "user_created_at",updatable = false))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "user_updated_at"))
 public class User extends BaseEntity {
 
