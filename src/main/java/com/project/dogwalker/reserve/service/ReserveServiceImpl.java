@@ -75,10 +75,10 @@ public class ReserveServiceImpl implements ReserveService{
     final User walker = userRepository.findByUserIdAndUserRole(request.getWalkerId() , Role.WALKER)
         .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
 
-    final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
     final PayHistory payHistory = PayHistory.of(request , customer);
 
     final PayHistory pay = payHistoryRespository.save(payHistory);
+    final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker, pay);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
 
     Map <String, String > params=new HashMap <>();

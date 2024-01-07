@@ -41,7 +41,7 @@ import lombok.ToString;
         columnNames={"walker_id", "walker_service_date"}
     )
 })
-@AttributeOverride(name = "createdAt", column = @Column(name = "walker_reserve_service_created_at"))
+@AttributeOverride(name = "createdAt", column = @Column(name = "walker_reserve_service_created_at", updatable = false))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "walker_reserve_service_updated_at"))
 public class WalkerReserveServiceInfo extends BaseEntity {
 
@@ -76,11 +76,12 @@ public class WalkerReserveServiceInfo extends BaseEntity {
   @JoinColumn(name = "pay_history_id")
   private PayHistory payHistory;
 
-  public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
+  public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker, final PayHistory payHistory){
     return WalkerReserveServiceInfo.builder()
         .customer(user)
+        .payHistory(payHistory)
         .serviceDateTime(request.getServiceDateTime())
-        .servicePrice(request.getPrice())
+        .servicePrice(payHistory.getPayPrice())
         .timeUnit(request.getTimeUnit())
         .walker(walker)
         .build();
