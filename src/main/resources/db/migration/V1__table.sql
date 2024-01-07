@@ -65,7 +65,7 @@ CREATE TABLE `pay_history` (
                                `pay_history_id`	bigint  AUTO_INCREMENT	PRIMARY KEY,
                                `user_id`	bigint	NOT NULL,
                                `pay_price`	int NOT NULL,
-                               `pay_status`	char(10) NOT NULL,
+                               `pay_status`	char(20) NOT NULL,
                                `pay_created_at`	timestamp NOT NULL,
                                `pay_updated_at`	timestamp NOT NULL,
                                `pay_method`	varchar(50) NOT NULL
