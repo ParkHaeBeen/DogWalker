@@ -130,7 +130,7 @@ public class WalkerAdjustBatchTest {
         .customer(user)
         .payHistory(savePayHistory3)
         .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
+        .serviceDateTime(LocalDateTime.now().plusDays(3))
         .timeUnit(50)
         .status(WalkerServiceStatus.CUSTOMER_CANCEL)
         .servicePrice(1000)
