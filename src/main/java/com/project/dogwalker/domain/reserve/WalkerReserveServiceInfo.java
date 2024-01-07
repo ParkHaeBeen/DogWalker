@@ -41,7 +41,7 @@ import lombok.ToString;
         columnNames={"walker_id", "walker_service_date"}
     )
 })
-@AttributeOverride(name = "createdAt", column = @Column(name = "walker_reserve_service_created_at"))
+@AttributeOverride(name = "createdAt", column = @Column(name = "walker_reserve_service_created_at", updatable = false))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "walker_reserve_service_updated_at"))
 public class WalkerReserveServiceInfo extends BaseEntity {
 
