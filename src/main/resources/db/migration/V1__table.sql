@@ -57,13 +57,13 @@ CREATE TABLE `walker_reserve_service` (
                                           `walker_service_time_unit` int NOT NULL,
                                           `walker_service_status`	char(15)	NOT NULL,
                                           `walker_reserve_service_update_at`	timestamp NOT NULL,
-                                          `walker_reserve_service_price` int NOT NULL
+                                          `walker_reserve_service_price` int NOT NULL,
+                                          `pay_history_id` bigint NOT NULL
 );
 
 CREATE TABLE `pay_history` (
                                `pay_history_id`	bigint  AUTO_INCREMENT	PRIMARY KEY,
                                `user_id`	bigint	NOT NULL,
-                               `walker_reserve_service_id`	bigint	NOT NULL,
                                `pay_price`	int NOT NULL,
                                `pay_status`	char(10) NOT NULL,
                                `pay_created_at`	timestamp NOT NULL,
