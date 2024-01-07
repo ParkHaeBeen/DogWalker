@@ -68,8 +68,7 @@ CREATE TABLE `pay_history` (
                                `pay_status`	char(10) NOT NULL,
                                `pay_created_at`	timestamp DEFAULT CURRENT_TIMESTAMP NULL,
                                `pay_updated_at`	timestamp NOT NULL,
-                               `pay_method`	varchar(50) NOT NULL,
-                                `adjust_status` char(20) not null
+                               `pay_method`	varchar(50) NOT NULL
 );
 
 CREATE TABLE BATCH_JOB_INSTANCE  (
