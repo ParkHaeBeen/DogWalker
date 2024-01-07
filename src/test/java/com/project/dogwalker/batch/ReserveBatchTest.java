@@ -51,9 +51,9 @@ public class ReserveBatchTest {
         .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("batchuser1@gmail.com")
+        .userEmail("batchuser4@gmail.com")
         .userPhoneNumber("010-1234-1234")
-        .userName("batchuser1")
+        .userName("batchuser4")
         .userRole(Role.WALKER)
         .build();
     User walker= User.builder()

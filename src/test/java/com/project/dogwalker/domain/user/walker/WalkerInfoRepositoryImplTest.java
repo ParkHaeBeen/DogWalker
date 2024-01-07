@@ -19,9 +19,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 class WalkerInfoRepositoryImplTest {
 
 
@@ -38,7 +39,6 @@ class WalkerInfoRepositoryImplTest {
 
 
   @Test
-  @Rollback
   @DisplayName("서비스 예약 아예안되는 시간 조회- 성공")
   void queryDsl_walkerInfo_perunavail_succes(){
     //given
@@ -78,7 +78,6 @@ class WalkerInfoRepositoryImplTest {
 
 
   @Test
-  @Rollback
   @DisplayName("서비스 예약 일시적으로 안되는 날짜 조회- 성공")
   void queryDsl_walkerInfo_tempunavail_succes(){
     //given
@@ -88,7 +87,7 @@ class WalkerInfoRepositoryImplTest {
         .userLnt(3.0)
         .userEmail("query2@gmail.com")
         .userPhoneNumber("010-1234-1234")
-        .userName("querㅛ2")
+        .userName("query2")
         .userRole(Role.WALKER)
         .build();
 
@@ -113,7 +112,6 @@ class WalkerInfoRepositoryImplTest {
   }
 
   @Test
-  @Rollback
   @DisplayName("서비스 수행자 시간단위당 비용검색- 성공")
   void queryDsl_walkerInfo_price_search(){
     //given
@@ -152,7 +150,6 @@ class WalkerInfoRepositoryImplTest {
   }
 
   @Test
-  @Rollback
   @DisplayName("해당 날짜 예약된 날짜+시간 보내기")
   void walkerReserveDate(){
     //given
@@ -190,7 +187,7 @@ class WalkerInfoRepositoryImplTest {
     User saveWalker2 = userRepository.save(walker2);
     WalkerReserveServiceInfo serviceInfo1=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,16,0))
-        .walker(walker)
+        .walker(saveWalker)
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)
@@ -198,7 +195,7 @@ class WalkerInfoRepositoryImplTest {
         .build();
     WalkerReserveServiceInfo serviceInfo2=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,18,0))
-        .walker(walker)
+        .walker(saveWalker)
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)
@@ -206,7 +203,7 @@ class WalkerInfoRepositoryImplTest {
         .build();
     WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,12,0))
-        .walker(walker2)
+        .walker(saveWalker2)
         .customer(saveCustomer)
         .servicePrice(10000)
         .timeUnit(30)

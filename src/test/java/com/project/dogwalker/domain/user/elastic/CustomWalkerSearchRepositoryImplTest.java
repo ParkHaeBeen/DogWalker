@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.test.annotation.Rollback;
 
 
 @SpringBootTest
@@ -22,7 +21,6 @@ class CustomWalkerSearchRepositoryImplTest {
 
   @Test
   @DisplayName("elastic insert 성공")
-  @Rollback
   void elastic_insert_test(){
     //이전 데이터 영향받지 않기 위해 삭제후 테스트 진행
     walkerSearchRepository.deleteAll();
@@ -32,7 +30,7 @@ class CustomWalkerSearchRepositoryImplTest {
         .userLat(37.300422)
         .userId(1L)
         .userLnt(127.074458)
-        .userEmail("a1@naver.com")
+        .userEmail("test1@naver.com")
         .userPhoneNumber("010-1234-1234")
         .userName("test1")
         .userRole(Role.WALKER)
@@ -42,7 +40,7 @@ class CustomWalkerSearchRepositoryImplTest {
         .userLat(37.3004)
         .userId(2L)
         .userLnt(127.074459)
-        .userEmail("a1@naver.com")
+        .userEmail("test123@naver.com")
         .userPhoneNumber("010-1234-1234")
         .userName("test123")
         .userRole(Role.WALKER)

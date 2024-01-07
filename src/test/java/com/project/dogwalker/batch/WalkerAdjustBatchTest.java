@@ -52,7 +52,7 @@ public class WalkerAdjustBatchTest {
 
   @Test
   @DisplayName("정산 batch 기능 수행 - 성공 : Walkeradjust 엔티티가 있으면 거기에 추가")
-  @Rollback(value = false)
+  @Rollback
   public void adjustBatch_success() throws Exception {
     //given
     User user= User.builder()
