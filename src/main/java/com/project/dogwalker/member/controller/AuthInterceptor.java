@@ -47,7 +47,7 @@ public class AuthInterceptor implements HandlerInterceptor {
   }
 
   private void isWalker(final HttpServletRequest request , final Auth authAnnotation) {
-    if(authAnnotation !=null && authAnnotation.isWalker() && !checkWalker(request)){
+    if(authAnnotation != null && authAnnotation.isWalker() && !checkWalker(request)){
       throw new MemberException(NOT_WALKER);
     }
   }
