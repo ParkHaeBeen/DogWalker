@@ -4,7 +4,7 @@ import static com.project.dogwalker.exception.ErrorCode.NOT_WALKER;
 import static com.project.dogwalker.exception.ErrorCode.TOKEN_EXPIRED;
 
 import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.member.NotWalkerException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.unauth.TokenExpiredException;
 import com.project.dogwalker.exception.unauth.TokenNotExistException;
 import com.project.dogwalker.member.token.JwtTokenProvider;
@@ -48,7 +48,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
   private void isWalker(final HttpServletRequest request , final Auth authAnnotation) {
     if(authAnnotation !=null && authAnnotation.isWalker() && !checkWalker(request)){
-      throw new NotWalkerException(NOT_WALKER);
+      throw new MemberException(NOT_WALKER);
     }
   }
 

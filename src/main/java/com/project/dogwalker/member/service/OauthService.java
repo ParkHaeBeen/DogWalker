@@ -10,11 +10,8 @@ public interface OauthService {
 
   String requestUrl(String type);
   LoginResult login(String code, String type);
-
   LoginResult joinCustomer(JoinUserRequest request, MultipartFile dotImg);
   LoginResult joinWalker(JoinWalkerRequest request);
-
   IssueToken generateToken(String refreshToken);
-
   String generateNewRefreshToken(String accessToken);
 }
