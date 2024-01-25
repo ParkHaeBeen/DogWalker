@@ -21,9 +21,7 @@ import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.AuthMemberException;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
-import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
-import com.project.dogwalker.exception.unauth.TokenExpiredException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.client.Oauth;
@@ -303,7 +301,7 @@ class OauthServiceImplTest {
 
     //when
     //then
-    assertThrows(RefreshTokenNotExistException.class,()->oauthService.generateToken(refreshToken));
+    assertThrows(TokenException.class,()->oauthService.generateToken(refreshToken));
 
   }
 
@@ -333,7 +331,7 @@ class OauthServiceImplTest {
     given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.of(refreshTokenObject));
     //when
     //then
-    assertThrows(RefreshTokenExpiredException.class,()->oauthService.generateToken(refreshToken));
+    assertThrows(MemberException.class,()->oauthService.generateToken(refreshToken));
   }
   @Test
   @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 실패 : user db에 없음")
@@ -422,7 +420,7 @@ class OauthServiceImplTest {
 
     //when
     //then
-    assertThrows(TokenExpiredException.class,()->oauthService.generateNewRefreshToken(accessToken));
+    assertThrows(TokenException.class,()->oauthService.generateNewRefreshToken(accessToken));
   }
 
   @Test
@@ -480,6 +478,6 @@ class OauthServiceImplTest {
 
     //when
     //then
-    assertThrows(RefreshTokenNotExistException.class,()->oauthService.generateNewRefreshToken(accessToken));
+    assertThrows(TokenException.class,()->oauthService.generateNewRefreshToken(accessToken));
   }
 }

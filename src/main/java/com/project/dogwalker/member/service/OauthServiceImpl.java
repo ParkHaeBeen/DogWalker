@@ -20,9 +20,7 @@ import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.AuthMemberException;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
-import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
-import com.project.dogwalker.exception.unauth.TokenExpiredException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import com.project.dogwalker.member.aws.AwsService;
 import com.project.dogwalker.member.client.AllOauths;
 import com.project.dogwalker.member.dto.ClientResponse;
@@ -214,11 +212,11 @@ public class OauthServiceImpl implements OauthService{
   @Transactional
   public IssueToken generateToken(final String refreshToken) {
     final RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
-        .orElseThrow(()->new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
+        .orElseThrow(()->new TokenException(NOT_EXIST_REFRESH_TOKEN));
 
     if(refreshTokenProvider.isNotExpired(findRefreshToken)){
       refreshTokenRepository.delete(findRefreshToken);
-      throw new RefreshTokenExpiredException(TOKEN_EXPIRED);
+      throw new TokenException(TOKEN_EXPIRED);
     }
 
     final Long userId=findRefreshToken.getUserId();
@@ -244,14 +242,14 @@ public class OauthServiceImpl implements OauthService{
   @Override
   public String generateNewRefreshToken(String accessToken) {
     if(!jwtProvider.validateToken(accessToken)){
-      throw new TokenExpiredException(TOKEN_EXPIRED);
+      throw new TokenException(TOKEN_EXPIRED);
     }
 
     final MemberInfo memberInfo = jwtProvider.getMemberInfo(accessToken);
     final User user = userRepository.findByUserEmail(memberInfo.getEmail())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
     final RefreshToken token = refreshTokenRepository.findByUserId(user.getUserId())
-        .orElseThrow(() -> new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
+        .orElseThrow(() -> new TokenException(NOT_EXIST_REFRESH_TOKEN));
 
     final RefreshToken newRefreshToken = generateNewRefreshToken(user.getUserId() , token);
     return newRefreshToken.getRefreshToken();

@@ -18,10 +18,7 @@ import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
-import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
-import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
-import com.project.dogwalker.exception.unauth.TokenExpiredException;
-import com.project.dogwalker.exception.unauth.TokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,27 +120,9 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponse.from(e));
   }
 
-  @ExceptionHandler(TokenExpiredException.class)
-  public ResponseEntity<ExceptionResponse> handleTokenExpired(final TokenExpiredException e){
+  @ExceptionHandler(TokenException.class)
+  public ResponseEntity<ExceptionResponse> handleTRefreshTokenExpired(final TokenException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(RefreshTokenExpiredException.class)
-  public ResponseEntity<ExceptionResponse> handleTRefreshTokenExpired(final RefreshTokenExpiredException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(RefreshTokenNotExistException.class)
-  public ResponseEntity<ExceptionResponse> handleRefreshTokenNotExistToken(final RefreshTokenNotExistException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(TokenNotExistException.class)
-  public ResponseEntity<ExceptionResponse> handleTokenNotExist(final TokenNotExistException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
   }
 

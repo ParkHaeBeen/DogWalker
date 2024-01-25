@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.project.dogwalker.exception.member.AuthMemberException;
-import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
@@ -227,7 +227,7 @@ class MemberControllerTest extends ControllerTest {
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(result ->
             Assertions.assertThat(result.getResolvedException()).isInstanceOf(
-                RefreshTokenNotExistException.class)
+                TokenException.class)
         );
   }
 
