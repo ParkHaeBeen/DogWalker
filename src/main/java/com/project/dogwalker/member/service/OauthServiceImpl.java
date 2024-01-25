@@ -12,15 +12,14 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfo;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
-import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
-import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.domain.user.walker.WalkerSchedule;
 import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePrice;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
-import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
-import com.project.dogwalker.exception.member.WalkerNotWritePriceException;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
+import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
+import com.project.dogwalker.exception.member.AuthMemberException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
 import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.exception.unauth.TokenExpiredException;
@@ -84,7 +83,7 @@ public class OauthServiceImpl implements OauthService{
     Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     if(!userExist.isPresent()){
-      throw new LoginMemberNotFoundException(NOT_EXIST_MEMBER,clientReponse.getIdToken());
+      throw new AuthMemberException(NOT_EXIST_MEMBER,clientReponse.getIdToken());
     }
 
     final User user = userExist.get();
@@ -114,8 +113,9 @@ public class OauthServiceImpl implements OauthService{
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
 
-    User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
+    final User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
     newUser.setUserRole(Role.USER);
+
     final User joinUser = userRepository.save(newUser);
 
     //aws s3 이미지 업로드
@@ -154,11 +154,11 @@ public class OauthServiceImpl implements OauthService{
   public LoginResult joinWalker(final JoinWalkerRequest request) {
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
-    log.info("userInfo = {}",userInfo);
-    User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
-    newUser.setUserRole(Role.WALKER);
-    final User joinUser = userRepository.save(newUser);
 
+    final User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
+    newUser.setUserRole(Role.WALKER);
+
+    final User joinUser = userRepository.save(newUser);
     insertWalkerServiceInfo(request , joinUser);
 
     //토큰 생성
@@ -178,9 +178,8 @@ public class OauthServiceImpl implements OauthService{
         .build();
   }
 
-  private void insertWalkerServiceInfo(JoinWalkerRequest request , User joinUser) {
+  private void insertWalkerServiceInfo(final JoinWalkerRequest request , final User joinUser) {
     //워커 예약 불가 날짜 저장
-    log.info("shedule = {}, size = {}", request.getSchedules(), request.getSchedules().size());
     if(request.getSchedules().size()!=0) {
 
       List<WalkerSchedule> walkerSchedules = request.getSchedules().stream()
@@ -208,7 +207,7 @@ public class OauthServiceImpl implements OauthService{
 
       walkerServicePriceRepository.saveAll(timePerPrice);
     }else{
-      throw new WalkerNotWritePriceException(NOT_WRITE_SERVICE_PRICE);
+      throw new MemberException(NOT_WRITE_SERVICE_PRICE);
     }
   }
 
@@ -224,7 +223,7 @@ public class OauthServiceImpl implements OauthService{
     }
 
     final Long userId=findRefreshToken.getUserId();
-    final User user=userRepository.findById(userId).orElseThrow(()->new MemberNotFoundException(
+    final User user=userRepository.findById(userId).orElseThrow(()->new MemberException(
         NOT_EXIST_MEMBER));
 
     final String accessToken = jwtProvider.generateToken(user.getUserEmail() , user.getUserRole());
@@ -251,7 +250,7 @@ public class OauthServiceImpl implements OauthService{
 
     final MemberInfo memberInfo = jwtProvider.getMemberInfo(accessToken);
     final User user = userRepository.findByUserEmail(memberInfo.getEmail())
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
     final RefreshToken token = refreshTokenRepository.findByUserId(user.getUserId())
         .orElseThrow(() -> new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
 
@@ -263,7 +262,7 @@ public class OauthServiceImpl implements OauthService{
     return findRefreshToken.getExpiredAt().isBefore(LocalDateTime.now());
   }
 
-  private RefreshToken generateNewRefreshToken(Long userId , RefreshToken findRefreshToken) {
+  private RefreshToken generateNewRefreshToken(final Long userId ,final RefreshToken findRefreshToken) {
     final RefreshToken newRefreshToken = refreshTokenProvider.generateRefreshToken(userId);
     refreshTokenRepository.save(newRefreshToken);
     refreshTokenRepository.delete(findRefreshToken);

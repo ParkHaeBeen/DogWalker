@@ -1,6 +1,6 @@
 package com.project.dogwalker.member.aws;
 
-import com.project.dogwalker.exception.member.ImgUploadFailException;
+import com.project.dogwalker.exception.ImgUploadFailException;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

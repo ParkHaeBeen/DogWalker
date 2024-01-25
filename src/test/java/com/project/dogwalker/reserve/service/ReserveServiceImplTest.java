@@ -17,7 +17,7 @@ import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
@@ -349,6 +349,6 @@ class ReserveServiceImplTest {
 
     //then
     Assertions.assertThrows(
-        MemberNotFoundException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
+        MemberException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
   }
 }

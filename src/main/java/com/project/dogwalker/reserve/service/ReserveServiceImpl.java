@@ -17,7 +17,7 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
@@ -70,10 +70,10 @@ public class ReserveServiceImpl implements ReserveService{
     existReserve(request.getWalkerId(),request.getServiceDateTime());
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final User walker = userRepository.findByUserIdAndUserRole(request.getWalkerId() , Role.WALKER)
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
     final PayHistory payHistory = PayHistory.of(request , customer);
@@ -115,7 +115,7 @@ public class ReserveServiceImpl implements ReserveService{
   public ReserveCancel.Response reserveCancel(MemberInfo memberInfo , ReserveCancel.Request request) {
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     WalkerReserveServiceInfo reserveInfo = reserveServiceRepository.findById(request.getReserveId())
         .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
@@ -137,7 +137,7 @@ public class ReserveServiceImpl implements ReserveService{
   public void changeRequestServiceStatus(final MemberInfo memberInfo ,final ReserveStatusRequest request) {
     final User walker = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     WalkerReserveServiceInfo serviceInfo = reserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(
             request.getReserveId() ,request.getStatus() , walker.getUserId())

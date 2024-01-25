@@ -4,6 +4,7 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_AC
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
+import com.project.dogwalker.common.service.redis.RedisService;
 import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
@@ -13,14 +14,12 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRouteRepository;
 import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.member.dto.MemberInfo;
-
 import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
-import com.project.dogwalker.common.service.redis.RedisService;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
@@ -138,7 +137,7 @@ public class WalkerServiceImpl implements WalkerService{
       final Long reserveId) {
     final User walker = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
-        .orElseThrow(() -> new MemberNotFoundException(NOT_EXIST_MEMBER));
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo serviceInfo = reserveRepository.findByReserveIdAndStatusAndWalkerUserId(
             reserveId , WALKER_ACCEPT,walker.getUserId())

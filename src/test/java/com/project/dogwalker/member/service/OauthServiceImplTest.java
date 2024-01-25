@@ -19,8 +19,8 @@ import com.project.dogwalker.domain.user.walker.WalkerScheduleRepository;
 import com.project.dogwalker.domain.user.walker.WalkerServicePriceRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
-import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
-import com.project.dogwalker.exception.member.MemberNotFoundException;
+import com.project.dogwalker.exception.member.AuthMemberException;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.unauth.RefreshTokenExpiredException;
 import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.exception.unauth.TokenExpiredException;
@@ -139,7 +139,7 @@ class OauthServiceImplTest {
     given(userRepository.findByUserEmail(clientResponse.getEmail())).willReturn(Optional.empty());
 
     //when then
-    assertThrows(LoginMemberNotFoundException.class ,()-> oauthService.login(code , type));
+    assertThrows(AuthMemberException.class ,()-> oauthService.login(code , type));
 
   }
 
@@ -363,7 +363,7 @@ class OauthServiceImplTest {
 
     //when
     //then
-    assertThrows(MemberNotFoundException.class,()->oauthService.generateToken(refreshToken));
+    assertThrows(MemberException.class,()->oauthService.generateToken(refreshToken));
   }
 
   @Test
@@ -445,7 +445,7 @@ class OauthServiceImplTest {
 
     //when
     //then
-    assertThrows(MemberNotFoundException.class,()->oauthService.generateNewRefreshToken(accessToken));
+    assertThrows(MemberException.class,()->oauthService.generateNewRefreshToken(accessToken));
   }
 
   @Test

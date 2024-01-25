@@ -1,8 +1,6 @@
-package com.project.dogwalker.exception.member;
+package com.project.dogwalker.exception;
 
 import static com.project.dogwalker.exception.ErrorCode.IMG_UPLOAD_FAIL;
-
-import com.project.dogwalker.exception.CustomException;
 
 public class ImgUploadFailException extends CustomException {
 
