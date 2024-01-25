@@ -33,7 +33,6 @@ import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenProvider;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -217,7 +216,7 @@ public class OauthServiceImpl implements OauthService{
     final RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
         .orElseThrow(()->new RefreshTokenNotExistException(NOT_EXIST_REFRESH_TOKEN));
 
-    if(checkExpiredToken(findRefreshToken)){
+    if(refreshTokenProvider.isNotExpired(findRefreshToken)){
       refreshTokenRepository.delete(findRefreshToken);
       throw new RefreshTokenExpiredException(TOKEN_EXPIRED);
     }
@@ -256,10 +255,6 @@ public class OauthServiceImpl implements OauthService{
 
     final RefreshToken newRefreshToken = generateNewRefreshToken(user.getUserId() , token);
     return newRefreshToken.getRefreshToken();
-  }
-
-  private boolean checkExpiredToken(final RefreshToken findRefreshToken) {
-    return findRefreshToken.getExpiredAt().isBefore(LocalDateTime.now());
   }
 
   private RefreshToken generateNewRefreshToken(final Long userId ,final RefreshToken findRefreshToken) {

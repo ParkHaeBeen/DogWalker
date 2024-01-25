@@ -27,7 +27,7 @@ public class JwtTokenProvider {
    * @param email 회원이메일
    * @param role 회원 역할(고객, 워커)
    */
-  public String generateToken(final String email,final Role role){
+  public String generateToken(final String email, final Role role){
     final Date now=new Date();
     final Date validateDate=new Date(now.getTime()+TOKEN_EXPIRE_TIME);
 
@@ -46,9 +46,11 @@ public class JwtTokenProvider {
    * @param authorizationToken
    */
   public boolean validateToken(final String authorizationToken){
-    if (!StringUtils.hasText(authorizationToken)) return false;
-    Jws<Claims> claims=parseClaims(authorizationToken);
-    return isAccessToken(claims)&&isNotExpired(claims);
+    if (!StringUtils.hasText(authorizationToken)) {
+      return false;
+    }
+    final Jws<Claims> claims=parseClaims(authorizationToken);
+    return isAccessToken(claims) && isNotExpired(claims);
   }
 
   private Jws<Claims> parseClaims(final String authorizationToken) {
@@ -56,11 +58,11 @@ public class JwtTokenProvider {
     return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(authToken);
   }
 
-  private boolean isAccessToken(Jws<Claims> claims) {
+  private boolean isAccessToken(final Jws<Claims> claims) {
     return claims.getBody().getSubject().equals(ACCESS_SUBJECT);
   }
 
-  private boolean isNotExpired(Jws<Claims> claims) {
+  private boolean isNotExpired(final Jws<Claims> claims) {
     return claims.getBody().getExpiration().after(new Date());
   }
 
