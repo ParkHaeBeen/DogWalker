@@ -1,7 +1,7 @@
 package com.project.dogwalker.member.controller;
 
 import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResponse;
 import com.project.dogwalker.member.dto.LoginResult;
@@ -100,7 +100,7 @@ public class MemberController {
   @PostMapping("/auth/newtoken")
   public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
     if(refreshToken==null||refreshToken.isEmpty()){
-      throw new RefreshTokenNotExistException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
+      throw new TokenException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
     }
 
     final IssueToken issueToken = oauthService.generateToken(refreshToken);

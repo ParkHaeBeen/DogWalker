@@ -5,8 +5,7 @@ import static com.project.dogwalker.exception.ErrorCode.TOKEN_EXPIRED;
 
 import com.project.dogwalker.exception.ErrorCode;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.unauth.TokenExpiredException;
-import com.project.dogwalker.exception.unauth.TokenNotExistException;
+import com.project.dogwalker.exception.unauth.TokenException;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +41,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
   private void validateTokenRequired(final Auth authAnnotation) {
     if(authAnnotation !=null && authAnnotation.required()){
-      throw new TokenNotExistException(ErrorCode.TOKEN_NOT_EXIST);
+      throw new TokenException(ErrorCode.TOKEN_NOT_EXIST);
     }
   }
 
@@ -64,7 +63,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     final String authHeader=request.getHeader(HttpHeaders.AUTHORIZATION);
 
     if(!jwtTokenProvider.validateToken(authHeader)){
-      throw new TokenExpiredException(TOKEN_EXPIRED);
+      throw new TokenException(TOKEN_EXPIRED);
     }
   }
 

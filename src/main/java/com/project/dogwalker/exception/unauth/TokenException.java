@@ -5,9 +5,10 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class TokenExpiredException extends CustomException {
+public class TokenException extends CustomException {
 
-  public TokenExpiredException(final ErrorCode errorCode) {
+  public TokenException(final ErrorCode errorCode) {
     super(errorCode);
   }
+
 }
