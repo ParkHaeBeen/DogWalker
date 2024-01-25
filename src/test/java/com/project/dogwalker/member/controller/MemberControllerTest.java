@@ -9,55 +9,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.exception.member.LoginMemberNotFoundException;
+import com.project.dogwalker.exception.member.AuthMemberException;
 import com.project.dogwalker.exception.unauth.RefreshTokenNotExistException;
 import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
-import com.project.dogwalker.member.service.OauthServiceImpl;
-import com.project.dogwalker.member.token.JwtTokenProvider;
-import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
+import com.project.dogwalker.support.ControllerTest;
 import jakarta.servlet.http.Cookie;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@WebMvcTest(MemberController.class)
-@Rollback
-class MemberControllerTest {
-
-  @MockBean
-  private OauthServiceImpl oauthService;
-
-  @MockBean
-  private RefreshTokenCookieProvider refreshTokenCookieProvider;
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @MockBean
-  private JwtTokenProvider jwtTokenProvider;
-
+class MemberControllerTest extends ControllerTest {
   @Test
   @DisplayName("회원 db에 존재하여 로그인 성공")
   void loginSuccess() throws Exception {
@@ -88,7 +62,7 @@ class MemberControllerTest {
     given(refreshTokenCookieProvider.generateCookie(refreshToken)).willReturn(cookie);
 
     //when
-    ResultActions actions = mockMvc.perform(get("/api/login/" + type + "?code=" + code));
+    ResultActions actions = mockMvc.perform(get("/members/login/" + type + "?code=" + code));
 
     //then
     actions.andExpect(status().isOk())
@@ -104,10 +78,10 @@ class MemberControllerTest {
     String type="naver";
 
 
-    given(oauthService.login(code,type)).willThrow(LoginMemberNotFoundException.class);
+    given(oauthService.login(code,type)).willThrow(AuthMemberException.class);
 
     //when
-    ResultActions actions = mockMvc.perform(get("/api/login/" + type + "?code=" + code));
+    ResultActions actions = mockMvc.perform(get("/members/login/" + type + "?code=" + code));
 
     //then
     actions.andExpect(status().isNotFound())
@@ -153,7 +127,7 @@ class MemberControllerTest {
     //when
     ResultActions resultActions = mockMvc.perform(
         MockMvcRequestBuilders
-            .multipart(HttpMethod.POST,"/api/join/user")
+            .multipart(HttpMethod.POST,"/members/user")
             .file(file)
             .file(new MockMultipartFile("joinRequest", "", "application/json", joinRequest.getBytes()))
             .accept(MediaType.APPLICATION_JSON)
@@ -198,7 +172,7 @@ class MemberControllerTest {
     given(refreshTokenCookieProvider.generateCookie(loginResult.getRefreshToken())).willReturn(cookie);
 
     // when
-    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/join/walker")
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/members/walker")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
 
@@ -232,7 +206,7 @@ class MemberControllerTest {
 
     Cookie cookie1=new Cookie("RefreshToken",refreshToken);
     //when
-    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/newtoken")
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/members/auth/newtoken")
             .contentType(MediaType.APPLICATION_JSON)
                 .cookie(cookie1));
 
@@ -249,7 +223,7 @@ class MemberControllerTest {
     //given
     //when
     //then
-    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/newtoken")
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/members/auth/newtoken")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(result ->
             Assertions.assertThat(result.getResolvedException()).isInstanceOf(
@@ -275,7 +249,7 @@ class MemberControllerTest {
     given(refreshTokenCookieProvider.generateCookie(refreshToken)).willReturn(cookie);
 
     //when
-    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refreshtoken")
+    ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/members/auth/refreshtoken")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(accessToken)));
 

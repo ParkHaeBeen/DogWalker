@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j
-@RequestMapping("/api")
+@RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
 
@@ -66,8 +66,7 @@ public class MemberController {
    */
   @PostMapping( "/user")
   public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") @Valid final JoinUserRequest joinRequest
-      ,@RequestPart(name = "dogImg",required = true) final MultipartFile dogImg){
-    log.info("joinrequest ={}",joinRequest);
+      ,@RequestPart(name = "dogImg") final MultipartFile dogImg){
     final LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
     final String refreshToken = joinResult.getRefreshToken();
@@ -84,7 +83,6 @@ public class MemberController {
    */
   @PostMapping("/walker")
   public ResponseEntity<LoginResponse> joinWalker(@RequestBody @Valid final JoinWalkerRequest request){
-    log.info("join walker request = {}",request);
     final LoginResult joinResult = oauthService.joinWalker(request);
 
     final String refreshToken = joinResult.getRefreshToken();
@@ -101,7 +99,7 @@ public class MemberController {
    */
   @PostMapping("/auth/newtoken")
   public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
-    if(refreshToken==null){
+    if(refreshToken==null||refreshToken.isEmpty()){
       throw new RefreshTokenNotExistException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
     }
 
