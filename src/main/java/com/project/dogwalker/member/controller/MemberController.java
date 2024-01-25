@@ -64,7 +64,7 @@ public class MemberController {
    * 고객 회원가입
    * @param joinRequest
    */
-  @PostMapping( "/join/user")
+  @PostMapping( "/user")
   public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") @Valid final JoinUserRequest joinRequest
       ,@RequestPart(name = "dogImg",required = true) final MultipartFile dogImg){
     log.info("joinrequest ={}",joinRequest);
@@ -82,7 +82,7 @@ public class MemberController {
    * 서비스 수행자 회원가입
    * @param request
    */
-  @PostMapping("/join/walker")
+  @PostMapping("/walker")
   public ResponseEntity<LoginResponse> joinWalker(@RequestBody @Valid final JoinWalkerRequest request){
     log.info("join walker request = {}",request);
     final LoginResult joinResult = oauthService.joinWalker(request);
