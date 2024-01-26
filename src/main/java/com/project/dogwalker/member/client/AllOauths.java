@@ -18,7 +18,7 @@ public class AllOauths {
     return oauth.getLoginView();
   }
 
-  public ClientResponse login(final String type,final String code){
+  public ClientResponse login(final String type, final String code){
     final Oauth oauth=getTypeOauth(type);
     return oauth.login(code);
   }

@@ -111,7 +111,7 @@ public class OauthServiceImpl implements OauthService{
         request.getCommonRequest().getAccessToken());
 
     final User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
-    newUser.setUserRole(Role.USER);
+    newUser.modifyUserRole(Role.USER);
 
     final User joinUser = userRepository.save(newUser);
 
@@ -153,7 +153,7 @@ public class OauthServiceImpl implements OauthService{
         request.getCommonRequest().getAccessToken());
 
     final User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());
-    newUser.setUserRole(Role.WALKER);
+    newUser.modifyUserRole(Role.WALKER);
 
     final User joinUser = userRepository.save(newUser);
     insertWalkerServiceInfo(request , joinUser);

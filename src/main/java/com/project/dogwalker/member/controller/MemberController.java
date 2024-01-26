@@ -37,7 +37,7 @@ public class MemberController {
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   @GetMapping("/login/{type}/view")
-  public ResponseEntity<String> getLoginView(@PathVariable(required = true) final String type){
+  public ResponseEntity<String> getLoginView(@PathVariable final String type){
     return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
         .body(oauthService.requestUrl(type));
   }
@@ -49,7 +49,7 @@ public class MemberController {
    * @param type
    */
   @GetMapping("/login/{type}")
-  public ResponseEntity<LoginResponse> loginInfo(@RequestParam final String code,@PathVariable(required = true) final String type){
+  public ResponseEntity<LoginResponse> loginInfo(@RequestParam final String code,@PathVariable final String type){
     final LoginResult result = oauthService.login(code , type);
     final String refreshToken=result.getRefreshToken();
 
@@ -65,7 +65,7 @@ public class MemberController {
    * @param joinRequest
    */
   @PostMapping( "/user")
-  public ResponseEntity<LoginResponse> joinMember(@RequestPart("joinRequest") @Valid final JoinUserRequest joinRequest
+  public ResponseEntity<LoginResponse> joinMember(@RequestPart @Valid final JoinUserRequest joinRequest
       ,@RequestPart(name = "dogImg") final MultipartFile dogImg){
     final LoginResult joinResult = oauthService.joinCustomer(joinRequest , dogImg);
 
