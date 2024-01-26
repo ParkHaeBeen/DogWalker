@@ -2,7 +2,6 @@ package com.project.dogwalker.domain.user;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,20 +16,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
 @Table(name = "users",
       uniqueConstraints = {@UniqueConstraint(name = "users_email_unique",columnNames = {"user_email"})})
-@AttributeOverride(name = "createdAt", column = @Column(name = "user_created_at"))
-@AttributeOverride(name = "updatedAt", column = @Column(name = "user_updated_at"))
 public class User extends BaseEntity {
 
   @Id
@@ -67,5 +62,9 @@ public class User extends BaseEntity {
         .userLnt(request.getLnt())
         .userName(request.getName())
         .build();
+  }
+
+  public void modifyUserRole(final Role role){
+    this.userRole = role;
   }
 }
