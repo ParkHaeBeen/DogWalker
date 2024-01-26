@@ -5,7 +5,6 @@ import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,8 +29,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Table(name = "pay_history")
-@AttributeOverride(name = "createdAt", column = @Column(name = "pay_created_at"))
-@AttributeOverride(name = "updatedAt", column = @Column(name = "pay_updated_at"))
 public class PayHistory extends BaseEntity {
 
   @Id
