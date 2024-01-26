@@ -24,12 +24,12 @@ public class AwsService {
   private String BUCKET_NAME;
 
   public String saveDogImg(final MultipartFile imgFile) {
-    String originalFilename = imgFile.getOriginalFilename();
-    String s3Key=FOLDER_NAME+originalFilename;
+    final String originalFilename = imgFile.getOriginalFilename();
+    final String s3Key=FOLDER_NAME+originalFilename;
 
     uploadImageToS3(BUCKET_NAME,s3Key,imgFile);
 
-    String imageUrl = s3Client.utilities().getUrl(GetUrlRequest.builder()
+    final String imageUrl = s3Client.utilities().getUrl(GetUrlRequest.builder()
         .bucket(BUCKET_NAME)
         .key(s3Key)
         .build()).toExternalForm();
@@ -40,16 +40,17 @@ public class AwsService {
   private void uploadImageToS3(final String bucketName,final String key,final MultipartFile imageFile) {
 
     try {
-      PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+      final PutObjectRequest putObjectRequest = PutObjectRequest.builder()
           .bucket(bucketName)
           .key(key)
           .build();
 
-      RequestBody requestBody = RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize());
+      final RequestBody requestBody = RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize());
       s3Client.putObject(putObjectRequest, requestBody);
     } catch (IOException e) {
       throw new ImgUploadFailException(e);
     }
 
   }
+
 }
