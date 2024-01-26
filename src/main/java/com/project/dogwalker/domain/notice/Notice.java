@@ -2,7 +2,6 @@ package com.project.dogwalker.domain.notice;
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,8 +25,6 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@AttributeOverride(name = "createdAt", column = @Column(name = "notice_created_at"))
-@AttributeOverride(name = "updatedAt", column = @Column(name = "notice_updated_at"))
 public class Notice extends BaseEntity {
 
   @Id
