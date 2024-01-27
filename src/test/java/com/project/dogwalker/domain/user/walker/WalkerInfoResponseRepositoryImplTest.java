@@ -8,6 +8,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
+import com.project.dogwalker.support.DomainTest;
 import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo.Response;
 import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
@@ -19,13 +20,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles(profiles = "test")
-class WalkerInfoResponseRepositoryImplTest {
+
+class WalkerInfoResponseRepositoryImplTest extends DomainTest {
 
   @Autowired
   private UserRepository userRepository;
