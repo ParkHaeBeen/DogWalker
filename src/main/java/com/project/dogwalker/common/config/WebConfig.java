@@ -1,5 +1,7 @@
 package com.project.dogwalker.common.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.dogwalker.common.resolver.queryString.QueryStringArgsResolver;
 import com.project.dogwalker.member.controller.AuthArgumentResolver;
 import com.project.dogwalker.member.controller.AuthInterceptor;
 import com.project.dogwalker.member.token.JwtTokenProvider;
@@ -16,6 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 
   private final JwtTokenProvider jwtTokenProvider;
+  private final ObjectMapper objectMapper;
 
   @Override
   public void addInterceptors(final InterceptorRegistry registry) {
@@ -24,5 +27,6 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addArgumentResolvers(final List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(new AuthArgumentResolver(jwtTokenProvider));
+    resolvers.add(new QueryStringArgsResolver(objectMapper));
   }
 }

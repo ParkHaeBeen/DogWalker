@@ -53,7 +53,7 @@ class CustomWalkerSearchRepositoryImplTest {
     walkerSearchRepository.save(WalkerDocument.of(user2));
 
     WalkerInfoSearchCond searchCond=WalkerInfoSearchCond.builder()
-        .walkerName("test")
+        .name("test")
         .lat(37.3017387)
         .lnt(127.0735513)
         .build();

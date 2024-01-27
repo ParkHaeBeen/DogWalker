@@ -2,14 +2,13 @@ package com.project.dogwalker.walkersearch.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.project.dogwalker.domain.user.Role;
-import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.support.ControllerTest;
 import com.project.dogwalker.walkersearch.dto.WalkerInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
@@ -23,8 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -36,38 +33,35 @@ class WalkerInfoControllerTest extends ControllerTest {
   void getWalkerInfoList() throws Exception{
     //given
     String authorization ="Bearer Token";
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email("userInfo@gmail.com")
-        .role(Role.USER)
-        .build();
-
     WalkerInfoSearchCond cond=WalkerInfoSearchCond.builder()
-        .walkerName("walker1")
+        .name("walker1")
         .lat(12.0)
         .lnt(11.0)
         .build();
 
     WalkerInfo info1=WalkerInfo.builder()
         .walkerLat(12.0)
-        .walkerLnt(3.0)
+        .walkerLnt(11.0)
         .walkerName("walker1")
         .build();
 
     WalkerInfo info2=WalkerInfo.builder()
         .walkerLat(12.0)
-        .walkerLnt(3.0)
+        .walkerLnt(11.0)
         .walkerName("walker2")
         .build();
+
     List <WalkerInfo> walkerInfos=List.of(info2,info1);
-    Pageable pageable = PageRequest.of(0,10);
-    given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
-    given(walkerInfoService.getWalkerInfoList(memberInfo,cond,pageable)).willReturn(walkerInfos);
+    given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+    given(walkerInfoService.getWalkerInfoList(any(),any(),any())).willReturn(walkerInfos);
 
     //when
     ResultActions resultActions = mockMvc.perform(
         get("/walkerinfo/list")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(cond))
+            .queryParam("name",cond.getName())
+            .queryParam("lnt",String.valueOf(cond.getLnt()))
+            .queryParam("lat",String.valueOf(cond.getLat()))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -124,8 +118,8 @@ class WalkerInfoControllerTest extends ControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/walkerinfo/detail")
-            .content(objectMapper.writeValueAsString(1L))
+        get("/walkerinfo")
+            .param("walkerId","1")
             .contentType(MediaType.APPLICATION_JSON)
     );
 
@@ -161,7 +155,7 @@ class WalkerInfoControllerTest extends ControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/walkerinfo/detail/check/reserve")
+        get("/walkerinfo/reserve")
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     );
