@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class WalkerInfoSearchCond {
 
   @Builder.Default
-  private String walkerName="";
+  private String name="";
   @NotNull
   private Double lnt;
   @NotNull

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -41,7 +40,7 @@ public class CustomWalkerSearchRepositoryImpl implements CustomWalkerSearchRepos
 
 
   private CriteriaQuery createCond(final WalkerInfoSearchCond walkerInfoSearchCond ,final Pageable pageable){
-    Criteria nameCriteria = Criteria.where("walker_name").contains(walkerInfoSearchCond.getWalkerName())
+    Criteria nameCriteria = Criteria.where("walker_name").contains(walkerInfoSearchCond.getName())
         .and("location").within(new GeoPoint(walkerInfoSearchCond.getLat(),walkerInfoSearchCond.getLnt()),distanceMax+"km");
 
     CriteriaQuery criteriaQuery = new CriteriaQuery(nameCriteria);

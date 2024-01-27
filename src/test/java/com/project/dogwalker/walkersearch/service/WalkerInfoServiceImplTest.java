@@ -60,7 +60,7 @@ class WalkerInfoServiceImplTest {
         .role(Role.USER)
         .build();
     WalkerInfoSearchCond searchCond=WalkerInfoSearchCond.builder()
-        .walkerName("test")
+        .name("test")
         .lnt(12.0)
         .lat(11.0)
         .build();
