@@ -27,10 +27,8 @@ public class CustomWalkerSearchRepositoryImpl implements CustomWalkerSearchRepos
   private Integer distanceMax;
 
   @Override
-  public Page <WalkerDocument> searchByName(final WalkerInfoSearchCond walkerInfoSearchCond) {
-    final PageRequest pageable = PageRequest.of(walkerInfoSearchCond.getStartPage() ,
-        walkerInfoSearchCond.getSize());
-
+  public Page <WalkerDocument> searchByName(final WalkerInfoSearchCond walkerInfoSearchCond,
+      final Pageable pageable) {
 
     CriteriaQuery query1=createCond(walkerInfoSearchCond,pageable);
     SearchHits <WalkerDocument> searchHits = elasticsearchOperations.search(query1 , WalkerDocument.class);

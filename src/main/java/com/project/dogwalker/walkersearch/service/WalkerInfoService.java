@@ -6,10 +6,11 @@ import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface WalkerInfoService {
 
-  List <WalkerInfo> getWalkerInfoList(MemberInfo memberInfo ,WalkerInfoSearchCond searchCond);
+  List <WalkerInfo> getWalkerInfoList(MemberInfo memberInfo ,WalkerInfoSearchCond searchCond, Pageable pageable);
 
   WalkerUnAvailDetail getWalkerUnAvailService(Long walkerId);
 

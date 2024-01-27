@@ -34,6 +34,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +63,6 @@ class WalkerInfoServiceImplTest {
         .walkerName("test")
         .lnt(12.0)
         .lat(11.0)
-        .startPage(0)
         .build();
 
     User user= User.builder()
@@ -84,12 +85,13 @@ class WalkerInfoServiceImplTest {
         .location(new GeoPoint(12.00001,11.0))
         .build();
     Page <WalkerDocument> pages=new PageImpl <>(Arrays.asList(document1,document2));
+    Pageable pageable = PageRequest.of(0,10);
 
     given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.of(user));
-    given(walkerSearchRepository.searchByName(any())).willReturn(pages);
+    given(walkerSearchRepository.searchByName(any(),any())).willReturn(pages);
 
     //when
-    List <WalkerInfo> walkerInfoList = walkerInfoService.getWalkerInfoList(memberInfo,searchCond);
+    List <WalkerInfo> walkerInfoList = walkerInfoService.getWalkerInfoList(memberInfo,searchCond,pageable);
 
     //then
     Assertions.assertThat(walkerInfoList.size()).isEqualTo(2);

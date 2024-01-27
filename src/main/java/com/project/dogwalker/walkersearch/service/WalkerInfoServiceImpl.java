@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,14 +38,15 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
    */
   @Override
   @Transactional(readOnly = true)
-  public List <WalkerInfo> getWalkerInfoList(final MemberInfo info ,final WalkerInfoSearchCond searchCond) {
+  public List <WalkerInfo> getWalkerInfoList(final MemberInfo info ,final WalkerInfoSearchCond searchCond,
+      final Pageable pageable) {
     final User user = userRepository.findByUserEmailAndUserRole(info.getEmail() , info.getRole())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
     if(searchCond.getLat()==null||searchCond.getLnt()==null){
       searchCond.setLat(user.getUserLat());
       searchCond.setLnt(user.getUserLnt());
     }
-    final Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond);
+    final Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond,pageable);
 
     return walkerDocuments.stream().map(WalkerInfo::of)
         .collect(Collectors.toList());
