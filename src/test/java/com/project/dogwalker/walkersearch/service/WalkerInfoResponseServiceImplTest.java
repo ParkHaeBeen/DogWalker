@@ -11,14 +11,14 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo.Response;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
-import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetailResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles(profiles = "local")
-class WalkerInfoServiceImplTest {
+class WalkerInfoResponseServiceImplTest {
 
   @Mock
   private WalkerSearchRepository walkerSearchRepository;
@@ -59,7 +59,7 @@ class WalkerInfoServiceImplTest {
         .email("info@gmail.com")
         .role(Role.USER)
         .build();
-    WalkerInfoSearchCond searchCond=WalkerInfoSearchCond.builder()
+    WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
         .name("test")
         .lnt(12.0)
         .lat(11.0)
@@ -91,10 +91,10 @@ class WalkerInfoServiceImplTest {
     given(walkerSearchRepository.searchByName(any(),any())).willReturn(pages);
 
     //when
-    List <WalkerInfo> walkerInfoList = walkerInfoService.getWalkerInfoList(memberInfo,searchCond,pageable);
+    List <WalkerInfoResponse> walkerInfoResponseList = walkerInfoService.getWalkerInfoList(memberInfo,searchCond,pageable);
 
     //then
-    Assertions.assertThat(walkerInfoList.size()).isEqualTo(2);
+    Assertions.assertThat(walkerInfoResponseList.size()).isEqualTo(2);
 
   }
 
@@ -111,44 +111,45 @@ class WalkerInfoServiceImplTest {
         .userName("walkerInfo1")
         .userRole(Role.WALKER)
         .build();
-    WalkerPermUnAvailDate permUnAvailDate1=WalkerPermUnAvailDate.builder()
+    WalkerPermUnAvailDateResponse permUnAvailDate1= WalkerPermUnAvailDateResponse.builder()
         .dayOfWeak("MON")
         .startTime(3)
         .endTime(5)
         .build();
-    WalkerPermUnAvailDate permUnAvailDate2=WalkerPermUnAvailDate.builder()
+    WalkerPermUnAvailDateResponse permUnAvailDate2= WalkerPermUnAvailDateResponse.builder()
         .dayOfWeak("TUE")
         .startTime(5)
         .endTime(7)
         .build();
-    List<WalkerPermUnAvailDate> permUnAvailDates=List.of(permUnAvailDate1,permUnAvailDate2);
+    List<WalkerPermUnAvailDateResponse> permUnAvailDates=List.of(permUnAvailDate1,permUnAvailDate2);
 
-    WalkerTempUnAvailDate tempUnAvailDate1=WalkerTempUnAvailDate.builder()
+    WalkerTempUnAvailDateResponse tempUnAvailDate1= WalkerTempUnAvailDateResponse.builder()
         .dateTime(LocalDate.of(2023,12,25))
         .build();
 
-    WalkerTempUnAvailDate tempUnAvailDate2=WalkerTempUnAvailDate.builder()
+    WalkerTempUnAvailDateResponse tempUnAvailDate2= WalkerTempUnAvailDateResponse.builder()
         .dateTime(LocalDate.of(2023,12,24))
         .build();
-    List<WalkerTempUnAvailDate> tempUnAvailDates=List.of(tempUnAvailDate1,tempUnAvailDate2);
+    List<WalkerTempUnAvailDateResponse> tempUnAvailDates=List.of(tempUnAvailDate1,tempUnAvailDate2);
 
-    WalkerTimePrice walkerTimePrice1=WalkerTimePrice.builder()
+    WalkerTimePriceResponse walkerTimePriceResponse1 = WalkerTimePriceResponse.builder()
         .serviceFee(10000)
         .timeUnit(30)
         .build();
-    WalkerTimePrice walkerTimePrice2=WalkerTimePrice.builder()
+    WalkerTimePriceResponse walkerTimePriceResponse2 = WalkerTimePriceResponse.builder()
         .serviceFee(15000)
         .timeUnit(40)
         .build();
-    List<WalkerTimePrice> walkerTimePrices=List.of(walkerTimePrice1,walkerTimePrice2);
+    List<WalkerTimePriceResponse> walkerTimePriceResponses =List.of(walkerTimePriceResponse1 ,
+        walkerTimePriceResponse2);
 
     given(userRepository.findByUserIdAndUserRole(anyLong(),any())).willReturn(Optional.of(user));
     given(userRepository.walkerPermUnVailScheduleFindByWalkerId(anyLong())).willReturn(permUnAvailDates);
     given(userRepository.walkerTempUnAvailFindByWalkerId(anyLong())).willReturn(tempUnAvailDates);
-    given(userRepository.walkerTimePrices(anyLong())).willReturn(walkerTimePrices);
+    given(userRepository.walkerTimePrices(anyLong())).willReturn(walkerTimePriceResponses);
 
     //when
-    WalkerUnAvailDetail walkerUnAvailService = walkerInfoService.getWalkerUnAvailService(1L);
+    WalkerUnAvailDetailResponse walkerUnAvailService = walkerInfoService.getWalkerUnAvailService(1L);
 
     //then
     Assertions.assertThat(walkerUnAvailService.getWalkerName()).isEqualTo("walkerInfo1");

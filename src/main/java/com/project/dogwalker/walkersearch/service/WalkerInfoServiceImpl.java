@@ -9,13 +9,13 @@ import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
-import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetailResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
    */
   @Override
   @Transactional(readOnly = true)
-  public List <WalkerInfo> getWalkerInfoList(final MemberInfo info ,final WalkerInfoSearchCond searchCond,
+  public List <WalkerInfoResponse> getWalkerInfoList(final MemberInfo info ,final WalkerInfoRequest searchCond,
       final Pageable pageable) {
     final User user = userRepository.findByUserEmailAndUserRole(info.getEmail() , info.getRole())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
@@ -48,7 +48,7 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
     }
     final Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond,pageable);
 
-    return walkerDocuments.stream().map(WalkerInfo::of)
+    return walkerDocuments.stream().map(WalkerInfoResponse::of)
         .collect(Collectors.toList());
   }
 
@@ -58,22 +58,22 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
    */
   @Override
   @Transactional(readOnly = true)
-  public WalkerUnAvailDetail getWalkerUnAvailService(final Long walkerId) {
+  public WalkerUnAvailDetailResponse getWalkerUnAvailService(final Long walkerId) {
     final User walker = userRepository.findByUserIdAndUserRole(walkerId , WALKER)
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
-    final List <WalkerPermUnAvailDate> walkerPermUnAvailDates = userRepository.walkerPermUnVailScheduleFindByWalkerId(
+    final List <WalkerPermUnAvailDateResponse> walkerPermUnAvailDateResponses = userRepository.walkerPermUnVailScheduleFindByWalkerId(
         walker.getUserId());
-    final List <WalkerTempUnAvailDate> walkerTempUnAvailDates = userRepository.walkerTempUnAvailFindByWalkerId(
+    final List <WalkerTempUnAvailDateResponse> walkerTempUnAvailDateResponses = userRepository.walkerTempUnAvailFindByWalkerId(
         walker.getUserId());
-    final List<WalkerTimePrice> walkerTimePrices=userRepository.walkerTimePrices(walker.getUserId());
-    return WalkerUnAvailDetail.builder()
+    final List<WalkerTimePriceResponse> walkerTimePriceResponses =userRepository.walkerTimePrices(walker.getUserId());
+    return WalkerUnAvailDetailResponse.builder()
         .walkerName(walker.getUserName())
         .lat(walker.getUserLat())
         .lnt(walker.getUserLnt())
-        .permUnAvailDates(walkerPermUnAvailDates)
-        .tempUnAvailDates(walkerTempUnAvailDates)
-        .timePrices(walkerTimePrices)
+        .permUnAvailDates(walkerPermUnAvailDateResponses)
+        .tempUnAvailDates(walkerTempUnAvailDateResponses)
+        .timePrices(walkerTimePriceResponses)
         .build();
   }
 

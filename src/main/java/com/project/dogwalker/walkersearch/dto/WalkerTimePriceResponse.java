@@ -13,7 +13,7 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @ToString
-public class WalkerTimePrice {
+public class WalkerTimePriceResponse {
 
   private Integer timeUnit;
   private Integer serviceFee;

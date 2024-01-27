@@ -7,10 +7,10 @@ import static com.project.dogwalker.domain.user.walker.QWalkerSchedule.walkerSch
 import static com.project.dogwalker.domain.user.walker.QWalkerScheduleTemp.walkerScheduleTemp;
 import static com.project.dogwalker.domain.user.walker.QWalkerServicePrice.walkerServicePrice;
 
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -26,9 +26,9 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
    * 상시 서비스 불가능한 요일
    */
   @Override
-  public List<WalkerPermUnAvailDate> walkerPermUnVailScheduleFindByWalkerId(final Long walkerId){
+  public List<WalkerPermUnAvailDateResponse> walkerPermUnVailScheduleFindByWalkerId(final Long walkerId){
     return queryFactory
-        .select(Projections.constructor(WalkerPermUnAvailDate.class,
+        .select(Projections.constructor(WalkerPermUnAvailDateResponse.class,
                 walkerSchedule.dayOfWeek,
                 walkerSchedule.startTime,
                 walkerSchedule.endTime
@@ -44,9 +44,9 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
    * 일시적으로 불가능한 날짜 가져오기
    */
   @Override
-  public List<WalkerTempUnAvailDate> walkerTempUnAvailFindByWalkerId(final Long walkerId){
+  public List<WalkerTempUnAvailDateResponse> walkerTempUnAvailFindByWalkerId(final Long walkerId){
     return queryFactory
-        .select(Projections.constructor(WalkerTempUnAvailDate.class,
+        .select(Projections.constructor(WalkerTempUnAvailDateResponse.class,
             walkerScheduleTemp.dateTime
             ))
         .from(user)
@@ -61,9 +61,9 @@ public class WalkerInfoRepositoryImpl implements WalkerInfoRepository{
    * 서비스 수행자의 시간당 비용 가져오기
    */
   @Override
-  public List<WalkerTimePrice> walkerTimePrices(final Long walkerId){
+  public List<WalkerTimePriceResponse> walkerTimePrices(final Long walkerId){
     return queryFactory
-        .select(Projections.constructor(WalkerTimePrice.class,
+        .select(Projections.constructor(WalkerTimePriceResponse.class,
             walkerServicePrice.serviceFee,
                     walkerServicePrice.timeUnit
             ))

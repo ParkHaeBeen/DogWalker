@@ -7,10 +7,10 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo.Response;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
 @SpringBootTest
-class WalkerInfoRepositoryImplTest {
+class WalkerInfoResponseRepositoryImplTest {
 
 
   @Autowired
@@ -70,10 +70,10 @@ class WalkerInfoRepositoryImplTest {
 
 
     //when
-    List <WalkerPermUnAvailDate>  WalkerPermUnAvailDate = userRepository.walkerPermUnVailScheduleFindByWalkerId(saveWalker.getUserId());
+    List <WalkerPermUnAvailDateResponse> WalkerPermUnAvailDateResponse = userRepository.walkerPermUnVailScheduleFindByWalkerId(saveWalker.getUserId());
 
     //then
-    Assertions.assertThat(WalkerPermUnAvailDate.size()).isEqualTo(2);
+    Assertions.assertThat(WalkerPermUnAvailDateResponse.size()).isEqualTo(2);
   }
 
 
@@ -106,10 +106,10 @@ class WalkerInfoRepositoryImplTest {
     walkerScheduleTempRepository.save(tempSchedule2);
 
     //when
-    List <WalkerTempUnAvailDate>  WalkerTempUnAvailDate = userRepository.walkerTempUnAvailFindByWalkerId(saveWalker.getUserId());
+    List <WalkerTempUnAvailDateResponse> WalkerTempUnAvailDateResponse = userRepository.walkerTempUnAvailFindByWalkerId(saveWalker.getUserId());
 
     //then
-    Assertions.assertThat(WalkerTempUnAvailDate.size()).isEqualTo(2);
+    Assertions.assertThat(WalkerTempUnAvailDateResponse.size()).isEqualTo(2);
   }
 
   @Test
@@ -145,10 +145,10 @@ class WalkerInfoRepositoryImplTest {
     walkerServicePriceRepository.save(walkerServicePrice2);
 
     //when
-    List <WalkerTimePrice>  WalkerTimePrice = userRepository.walkerTimePrices(saveWalker.getUserId());
+    List <WalkerTimePriceResponse> WalkerTimePriceResponse = userRepository.walkerTimePrices(saveWalker.getUserId());
 
     //then
-    Assertions.assertThat(WalkerTimePrice.size()).isEqualTo(2);
+    Assertions.assertThat(WalkerTimePriceResponse.size()).isEqualTo(2);
   }
 
   @Test

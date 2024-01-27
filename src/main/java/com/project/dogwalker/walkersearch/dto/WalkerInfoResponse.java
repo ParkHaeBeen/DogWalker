@@ -12,14 +12,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
-public class WalkerInfo {
+public class WalkerInfoResponse {
 
+  private Long id;
   private String walkerName;
   private Double walkerLnt;
   private Double walkerLat;
 
-  public static WalkerInfo of(WalkerDocument document){
-    return WalkerInfo.builder()
+  public static WalkerInfoResponse of(WalkerDocument document){
+    return WalkerInfoResponse.builder()
+        .id(document.getId())
         .walkerLat(document.getLocation().getLat())
         .walkerLnt(document.getLocation().getLon())
         .walkerName(document.getWalker_name())

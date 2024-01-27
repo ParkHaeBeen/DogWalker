@@ -10,13 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.project.dogwalker.support.ControllerTest;
-import com.project.dogwalker.walkersearch.dto.WalkerInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
+import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
-import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
+import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetailResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,34 +26,34 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-class WalkerInfoControllerTest extends ControllerTest {
+class WalkerInfoResponseControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("회원 위치 기준으로 walker list 검색")
   void getWalkerInfoList() throws Exception{
     //given
     String authorization ="Bearer Token";
-    WalkerInfoSearchCond cond=WalkerInfoSearchCond.builder()
+    WalkerInfoRequest cond= WalkerInfoRequest.builder()
         .name("walker1")
         .lat(12.0)
         .lnt(11.0)
         .build();
 
-    WalkerInfo info1=WalkerInfo.builder()
+    WalkerInfoResponse info1= WalkerInfoResponse.builder()
         .walkerLat(12.0)
         .walkerLnt(11.0)
         .walkerName("walker1")
         .build();
 
-    WalkerInfo info2=WalkerInfo.builder()
+    WalkerInfoResponse info2= WalkerInfoResponse.builder()
         .walkerLat(12.0)
         .walkerLnt(11.0)
         .walkerName("walker2")
         .build();
 
-    List <WalkerInfo> walkerInfos=List.of(info2,info1);
+    List <WalkerInfoResponse> walkerInfoResponses =List.of(info2,info1);
     given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
-    given(walkerInfoService.getWalkerInfoList(any(),any(),any())).willReturn(walkerInfos);
+    given(walkerInfoService.getWalkerInfoList(any(),any(),any())).willReturn(walkerInfoResponses);
 
     //when
     ResultActions resultActions = mockMvc.perform(
@@ -74,44 +74,45 @@ class WalkerInfoControllerTest extends ControllerTest {
   @DisplayName("서비슷 수행자 예약 불가능한 날짜 조회")
   void getWalkerDetail() throws Exception{
     //given
-    WalkerPermUnAvailDate permUnAvailDate1=WalkerPermUnAvailDate.builder()
+    WalkerPermUnAvailDateResponse permUnAvailDate1= WalkerPermUnAvailDateResponse.builder()
         .dayOfWeak("MON")
         .startTime(3)
         .endTime(5)
         .build();
-    WalkerPermUnAvailDate permUnAvailDate2=WalkerPermUnAvailDate.builder()
+    WalkerPermUnAvailDateResponse permUnAvailDate2= WalkerPermUnAvailDateResponse.builder()
         .dayOfWeak("TUE")
         .startTime(5)
         .endTime(7)
         .build();
-    List<WalkerPermUnAvailDate> permUnAvailDates=List.of(permUnAvailDate1,permUnAvailDate2);
+    List<WalkerPermUnAvailDateResponse> permUnAvailDates=List.of(permUnAvailDate1,permUnAvailDate2);
 
-    WalkerTempUnAvailDate tempUnAvailDate1=WalkerTempUnAvailDate.builder()
+    WalkerTempUnAvailDateResponse tempUnAvailDate1= WalkerTempUnAvailDateResponse.builder()
         .dateTime(LocalDate.of(2023,12,25))
         .build();
 
-    WalkerTempUnAvailDate tempUnAvailDate2=WalkerTempUnAvailDate.builder()
+    WalkerTempUnAvailDateResponse tempUnAvailDate2= WalkerTempUnAvailDateResponse.builder()
         .dateTime(LocalDate.of(2023,12,24))
         .build();
-    List<WalkerTempUnAvailDate> tempUnAvailDates=List.of(tempUnAvailDate1,tempUnAvailDate2);
+    List<WalkerTempUnAvailDateResponse> tempUnAvailDates=List.of(tempUnAvailDate1,tempUnAvailDate2);
 
-    WalkerTimePrice walkerTimePrice1=WalkerTimePrice.builder()
+    WalkerTimePriceResponse walkerTimePriceResponse1 = WalkerTimePriceResponse.builder()
         .serviceFee(10000)
         .timeUnit(30)
         .build();
-    WalkerTimePrice walkerTimePrice2=WalkerTimePrice.builder()
+    WalkerTimePriceResponse walkerTimePriceResponse2 = WalkerTimePriceResponse.builder()
         .serviceFee(15000)
         .timeUnit(40)
         .build();
-    List<WalkerTimePrice> walkerTimePrices=List.of(walkerTimePrice1,walkerTimePrice2);
+    List<WalkerTimePriceResponse> walkerTimePriceResponses =List.of(walkerTimePriceResponse1 ,
+        walkerTimePriceResponse2);
 
-    WalkerUnAvailDetail unAvailDetails=WalkerUnAvailDetail.builder()
+    WalkerUnAvailDetailResponse unAvailDetails= WalkerUnAvailDetailResponse.builder()
         .walkerName("walker1")
         .lnt(12.0)
         .lat(3.0)
         .permUnAvailDates(permUnAvailDates)
         .tempUnAvailDates(tempUnAvailDates)
-        .timePrices(walkerTimePrices)
+        .timePrices(walkerTimePriceResponses)
         .build();
 
     given(walkerInfoService.getWalkerUnAvailService(anyLong())).willReturn(unAvailDetails);

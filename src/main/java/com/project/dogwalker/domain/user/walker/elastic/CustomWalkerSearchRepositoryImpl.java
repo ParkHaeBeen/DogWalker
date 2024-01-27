@@ -1,7 +1,7 @@
 package com.project.dogwalker.domain.user.walker.elastic;
 
 
-import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +26,10 @@ public class CustomWalkerSearchRepositoryImpl implements CustomWalkerSearchRepos
   private Integer distanceMax;
 
   @Override
-  public Page <WalkerDocument> searchByName(final WalkerInfoSearchCond walkerInfoSearchCond,
+  public Page <WalkerDocument> searchByName(final WalkerInfoRequest walkerInfoRequest ,
       final Pageable pageable) {
 
-    CriteriaQuery query=createCond(walkerInfoSearchCond,pageable);
+    CriteriaQuery query=createCond(walkerInfoRequest ,pageable);
     SearchHits <WalkerDocument> searchHits = elasticsearchOperations.search(query , WalkerDocument.class);
 
     List <WalkerDocument> list = searchHits.stream().map(SearchHit::getContent)
@@ -39,9 +39,9 @@ public class CustomWalkerSearchRepositoryImpl implements CustomWalkerSearchRepos
   }
 
 
-  private CriteriaQuery createCond(final WalkerInfoSearchCond walkerInfoSearchCond ,final Pageable pageable){
-    Criteria nameCriteria = Criteria.where("walker_name").contains(walkerInfoSearchCond.getName())
-        .and("location").within(new GeoPoint(walkerInfoSearchCond.getLat(),walkerInfoSearchCond.getLnt())
+  private CriteriaQuery createCond(final WalkerInfoRequest walkerInfoRequest ,final Pageable pageable){
+    Criteria nameCriteria = Criteria.where("walker_name").contains(walkerInfoRequest.getName())
+        .and("location").within(new GeoPoint(walkerInfoRequest.getLat(), walkerInfoRequest.getLnt())
             ,distanceMax+"km");
 
     CriteriaQuery criteriaQuery = new CriteriaQuery(nameCriteria);

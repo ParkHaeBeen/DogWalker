@@ -76,7 +76,7 @@ public class JwtTokenProvider {
     final Jws<Claims> claims = parseClaims(authorizationHeader);
     final Claims body = claims.getBody();
     final String email = body.get("email" , String.class);
-    final Role role=(Role) body.get("role");
+    final Role role= Role.valueOf((String) body.get("role"));
     return new MemberInfo(email,role);
   }
 
