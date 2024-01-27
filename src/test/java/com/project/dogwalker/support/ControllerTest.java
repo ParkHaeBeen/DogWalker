@@ -9,6 +9,7 @@ import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
 import com.project.dogwalker.walkersearch.controller.WalkerInfoController;
 import com.project.dogwalker.walkersearch.service.WalkerInfoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
     MemberController.class,
     WalkerInfoController.class
 })
+@AutoConfigureRestDocs
 @ActiveProfiles(profiles = "local")
 @Import(WebConfig.class)
 public abstract class ControllerTest {

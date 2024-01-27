@@ -1,0 +1,35 @@
+=== WalkerSearch
+
+=== 📌 walker 검색
+
+==== HTTP Request
+| `GET`
+include::{snippets}/walkerInfo/list/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerInfo/list/http-response.adoc[]
+
+---
+
+===  📌 walker 상세 조회(이름, 위치, 예약 가능/불가능 날짜, 가격)
+
+==== HTTP Request
+| `GET`
+include::{snippets}/walkerInfo/unavail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerInfo/unavail/http-response.adoc[]
+
+---
+
+===  📌 walker 예약된 날짜 조회
+
+==== HTTP Request
+| `GET`
+include::{snippets}/walkerInfo/reserve/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerInfo/reserve/http-response.adoc[]
