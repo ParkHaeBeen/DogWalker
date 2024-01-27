@@ -56,8 +56,9 @@ CREATE TABLE `walker_reserve_service` (
                                           `walker_service_date`	timestamp NOT NULL,
                                           `walker_service_time_unit` int NOT NULL,
                                           `walker_service_status`	char(15)	NOT NULL,
-                                          `update_at`	timestamp NOT NULL,
-                                          `walker_reserve_service_price` int NOT NULL
+                                          `updated_at`	timestamp NOT NULL,
+                                          `walker_reserve_service_price` int NOT NULL,
+                                          `pay_history_id` int not null
 );
 
 CREATE TABLE `pay_history` (

@@ -2,6 +2,7 @@ package com.project.dogwalker.domain.user.walker;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 
+import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -44,7 +45,6 @@ class WalkerInfoResponseRepositoryImplTest {
   void queryDsl_walkerInfo_perunavail_succes(){
     //given
     User walker= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query@gmail.com")
@@ -79,12 +79,11 @@ class WalkerInfoResponseRepositoryImplTest {
 
 
   @Test
-  @Rollback
   @DisplayName("서비스 예약 일시적으로 안되는 날짜 조회- 성공")
+  @Rollback
   void queryDsl_walkerInfo_tempunavail_succes(){
     //given
     User walker= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query2@gmail.com")
@@ -119,7 +118,6 @@ class WalkerInfoResponseRepositoryImplTest {
   void queryDsl_walkerInfo_price_search(){
     //given
     User walker= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query3@gmail.com")
@@ -158,7 +156,6 @@ class WalkerInfoResponseRepositoryImplTest {
   void walkerReserveDate(){
     //given
     User walker= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query4@gmail.com")
@@ -168,7 +165,6 @@ class WalkerInfoResponseRepositoryImplTest {
         .build();
 
     User customer= User.builder()
-        .userId(2L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query6@gmail.com")
@@ -177,7 +173,6 @@ class WalkerInfoResponseRepositoryImplTest {
         .userRole(Role.USER)
         .build();
     User walker2= User.builder()
-        .userId(3L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("query5@gmail.com")
@@ -188,7 +183,8 @@ class WalkerInfoResponseRepositoryImplTest {
 
     User saveWalker = userRepository.save(walker);
     User saveCustomer = userRepository.save(customer);
-    User saveWalker2 = userRepository.save(walker2);
+    userRepository.save(walker2);
+
     WalkerReserveServiceInfo serviceInfo1=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,16,0))
         .walker(walker)
@@ -196,6 +192,9 @@ class WalkerInfoResponseRepositoryImplTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
+        .payHistory(PayHistory.builder()
+            .payId(1L)
+            .build())
         .build();
     WalkerReserveServiceInfo serviceInfo2=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,18,0))
@@ -204,6 +203,9 @@ class WalkerInfoResponseRepositoryImplTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
+        .payHistory(PayHistory.builder()
+            .payId(2L)
+            .build())
         .build();
     WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,12,0))
@@ -212,10 +214,14 @@ class WalkerInfoResponseRepositoryImplTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
+        .payHistory(PayHistory.builder()
+            .payId(3L)
+            .build())
         .build();
     walkerReserveServiceRepository.save(serviceInfo1);
     walkerReserveServiceRepository.save(serviceInfo2);
     walkerReserveServiceRepository.save(serviceInfo3);
+
     //when
     List <Response> responses = userRepository.walkerReserveDate(saveWalker.getUserId() ,
         LocalDate.of(2023 , 12 , 15));
