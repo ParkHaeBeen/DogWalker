@@ -18,9 +18,4 @@ public class WalkerInfoSearchCond {
   private Double lnt;
   @NotNull
   private Double lat;
-  private int startPage;
-
-  //default 10개
-  @Builder.Default
-  private int size=10;
 }

@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 
 
@@ -54,10 +56,12 @@ class CustomWalkerSearchRepositoryImplTest {
         .walkerName("test")
         .lat(37.3017387)
         .lnt(127.0735513)
-        .startPage(0)
         .build();
+
+    Pageable pageable = PageRequest.of(0,10);
+
     //when
-    Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond);
+    Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond,pageable);
 
     //then
     Assertions.assertThat(walkerDocuments.getTotalElements()).isEqualTo(2);

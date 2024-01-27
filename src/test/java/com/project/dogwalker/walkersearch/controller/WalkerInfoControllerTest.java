@@ -8,11 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.common.config.WebConfig;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.member.token.JwtTokenProvider;
+import com.project.dogwalker.support.ControllerTest;
 import com.project.dogwalker.walkersearch.dto.WalkerInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
 import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDate;
@@ -20,36 +18,18 @@ import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDate;
 import com.project.dogwalker.walkersearch.dto.WalkerTimePrice;
 import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetail;
-import com.project.dogwalker.walkersearch.service.WalkerInfoServiceImpl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(WalkerInfoController.class)
-@Import(WebConfig.class)
-class WalkerInfoControllerTest {
-
-  @MockBean
-  private WalkerInfoServiceImpl walkerInfoService;
-
-  @MockBean
-  private JwtTokenProvider jwtTokenProvider;
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
+class WalkerInfoControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("회원 위치 기준으로 walker list 검색")
@@ -65,7 +45,6 @@ class WalkerInfoControllerTest {
         .walkerName("walker1")
         .lat(12.0)
         .lnt(11.0)
-        .startPage(0)
         .build();
 
     WalkerInfo info1=WalkerInfo.builder()
@@ -80,13 +59,13 @@ class WalkerInfoControllerTest {
         .walkerName("walker2")
         .build();
     List <WalkerInfo> walkerInfos=List.of(info2,info1);
-
+    Pageable pageable = PageRequest.of(0,10);
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
-    given(walkerInfoService.getWalkerInfoList(memberInfo,cond)).willReturn(walkerInfos);
+    given(walkerInfoService.getWalkerInfoList(memberInfo,cond,pageable)).willReturn(walkerInfos);
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/walkerinfo/list")
+        get("/walkerinfo/list")
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .content(objectMapper.writeValueAsString(cond))
             .contentType(MediaType.APPLICATION_JSON)
@@ -145,7 +124,7 @@ class WalkerInfoControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/walkerinfo/detail")
+        get("/walkerinfo/detail")
             .content(objectMapper.writeValueAsString(1L))
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -182,7 +161,7 @@ class WalkerInfoControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/walkerinfo/detail/check/reserve")
+        get("/walkerinfo/detail/check/reserve")
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     );
