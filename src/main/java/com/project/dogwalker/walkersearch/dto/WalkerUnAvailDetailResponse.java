@@ -14,13 +14,13 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @ToString
-public class WalkerUnAvailDetail {
+public class WalkerUnAvailDetailResponse {
   private String walkerName;
   private double lat;
   private double lnt;
 
-  private List <WalkerPermUnAvailDate> permUnAvailDates;
-  private List<WalkerTempUnAvailDate> tempUnAvailDates;
-  private List<WalkerTimePrice> timePrices;
+  private List <WalkerPermUnAvailDateResponse> permUnAvailDates;
+  private List<WalkerTempUnAvailDateResponse> tempUnAvailDates;
+  private List<WalkerTimePriceResponse> timePrices;
 
 }

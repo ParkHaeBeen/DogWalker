@@ -4,7 +4,7 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoSearchCond;
+import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class CustomWalkerSearchRepositoryImplTest {
       walkerSearchRepository.save(WalkerDocument.of(user));
     }
 
-    WalkerInfoSearchCond searchCond=WalkerInfoSearchCond.builder()
+    WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
         .name("test")
         .lat(37.3017387)
         .lnt(127.0735513)

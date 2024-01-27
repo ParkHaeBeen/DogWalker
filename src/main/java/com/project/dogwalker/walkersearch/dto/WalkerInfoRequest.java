@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class WalkerInfoSearchCond {
+public class WalkerInfoRequest {
 
   @Builder.Default
   private String name="";
