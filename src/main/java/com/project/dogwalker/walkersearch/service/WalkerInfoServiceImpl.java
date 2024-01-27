@@ -42,7 +42,7 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
       final Pageable pageable) {
     final User user = userRepository.findByUserEmailAndUserRole(info.getEmail() , info.getRole())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
-    if(searchCond.getLat()==null||searchCond.getLnt()==null){
+    if(searchCond.getLat() == null || searchCond.getLnt() == null){
       searchCond.setLat(user.getUserLat());
       searchCond.setLnt(user.getUserLnt());
     }
@@ -58,7 +58,7 @@ public class WalkerInfoServiceImpl implements WalkerInfoService {
    */
   @Override
   @Transactional(readOnly = true)
-  public WalkerUnAvailDetail getWalkerUnAvailService(Long walkerId) {
+  public WalkerUnAvailDetail getWalkerUnAvailService(final Long walkerId) {
     final User walker = userRepository.findByUserIdAndUserRole(walkerId , WALKER)
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
