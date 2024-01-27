@@ -36,10 +36,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
-@Transactional
+@ActiveProfiles(profiles = "local")
 class WalkerInfoServiceImplTest {
 
   @Mock
@@ -75,12 +75,12 @@ class WalkerInfoServiceImplTest {
         .userRole(Role.WALKER)
         .build();
     WalkerDocument document1=WalkerDocument.builder()
-        .walker_info_id(1L)
+        .id(1L)
         .walker_name("test1")
         .location(new GeoPoint(12.0,11.0))
         .build();
     WalkerDocument document2=WalkerDocument.builder()
-        .walker_info_id(2L)
+        .id(2L)
         .walker_name("test2")
         .location(new GeoPoint(12.00001,11.0))
         .build();
