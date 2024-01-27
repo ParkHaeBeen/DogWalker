@@ -4,21 +4,18 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
+import com.project.dogwalker.support.DomainTest;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
 
 
-@SpringBootTest
-@ActiveProfiles(profiles = "test")
-class CustomWalkerSearchRepositoryImplTest {
+class CustomWalkerSearchRepositoryImplTest extends DomainTest {
 
   @Autowired
   private WalkerSearchRepository walkerSearchRepository;
