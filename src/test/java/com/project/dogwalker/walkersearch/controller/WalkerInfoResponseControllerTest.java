@@ -4,6 +4,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,12 +44,14 @@ class WalkerInfoResponseControllerTest extends ControllerTest {
         .build();
 
     WalkerInfoResponse info1= WalkerInfoResponse.builder()
+        .id(1L)
         .walkerLat(12.0)
         .walkerLnt(11.0)
         .walkerName("walker1")
         .build();
 
     WalkerInfoResponse info2= WalkerInfoResponse.builder()
+        .id(2L)
         .walkerLat(12.0)
         .walkerLnt(11.0)
         .walkerName("walker2")
@@ -67,7 +73,11 @@ class WalkerInfoResponseControllerTest extends ControllerTest {
 
     //then
     resultActions.andExpect(status().isOk())
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("walkerInfo/list",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+            ));
   }
 
   @Test
@@ -131,7 +141,11 @@ class WalkerInfoResponseControllerTest extends ControllerTest {
         .andExpect(jsonPath("$.lnt").value(12.0))
         .andExpect(jsonPath("$.permUnAvailDates.size()").value(2))
         .andExpect(jsonPath("$.tempUnAvailDates.size()").value(2))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("walkerInfo/unavail",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
   @Test
@@ -164,6 +178,10 @@ class WalkerInfoResponseControllerTest extends ControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(2))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("walkerInfo/reserve",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 }
