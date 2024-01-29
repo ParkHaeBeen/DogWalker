@@ -118,7 +118,6 @@ class ReserveServiceImplTest {
         .build();
     WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
-        .payHistory(payHistory)
         .build();
 
     ReserveCancel.Request request=ReserveCancel.Request.builder()

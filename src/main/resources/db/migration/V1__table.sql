@@ -68,7 +68,6 @@ CREATE TABLE `walker_reserve_service` (
                                           `walker_service_status`	char(15)	NOT NULL,
                                           `updated_at`	timestamp NOT NULL,
                                           `walker_reserve_service_price` int NOT NULL,
-                                          `pay_history_id` int not null,
                                           FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`),
                                           FOREIGN KEY (`customer_id`) REFERENCES `users` (`user_id`)
 );
@@ -88,11 +87,10 @@ CREATE TABLE `pay_history` (
                                `user_id`	bigint	NOT NULL,
                                `walker_reserve_service_id`	bigint	NOT NULL,
                                `pay_price`	int NOT NULL,
-                               `pay_status`	char(10) NOT NULL,
+                               `pay_status`	char(20) NOT NULL,
                                `created_at`	timestamp NOT NULL,
                                `updated_at`	timestamp NOT NULL,
                                `pay_method`	varchar(50) NOT NULL,
-                                `adjust_status` char(20) not null,
                                FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
                                FOREIGN KEY (`walker_reserve_service_id`) REFERENCES `walker_reserve_service` (`walker_reserve_service_id`)
 

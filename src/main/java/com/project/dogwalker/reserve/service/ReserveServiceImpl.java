@@ -1,5 +1,6 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.ADJUST_DONE;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_CANCEL;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
@@ -9,7 +10,6 @@ import com.project.dogwalker.aop.distribute.DistributedLock;
 import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
-import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
@@ -19,6 +19,7 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.ErrorCode;
 import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
 import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
 import com.project.dogwalker.member.dto.MemberInfo;
@@ -117,15 +118,18 @@ public class ReserveServiceImpl implements ReserveService{
             memberInfo.getRole())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
-    WalkerReserveServiceInfo reserveInfo = reserveServiceRepository.findById(request.getReserveId())
+    final WalkerReserveServiceInfo reserveInfo = reserveServiceRepository.findById(request.getReserveId())
         .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
 
     if(Duration.between(request.getNow(),reserveInfo.getServiceDateTime()).toDays()<1){
       throw new ReserveUnAvailCancelException(ErrorCode.RESERVE_CANCEL_UNAVAIL);
     }
 
+    final PayHistory payHistory = payHistoryRespository.findByWalkerReserveInfoReserveId(
+        reserveInfo.getReserveId()).orElseThrow(() -> new ReserveException(ErrorCode.NOT_FOUND_PAY_HISTORY));
+
     reserveInfo.setStatus(CUSTOMER_CANCEL);
-    reserveInfo.getPayHistory().setPayStatus(PayStatus.PAY_REFUND);
+    payHistory.modifyStatus(ADJUST_DONE);
     return ReserveCancel.Response.builder()
         .serviceDate(reserveInfo.getServiceDateTime())
         .cancelDate(reserveInfo.getUpdatedAt())

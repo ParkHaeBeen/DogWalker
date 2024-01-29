@@ -101,7 +101,6 @@ class WalkerServiceImplTest {
         .timeUnit(40)
         .status(WALKER_ACCEPT)
         .servicePrice(10000)
-        .payHistory(payHistory)
         .build();
     given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(
         Optional.ofNullable(walker));

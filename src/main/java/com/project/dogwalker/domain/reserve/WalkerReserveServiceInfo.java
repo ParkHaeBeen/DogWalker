@@ -5,7 +5,6 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CH
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
@@ -68,10 +66,6 @@ public class WalkerReserveServiceInfo extends BaseEntity {
 
   @Column(name = "walker_reserve_service_price")
   private Integer servicePrice;
-
-  @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
-  @JoinColumn(name = "pay_history_id")
-  private PayHistory payHistory;
 
   public static WalkerReserveServiceInfo of(final ReserveRequest request,final User user,final User walker){
     return WalkerReserveServiceInfo.builder()
