@@ -2,10 +2,12 @@ package com.project.dogwalker.batch;
 
 import static com.project.dogwalker.domain.reserve.PayStatus.ADJUST_DONE;
 import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
 import com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo;
+import com.project.dogwalker.batch.reserve.dto.ReserveInfo;
 import com.project.dogwalker.domain.adjust.AdjustStatus;
 import com.project.dogwalker.domain.adjust.WalkerAdjust;
 import com.project.dogwalker.domain.adjust.WalkerAdjustDetail;
@@ -36,7 +38,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaItemWriter;
 import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -45,7 +46,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @RequiredArgsConstructor
 @EnableBatchProcessing
-public class BatchConfig{
+public class  BatchConfig{
 
   private final JobRepository jobRepository;
   private final PlatformTransactionManager platformManager;
@@ -77,7 +78,7 @@ public class BatchConfig{
   public Step reserveStep(){
 
     return new StepBuilder("reserveStep",jobRepository)
-        .<WalkerReserveServiceInfo,WalkerReserveServiceInfo>chunk(chunkSize,platformManager)
+        .<ReserveInfo,WalkerReserveServiceInfo>chunk(chunkSize,platformManager)
         .reader(reserveReader())
         .processor(reserveProcessor())
         .writer(reserveWriter())
@@ -86,28 +87,36 @@ public class BatchConfig{
   }
 
   @Bean
-  public JpaPagingItemReader<WalkerReserveServiceInfo> reserveReader(){
+  public JpaPagingItemReader<ReserveInfo> reserveReader(){
     Map<String, Object> parameter=new HashMap<>();
     parameter.put("createdAt", LocalDateTime.now().minusMinutes(10));
     parameter.put("status", WALKER_CHECKING);
-    return new JpaPagingItemReaderBuilder<WalkerReserveServiceInfo>()
-        .name("reserveReader")
-        .entityManagerFactory(entityManagerFactory)
-        .pageSize(chunkSize)
-        .queryString("SELECT w FROM WalkerReserveServiceInfo w "
-            + "Join Fetch w.payHistory p "
-            + "WHERE w.createdAt < :createdAt "
-            + "AND w.status = :status")
-        .parameterValues(parameter)
-        .build();
+    JpaPagingItemReader<ReserveInfo> reader = new JpaPagingItemReader <>(){
+      @Override
+      public int getPage() {
+        return 0;
+      }
+    };
+    reader.setName("reserveReader");
+    reader.setPageSize(chunkSize);
+    reader.setEntityManagerFactory(entityManagerFactory);
+    reader.setQueryString("SELECT NEW com.project.dogwalker.batch.reserve.dto.ReserveInfo(p, w) FROM PayHistory p "
+        + "Join Fetch p.walkerReserveInfo w "
+        + "WHERE w.createdAt < :createdAt "
+        + "AND w.status = :status");
+    reader.setParameterValues(parameter);
+    return reader;
   }
 
   @Bean
-  public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
+  public ItemProcessor<ReserveInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
-      reserveService.setStatus(WALKER_REFUSE);
-     // reserveService.getPayHistory().setPayStatus(PAY_REFUND);
-      return entityManagerFactory.createEntityManager().merge(reserveService);
+      final WalkerReserveServiceInfo reserveServiceInfo = reserveService.getReserveServiceInfo();
+      reserveServiceInfo.modifyStatus(WALKER_REFUSE);
+      final PayHistory payHistory = reserveService.getPayHistory();
+      payHistory.modifyStatus(PAY_REFUND);
+      manager.merge(payHistory);
+      return reserveServiceInfo;
     };
   }
 

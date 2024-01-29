@@ -22,6 +22,7 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 
 @SpringBatchTest
@@ -45,10 +46,10 @@ public class ReserveBatchTest {
 
   @Test
   @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
+  @Rollback
   public void reserveBatchJob_success() throws Exception {
     //given
     User user= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("batchuser1@gmail.com")
@@ -57,7 +58,6 @@ public class ReserveBatchTest {
         .userRole(Role.WALKER)
         .build();
     User walker= User.builder()
-        .userId(2L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("batchuser3@gmail.com")
@@ -68,42 +68,27 @@ public class ReserveBatchTest {
 
     userRepository.save(user);
     userRepository.save(walker);
+    for(int i=0;i<19;i++){
+      WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
+          .customer(user)
+          .walker(walker)
+          .serviceDateTime(LocalDateTime.now().plusDays(i))
+          .timeUnit(60)
+          .status(WalkerServiceStatus.WALKER_CHECKING)
+          .servicePrice(100)
+          .build();
+      WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
+      saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(20));
+      reserveServiceRepository.save(saveService1);
+      PayHistory payHistory1 = PayHistory.builder()
+          .customer(user)
+          .payPrice(1000)
+          .walkerReserveInfo(reserveServiceInfo1)
+          .payMethod("Credit Card")
+          .build();
+      payHistoryRespository.save(payHistory1);
+    }
 
-    PayHistory payHistory1 = PayHistory.builder()
-        .customer(user)
-        .payPrice(100)
-        .payMethod("Credit Card")
-        .build();
-    PayHistory payHistory2 = PayHistory.builder()
-        .customer(user)
-        .payPrice(100)
-        .payMethod("Credit Card")
-        .build();
-    PayHistory savePayHistory1 = payHistoryRespository.save(payHistory1);
-    PayHistory savePayHistory2 = payHistoryRespository.save(payHistory2);
-    WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now())
-        .timeUnit(60)
-        .status(WalkerServiceStatus.WALKER_CHECKING)
-        .servicePrice(100)
-        .build();
-    WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
-        .timeUnit(60)
-        .status(WalkerServiceStatus.WALKER_CHECKING)
-        .servicePrice(100)
-        .build();
-
-    WalkerReserveServiceInfo saveService1 = reserveServiceRepository.save(reserveServiceInfo1);
-    WalkerReserveServiceInfo saveService2 = reserveServiceRepository.save(reserveServiceInfo2);
-    saveService1.setCreatedAt(LocalDateTime.now().minusMinutes(20));
-    saveService2.setCreatedAt(LocalDateTime.now().minusMinutes(20));
-    reserveServiceRepository.saveAndFlush(saveService1);
-    reserveServiceRepository.saveAndFlush(saveService2);
     JobParameters jobParameters=new JobParametersBuilder()
         .addString("jobName","reserveJob")
         .addLong("time",System.currentTimeMillis())
