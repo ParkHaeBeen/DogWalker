@@ -1,6 +1,6 @@
 package com.project.dogwalker.notice.controller;
 
-import com.project.dogwalker.member.controller.AuthMember;
+import com.project.dogwalker.common.resolver.auth.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.service.NoticeService;
 import jakarta.validation.Valid;

@@ -1,8 +1,8 @@
 package com.project.dogwalker.walkersearch.controller;
 
 import com.project.dogwalker.common.resolver.queryString.QueryStringResolver;
-import com.project.dogwalker.member.controller.Auth;
-import com.project.dogwalker.member.controller.AuthMember;
+import com.project.dogwalker.common.interceptor.Auth;
+import com.project.dogwalker.common.resolver.auth.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;

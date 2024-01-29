@@ -1,7 +1,7 @@
 package com.project.dogwalker.walkerservice.controller;
 
-import com.project.dogwalker.member.controller.Auth;
-import com.project.dogwalker.member.controller.AuthMember;
+import com.project.dogwalker.common.interceptor.Auth;
+import com.project.dogwalker.common.resolver.auth.AuthMember;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;

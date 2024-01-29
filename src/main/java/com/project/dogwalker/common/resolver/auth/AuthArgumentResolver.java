@@ -1,4 +1,4 @@
-package com.project.dogwalker.member.controller;
+package com.project.dogwalker.common.resolver.auth;
 
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

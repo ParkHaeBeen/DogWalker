@@ -1,4 +1,4 @@
-package com.project.dogwalker.member.controller;
+package com.project.dogwalker.common.resolver.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

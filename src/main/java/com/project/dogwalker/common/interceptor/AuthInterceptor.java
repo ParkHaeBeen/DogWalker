@@ -1,4 +1,4 @@
-package com.project.dogwalker.member.controller;
+package com.project.dogwalker.common.interceptor;
 
 import static com.project.dogwalker.exception.ErrorCode.NOT_WALKER;
 import static com.project.dogwalker.exception.ErrorCode.TOKEN_EXPIRED;
