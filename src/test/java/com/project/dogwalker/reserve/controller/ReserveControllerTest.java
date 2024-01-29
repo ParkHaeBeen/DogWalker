@@ -1,55 +1,38 @@
 package com.project.dogwalker.reserve.controller;
 
 import static com.project.dogwalker.domain.user.Role.USER;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.common.config.WebConfig;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
-import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.reserve.dto.ReserveResponse;
 import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
-import com.project.dogwalker.reserve.service.ReserveServiceImpl;
+import com.project.dogwalker.support.ControllerTest;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(ReserveController.class)
-@Import(WebConfig.class)
-class ReserveControllerTest {
-
-  @MockBean
-  private ReserveServiceImpl reserveService;
-
-  @MockBean
-  private JwtTokenProvider jwtTokenProvider;
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
+class ReserveControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("토큰 검증 실패로 실패")
@@ -57,18 +40,22 @@ class ReserveControllerTest {
     //given
     String authorization ="Bearer Token";
     given(jwtTokenProvider.validateToken(authorization)).willReturn(false);
-    ReserveCheckRequest request=ReserveCheckRequest.builder().build();
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/reserve/check")
+        get("/reserve/check")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(request))
+            .queryParam("walkerId",String.valueOf(1L))
+            .queryParam("serviceDate",LocalDateTime.now().toString())
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isUnauthorized());
+    resultActions
+        .andExpect(status().isUnauthorized())
+        .andDo(document("reserve/check/fail",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -77,22 +64,22 @@ class ReserveControllerTest {
     //given
     String authorization ="Bearer Token";
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
-    ReserveCheckRequest request=ReserveCheckRequest.builder()
-        .walkerId(1L)
-        .serviceDate(LocalDateTime.of(2023,12,25,15,0))
-        .build();
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/reserve/check")
+        get("/reserve/check")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(request))
+            .queryParam("walkerId",String.valueOf(1L))
+            .queryParam("serviceDate",LocalDateTime.now().toString())
             .contentType(MediaType.APPLICATION_JSON)
     );
 
 
     //then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andDo(document("reserve/check/success",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -114,12 +101,21 @@ class ReserveControllerTest {
         .role(role)
         .build();
 
+    ReserveResponse reserveResponse = ReserveResponse.builder()
+        .payDate(LocalDateTime.now())
+        .walkerName("walker")
+        .price(1000)
+        .serviceDate(LocalDateTime.of(2023,12,12,12,30))
+        .timeUnit(30)
+        .build();
+
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
     given(jwtTokenProvider.getMemberInfo(authorization)).willReturn(memberInfo);
+    given(reserveService.reserveService(any(),any())).willReturn(reserveResponse);
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/api/reserve")
+        post("/reserve")
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
@@ -130,7 +126,10 @@ class ReserveControllerTest {
     verify(jwtTokenProvider, times(1)).getMemberInfo(authorization);
 
     resultActions.andExpect(status().isOk())
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("reserve/request",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
 
     verify(reserveService).reserveService(memberInfo,request);
   }
@@ -157,14 +156,17 @@ class ReserveControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        patch("/api/reserve/request" )
+        patch("/reserve" )
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andDo(document("reserve/acceptRefuse",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
 
   }
 
@@ -184,12 +186,18 @@ class ReserveControllerTest {
         .role(role)
         .build();
 
+    ReserveCancel.Response response = ReserveCancel.Response.builder()
+        .cancelDate(LocalDateTime.now())
+        .serviceDate(LocalDateTime.of(2024,03,12,12,30))
+        .build();
+
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
     given(jwtTokenProvider.getMemberInfo(authorization)).willReturn(memberInfo);
+    given(reserveService.reserveCancel(any(),any())).willReturn(response);
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/api/reserve/cancel")
+        delete("/reserve")
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .content(objectMapper.writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
@@ -200,7 +208,10 @@ class ReserveControllerTest {
     verify(jwtTokenProvider, times(1)).getMemberInfo(authorization);
 
     resultActions.andExpect(status().isOk())
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("reserve/cancel",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));;
 
     verify(reserveService).reserveCancel(memberInfo,request);
   }

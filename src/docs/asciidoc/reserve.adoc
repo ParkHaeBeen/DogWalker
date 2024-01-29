@@ -1,0 +1,62 @@
+=== Reserve
+
+=== 📌 예약 진행 전 해당 날짜에 예약이 있는지 확인
+
+==== 성공
+
+==== HTTP Request
+| `GET`
+include::{snippets}/reserve/check/success/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/check/success/http-response.adoc[]
+
+==== 실패 (토큰검증 실패)
+
+| `GET`
+include::{snippets}/reserve/check/fail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/check/fail/http-response.adoc[]
+
+---
+
+
+=== 📌 예약 및 결제 진행
+
+
+==== HTTP Request
+| `POST`
+include::{snippets}/reserve/request/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/request/http-response.adoc[]
+
+---
+
+=== 📌 서비스 수행자 예약 요청 수락/거부
+
+
+==== HTTP Request
+| `PATCH`
+include::{snippets}/reserve/acceptRefuse/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/acceptRefuse/http-response.adoc[]
+
+---
+
+=== 📌 서비스 예약 취소
+
+
+==== HTTP Request
+| `DELETE`
+include::{snippets}/reserve/cancel/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/cancel/http-response.adoc[]
