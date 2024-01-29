@@ -88,7 +88,7 @@
 
 ### ERD
 
-![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/d9a206d4-f341-402b-8245-d45418645bd3)
+![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/041be768-fa25-4fc3-a6d5-ca6b9359e73a)
 
 <hr>
 
