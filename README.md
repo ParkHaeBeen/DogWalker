@@ -1,6 +1,11 @@
-# :dog2: 산책 대행 서비스
 
+<img src= https://github.com/ParkHaeBeen/DogWalker/assets/130157565/660acee2-0578-4777-9fc6-b2d6a8c1d2eb  width ="170">
+
+### 🔥 REFACTORING 중! 🔥
+
+## :dog2: 프로젝트 소개 < 산책 대행 서비스 >
 바쁜 현대인들을 위해 강아지 산책 대행 알바 서비스!
+
 위치 기준으로 산책 알바를 검색하고 가능한 날짜에 예약을 진행!
 
 ## 프로젝트 기능 및 설계
