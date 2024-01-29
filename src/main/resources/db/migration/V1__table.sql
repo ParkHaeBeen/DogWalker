@@ -11,19 +11,50 @@ CREATE TABLE `users` (
                          `updated_at`	timestamp	NOT NULL
 );
 
-CREATE TABLE `walker_schedule` (
-                                   `walker_sc_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                   `walker_id`	bigint	NOT NULL,
-                                   `unavailable_day`	varchar(4) NOT NULL,
-                                   `unavailable_time_start`	int	NOT NULL,
-                                   `unavailable_time_end`	int	NOT NULL
+CREATE TABLE `customer_dog_info` (
+                                     `dog_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                     `user_id` BIGINT NOT NULL,
+                                     `dog_img_url` VARCHAR(100) NOT NULL,
+                                     `dog_birth_date` TIMESTAMP NOT NULL,
+                                     `dog_name` VARCHAR(10) NOT NULL,
+                                     `dog_type` VARCHAR(20) NOT NULL,
+                                     `dog_description` VARCHAR(500) NOT NULL,
+                                     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+);
+
+CREATE TABLE `walker_service_price` (
+                                        `walker_price_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                        `walker_id`	bigint	NOT NULL,
+                                        `walker_service_unit`	int	NOT NULL,
+                                        `walker_service_fee`	int	NOT NULL,
+                                        FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`)
+
 );
 
 CREATE TABLE `walker_schedule_temporary` (
                                              `walker_sc_temp_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                                              `walker_Id`	bigint	NOT NULL,
-                                             `unavailable_date`	timestamp	NOT NULL
+                                             `unavailable_date`	timestamp	NOT NULL,
+                                             FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`)
+
 );
+
+CREATE TABLE `walker_schedule` (
+                                   `walker_sc_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                   `walker_id`	bigint	NOT NULL,
+                                   `unavailable_day`	varchar(4) NOT NULL,
+                                   `unavailable_time_start`	int	NOT NULL,
+                                   `unavailable_time_end`	int	NOT NULL,
+                                   FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`)
+
+);
+CREATE TABLE `walker_service_route` (
+                                        `walker_service_route_id`	bigint	AUTO_INCREMENT PRIMARY KEY ,
+                                        `walker_reserve_service_id`	bigint	NOT NULL,
+                                        `walker_route`	multipoint	NULL,
+                                        `created_at`	timestamp	NULL
+);
+
 
 CREATE TABLE `refresh_token` (
                                  `refresh_token`	varchar(40)	 PRIMARY KEY,
@@ -31,22 +62,6 @@ CREATE TABLE `refresh_token` (
                                  `refresh_token_expired_at`	timestamp	NOT NULL
 );
 
-CREATE TABLE `customer_dog_info` (
-                                     `dog_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                     `user_id`	bigint	NOT NULL,
-                                     `dog_img_url`	varchar(100) NOT NULL,
-                                     `dog_birth_date`	timestamp NOT NULL,
-                                     `dog_name`	varchar(10) NOT NULL,
-                                     `dog_type`	varchar(20)	NOT NULL,
-                                     `dog_description`	varchar(500) NOT NULL
-);
-
-CREATE TABLE `walker_service_price` (
-                                        `walker_price_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                        `walker_id`	bigint	NOT NULL,
-                                        `walker_service_unit`	int	NOT NULL,
-                                        `walker_service_fee`	int	NOT NULL
-);
 
 CREATE TABLE `walker_reserve_service` (
                                           `walker_reserve_service_id`	bigint AUTO_INCREMENT PRIMARY KEY,
@@ -72,6 +87,46 @@ CREATE TABLE `pay_history` (
                                `pay_method`	varchar(50) NOT NULL,
                                 `adjust_status` char(20) not null
 );
+
+
+
+ALTER TABLE `walker_service_route` ADD CONSTRAINT `FK_walker_reserve_service_TO_walker_service_route_1` FOREIGN KEY (
+                                                                                                                     `walker_reserve_service_id`
+    )
+    REFERENCES `walker_reserve_service` (
+                                         `walker_reserve_service_id`
+        );
+
+
+ALTER TABLE `pay_history` ADD CONSTRAINT `FK_Users_TO_pay_history_1` FOREIGN KEY (
+                                                                                  `user_id`
+    )
+    REFERENCES `users` (
+                        `user_id`
+        );
+
+ALTER TABLE `pay_history` ADD CONSTRAINT `FK_walker_reserve_service_TO_pay_history_1` FOREIGN KEY (
+                                                                                                   `walker_reserve_service_id`
+    )
+    REFERENCES `walker_reserve_service` (
+                                         `walker_reserve_service_id`
+        );
+
+ALTER TABLE `walker_reserve_service` ADD CONSTRAINT `FK_Users_TO_walker_reserve_service_1` FOREIGN KEY (
+                                                                                                        `customer_id`
+    )
+    REFERENCES `users` (
+                        `user_Id`
+        );
+
+
+ALTER TABLE `refresh_token` ADD CONSTRAINT `FK_Users_TO_Refresh_token_1` FOREIGN KEY (
+                                                                                      `refresh_token_user_id`
+    )
+    REFERENCES `users` (
+                        `user_id`
+        );
+
 
 CREATE TABLE BATCH_JOB_INSTANCE  (
          JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,

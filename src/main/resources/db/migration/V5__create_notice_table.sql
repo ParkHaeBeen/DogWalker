@@ -7,3 +7,10 @@ CREATE TABLE `notice` (
                           `notice_check_date`	timestamp	NULL,
                           `updated_at`	timestamp NOT NULL
 );
+
+ALTER TABLE `notice` ADD CONSTRAINT `FK_Users_TO_notice_1` FOREIGN KEY (
+                                                                        `user_id`
+    )
+    REFERENCES `users` (
+                        `user_id`
+        );
