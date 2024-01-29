@@ -75,8 +75,6 @@ public class OauthServiceImpl implements OauthService{
   @Transactional
   public LoginResult login(final String code,final String type){
     final ClientResponse clientReponse = oauthClients.login(type,code);
-    log.info("respoonse ={}",clientReponse);
-
     Optional<User> userExist = userRepository.findByUserEmail(clientReponse.getEmail());
 
     if(!userExist.isPresent()){
@@ -106,7 +104,6 @@ public class OauthServiceImpl implements OauthService{
   @Override
   @Transactional
   public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
-    log.info("request = {}",request.getCommonRequest());
     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
 
