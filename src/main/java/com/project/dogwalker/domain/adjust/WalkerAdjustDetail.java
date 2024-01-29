@@ -18,12 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Builder
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "walker_adjust_detail")
@@ -49,4 +47,7 @@ public class WalkerAdjustDetail {
   @Builder.Default
   private AdjustDetailStatus adjustDetailStatus= ADJUST_NOT_YET;
 
+  public void setWalkerAdjust(final WalkerAdjust walkerAdjust){
+    this.walkerAdjust=walkerAdjust;
+  }
 }
