@@ -2,6 +2,7 @@ package com.project.dogwalker.reserve.controller;
 
 import com.project.dogwalker.common.interceptor.Auth;
 import com.project.dogwalker.common.resolver.auth.AuthMember;
+import com.project.dogwalker.common.resolver.queryString.QueryStringResolver;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/reserve")
+@RequestMapping("/reserve")
 @RequiredArgsConstructor
 public class ReserveController {
 
@@ -34,7 +36,7 @@ public class ReserveController {
    */
   @GetMapping("/check")
   @Auth
-  public ResponseEntity<?> isReservedCheck(@RequestBody @Valid final ReserveCheckRequest request){
+  public ResponseEntity<?> isReservedCheck(@QueryStringResolver @Valid final ReserveCheckRequest request){
     reserveService.isReserved(request);
     return ResponseEntity.ok().build();
   }
@@ -44,7 +46,8 @@ public class ReserveController {
    */
   @PostMapping
   @Auth
-  public ResponseEntity<ReserveResponse> reserveService(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid final ReserveRequest request){
+  public ResponseEntity<ReserveResponse> reserveService(@AuthMember @Valid final MemberInfo memberInfo
+      ,@RequestBody @Valid final ReserveRequest request){
     final ReserveResponse reserveResponse = reserveService.reserveService(memberInfo , request);
     return ResponseEntity.ok(reserveResponse);
   }
@@ -52,7 +55,7 @@ public class ReserveController {
   /**
    * 서비스 수행자 예약 요청 수락/거부
    */
-  @PatchMapping("/request")
+  @PatchMapping
   @Auth(isWalker = true)
   public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid ReserveStatusRequest request){
     reserveService.changeRequestServiceStatus(memberInfo,request);
@@ -61,9 +64,9 @@ public class ReserveController {
   /**
    * 예약 하루전까지 취소 가능
    */
-  @PostMapping("/cancel")
+  @DeleteMapping
   @Auth
-  public ResponseEntity<?> reserveCancel(@AuthMember @Valid final MemberInfo memberInfo, @RequestBody @Valid final ReserveCancel.Request request ){
+  public ResponseEntity<ReserveCancel.Response> reserveCancel(@AuthMember @Valid final MemberInfo memberInfo, @RequestBody @Valid final ReserveCancel.Request request ){
     return ResponseEntity.ok(reserveService.reserveCancel(memberInfo,request));
   }
 }

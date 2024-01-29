@@ -6,6 +6,8 @@ import com.project.dogwalker.member.controller.MemberController;
 import com.project.dogwalker.member.service.OauthServiceImpl;
 import com.project.dogwalker.member.token.JwtTokenProvider;
 import com.project.dogwalker.member.token.RefreshTokenCookieProvider;
+import com.project.dogwalker.reserve.controller.ReserveController;
+import com.project.dogwalker.reserve.service.ReserveServiceImpl;
 import com.project.dogwalker.walkersearch.controller.WalkerInfoController;
 import com.project.dogwalker.walkersearch.service.WalkerInfoServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest({
     MemberController.class,
-    WalkerInfoController.class
+    WalkerInfoController.class,
+    ReserveController.class
 })
 @AutoConfigureRestDocs
 @ActiveProfiles(profiles = "local")
@@ -42,5 +45,8 @@ public abstract class ControllerTest {
 
   @MockBean
   protected WalkerInfoServiceImpl walkerInfoService;
+
+  @MockBean
+  protected ReserveServiceImpl reserveService;
 
 }
