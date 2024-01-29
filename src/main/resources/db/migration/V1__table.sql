@@ -48,18 +48,13 @@ CREATE TABLE `walker_schedule` (
                                    FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`)
 
 );
-CREATE TABLE `walker_service_route` (
-                                        `walker_service_route_id`	bigint	AUTO_INCREMENT PRIMARY KEY ,
-                                        `walker_reserve_service_id`	bigint	NOT NULL,
-                                        `walker_route`	multipoint	NULL,
-                                        `created_at`	timestamp	NULL
-);
-
 
 CREATE TABLE `refresh_token` (
                                  `refresh_token`	varchar(40)	 PRIMARY KEY,
-                                 `refresh_token_user_id`	bigint	NOT NULL,
-                                 `refresh_token_expired_at`	timestamp	NOT NULL
+                                 `user_id`	bigint	NOT NULL,
+                                 `expired_at`	timestamp	NOT NULL,
+                                 FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+
 );
 
 
@@ -73,8 +68,20 @@ CREATE TABLE `walker_reserve_service` (
                                           `walker_service_status`	char(15)	NOT NULL,
                                           `updated_at`	timestamp NOT NULL,
                                           `walker_reserve_service_price` int NOT NULL,
-                                          `pay_history_id` int not null
+                                          `pay_history_id` int not null,
+                                          FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`),
+                                          FOREIGN KEY (`customer_id`) REFERENCES `users` (`user_id`)
 );
+
+CREATE TABLE `walker_service_route` (
+                                        `walker_service_route_id`	bigint	AUTO_INCREMENT PRIMARY KEY ,
+                                        `walker_reserve_service_id`	bigint	NOT NULL,
+                                        `walker_route`	multipoint	NULL,
+                                        `created_at`	timestamp	NULL,
+                                        FOREIGN KEY (`walker_reserve_service_id`) REFERENCES `walker_reserve_service` (`walker_reserve_service_id`)
+
+);
+
 
 CREATE TABLE `pay_history` (
                                `pay_history_id`	bigint  AUTO_INCREMENT	PRIMARY KEY,
@@ -85,47 +92,12 @@ CREATE TABLE `pay_history` (
                                `created_at`	timestamp NOT NULL,
                                `updated_at`	timestamp NOT NULL,
                                `pay_method`	varchar(50) NOT NULL,
-                                `adjust_status` char(20) not null
+                                `adjust_status` char(20) not null,
+                               FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+                               FOREIGN KEY (`walker_reserve_service_id`) REFERENCES `walker_reserve_service` (`walker_reserve_service_id`)
+
 );
 
-
-
-ALTER TABLE `walker_service_route` ADD CONSTRAINT `FK_walker_reserve_service_TO_walker_service_route_1` FOREIGN KEY (
-                                                                                                                     `walker_reserve_service_id`
-    )
-    REFERENCES `walker_reserve_service` (
-                                         `walker_reserve_service_id`
-        );
-
-
-ALTER TABLE `pay_history` ADD CONSTRAINT `FK_Users_TO_pay_history_1` FOREIGN KEY (
-                                                                                  `user_id`
-    )
-    REFERENCES `users` (
-                        `user_id`
-        );
-
-ALTER TABLE `pay_history` ADD CONSTRAINT `FK_walker_reserve_service_TO_pay_history_1` FOREIGN KEY (
-                                                                                                   `walker_reserve_service_id`
-    )
-    REFERENCES `walker_reserve_service` (
-                                         `walker_reserve_service_id`
-        );
-
-ALTER TABLE `walker_reserve_service` ADD CONSTRAINT `FK_Users_TO_walker_reserve_service_1` FOREIGN KEY (
-                                                                                                        `customer_id`
-    )
-    REFERENCES `users` (
-                        `user_Id`
-        );
-
-
-ALTER TABLE `refresh_token` ADD CONSTRAINT `FK_Users_TO_Refresh_token_1` FOREIGN KEY (
-                                                                                      `refresh_token_user_id`
-    )
-    REFERENCES `users` (
-                        `user_id`
-        );
 
 
 CREATE TABLE BATCH_JOB_INSTANCE  (
