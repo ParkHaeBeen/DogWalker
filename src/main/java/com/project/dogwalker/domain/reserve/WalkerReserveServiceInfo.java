@@ -22,12 +22,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -75,6 +73,10 @@ public class WalkerReserveServiceInfo extends BaseEntity {
         .timeUnit(request.getTimeUnit())
         .walker(walker)
         .build();
+  }
+
+  public void modifyStatus(final WalkerServiceStatus walkerServiceStatus){
+    this.status=walkerServiceStatus;
   }
 
 }

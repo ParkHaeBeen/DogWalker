@@ -128,7 +128,7 @@ public class ReserveServiceImpl implements ReserveService{
     final PayHistory payHistory = payHistoryRespository.findByWalkerReserveInfoReserveId(
         reserveInfo.getReserveId()).orElseThrow(() -> new ReserveException(ErrorCode.NOT_FOUND_PAY_HISTORY));
 
-    reserveInfo.setStatus(CUSTOMER_CANCEL);
+    reserveInfo.modifyStatus(CUSTOMER_CANCEL);
     payHistory.modifyStatus(ADJUST_DONE);
     return ReserveCancel.Response.builder()
         .serviceDate(reserveInfo.getServiceDateTime())
@@ -157,6 +157,6 @@ public class ReserveServiceImpl implements ReserveService{
         .path(null)
         .build());
 
-    serviceInfo.setStatus(WalkerServiceStatus.WALKER_ACCEPT);
+    serviceInfo.modifyStatus(WalkerServiceStatus.WALKER_ACCEPT);
   }
 }
