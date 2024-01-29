@@ -30,7 +30,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -53,11 +52,10 @@ public class  BatchConfig{
   private final EntityManagerFactory entityManagerFactory;
 
   @PersistenceContext
-  private EntityManager manager;
+  private EntityManager entityManager;
   private int chunkSize=10;
 
   @Bean
-  @JobScope
   public Job refuseReserveJob(){
 
     return new JobBuilder("reserveJob",jobRepository)
@@ -66,7 +64,6 @@ public class  BatchConfig{
   }
 
   @Bean
-  @JobScope
   public Job adjustWalkerFee(){
     return new JobBuilder("adjustJob",jobRepository)
         .start(adjustStep())
@@ -74,7 +71,7 @@ public class  BatchConfig{
   }
 
   @Bean
-  @StepScope
+  @JobScope
   public Step reserveStep(){
 
     return new StepBuilder("reserveStep",jobRepository)
@@ -115,7 +112,7 @@ public class  BatchConfig{
       reserveServiceInfo.modifyStatus(WALKER_REFUSE);
       final PayHistory payHistory = reserveService.getPayHistory();
       payHistory.modifyStatus(PAY_REFUND);
-      manager.merge(payHistory);
+      entityManager.merge(payHistory);
       return reserveServiceInfo;
     };
   }
@@ -128,7 +125,7 @@ public class  BatchConfig{
   }
 
   @Bean
-  @StepScope
+  @JobScope
   public Step adjustStep(){
 
     return new StepBuilder("adjustStep",jobRepository)
@@ -186,7 +183,7 @@ public class  BatchConfig{
 
       final PayHistory payHistory = adjustWalkerInfo.getPayHistory();
       payHistory.modifyStatus(ADJUST_DONE);
-      manager.merge(payHistory);
+      entityManager.merge(payHistory);
       return walkerAdjust;
     };
   }
@@ -196,7 +193,7 @@ public class  BatchConfig{
     LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
 
     try {
-      Query query = manager.createQuery("SELECT wa FROM WalkerAdjust wa " +
+      Query query = entityManager.createQuery("SELECT wa FROM WalkerAdjust wa " +
           "WHERE wa.userId = :walkerId AND wa.walkerAdjustDate = :currentDate");
       query.setParameter("walkerId", walkerId);
       query.setParameter("currentDate", LocalDate.now());

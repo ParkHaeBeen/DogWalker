@@ -110,14 +110,18 @@ class ReserveServiceImplTest {
         .userPhoneNumber("010-1234-1234")
         .userEmail("dis1@gmail.com")
         .build();
+
+    WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
+        .reserveId(1L)
+        .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
+        .build();
+
     PayHistory payHistory=PayHistory.builder()
+        .walkerReserveInfo(walkerReserveServiceInfo)
         .payPrice(10000)
         .customer(customer)
         .payMethod("CARD")
         .payStatus(PayStatus.PAY_REFUND)
-        .build();
-    WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
-        .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
         .build();
 
     ReserveCancel.Request request=ReserveCancel.Request.builder()
@@ -132,6 +136,7 @@ class ReserveServiceImplTest {
 
     given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.of(customer));
     given(walkerReserveServiceRepository.findById(anyLong())).willReturn(Optional.of(walkerReserveServiceInfo));
+    given(payHistoryRespository.findByWalkerReserveInfoReserveId(anyLong())).willReturn(Optional.of(payHistory));
     //when
     ReserveCancel.Response response = reserveService.reserveCancel(memberInfo , request);
 
