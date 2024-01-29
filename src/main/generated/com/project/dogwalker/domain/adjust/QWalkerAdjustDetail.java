@@ -22,15 +22,7 @@ public class QWalkerAdjustDetail extends EntityPathBase<WalkerAdjustDetail> {
 
     public static final QWalkerAdjustDetail walkerAdjustDetail = new QWalkerAdjustDetail("walkerAdjustDetail");
 
-    public final com.project.dogwalker.domain.QBaseEntity _super = new com.project.dogwalker.domain.QBaseEntity(this);
-
     public final EnumPath<AdjustDetailStatus> adjustDetailStatus = createEnum("adjustDetailStatus", AdjustDetailStatus.class);
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
-
-    //inherited
-    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public final QWalkerAdjust walkerAdjust;
 

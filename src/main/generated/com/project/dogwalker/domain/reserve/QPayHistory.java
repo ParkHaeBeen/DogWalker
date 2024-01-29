@@ -40,6 +40,8 @@ public class QPayHistory extends EntityPathBase<PayHistory> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
+    public final QWalkerReserveServiceInfo walkerReserveInfo;
+
     public QPayHistory(String variable) {
         this(PayHistory.class, forVariable(variable), INITS);
     }
@@ -59,6 +61,7 @@ public class QPayHistory extends EntityPathBase<PayHistory> {
     public QPayHistory(Class<? extends PayHistory> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.customer = inits.isInitialized("customer") ? new com.project.dogwalker.domain.user.QUser(forProperty("customer")) : null;
+        this.walkerReserveInfo = inits.isInitialized("walkerReserveInfo") ? new QWalkerReserveServiceInfo(forProperty("walkerReserveInfo"), inits.get("walkerReserveInfo")) : null;
     }
 
 }

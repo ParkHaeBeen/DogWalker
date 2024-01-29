@@ -2,7 +2,6 @@ package com.project.dogwalker.domain.user.walker;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 
-import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -190,9 +189,6 @@ class WalkerInfoResponseRepositoryImplTest extends DomainTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
-        .payHistory(PayHistory.builder()
-            .payId(1L)
-            .build())
         .build();
     WalkerReserveServiceInfo serviceInfo2=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,18,0))
@@ -201,9 +197,6 @@ class WalkerInfoResponseRepositoryImplTest extends DomainTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
-        .payHistory(PayHistory.builder()
-            .payId(2L)
-            .build())
         .build();
     WalkerReserveServiceInfo serviceInfo3=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,15,12,0))
@@ -212,9 +205,6 @@ class WalkerInfoResponseRepositoryImplTest extends DomainTest {
         .servicePrice(10000)
         .timeUnit(30)
         .status(WALKER_ACCEPT)
-        .payHistory(PayHistory.builder()
-            .payId(3L)
-            .build())
         .build();
     walkerReserveServiceRepository.save(serviceInfo1);
     walkerReserveServiceRepository.save(serviceInfo2);

@@ -1,15 +1,16 @@
 package com.project.dogwalker.batch;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_CANCEL;
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.FINISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.dogwalker.domain.adjust.WalkerAdjust;
 import com.project.dogwalker.domain.adjust.WalkerAdjustRepository;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
-import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
-import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
@@ -50,22 +51,21 @@ public class WalkerAdjustBatchTest {
   @Autowired
   private WalkerAdjustRepository adjustRepository;
 
+
   @Test
   @DisplayName("정산 batch 기능 수행 - 성공 : Walkeradjust 엔티티가 있으면 거기에 추가")
-  @Rollback(value = false)
+  @Rollback
   public void adjustBatch_success() throws Exception {
     //given
     User user= User.builder()
-        .userId(1L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("batchuser1@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("batchuser1")
-        .userRole(Role.WALKER)
+        .userRole(Role.USER)
         .build();
     User walker= User.builder()
-        .userId(2L)
         .userLat(12.0)
         .userLnt(3.0)
         .userEmail("batchuser2@gmail.com")
@@ -77,28 +77,51 @@ public class WalkerAdjustBatchTest {
     userRepository.save(user);
     userRepository.save(walker);
 
-    PayHistory payHistory1 = PayHistory.builder()
+    for(int i=0;i<19;i++){
+      WalkerReserveServiceInfo reserveServiceInfo = WalkerReserveServiceInfo.builder()
+          .customer(user)
+          .walker(walker)
+          .serviceDateTime(LocalDateTime.now().plusHours(i))
+          .timeUnit(50)
+          .status(FINISH)
+          .servicePrice(1000)
+          .build();
+      reserveServiceRepository.save(reserveServiceInfo);
+
+      PayHistory payHistory = PayHistory.builder()
+          .customer(user)
+          .payPrice(1000)
+          .payMethod("CARD")
+          .walkerReserveInfo(reserveServiceInfo)
+          .build();
+
+      payHistoryRespository.save(payHistory);
+
+    }
+
+    WalkerReserveServiceInfo reserveServiceInfo3 = WalkerReserveServiceInfo.builder()
         .customer(user)
-        .payPrice(1000)
-        .payMethod("CARD")
+        .walker(walker)
+        .serviceDateTime(LocalDateTime.now().minusHours(2))
+        .timeUnit(50)
+        .status(CUSTOMER_CANCEL)
+        .servicePrice(1000)
         .build();
-    PayHistory payHistory2 = PayHistory.builder()
-        .customer(user)
-        .payPrice(1000)
-        .payMethod("CARD")
-        .build();
+
+    reserveServiceRepository.save(reserveServiceInfo3);
+
     PayHistory payHistory3 = PayHistory.builder()
         .customer(user)
         .payPrice(1000)
-        .payStatus(PayStatus.PAY_REFUND)
+        .payStatus(PAY_REFUND)
+        .walkerReserveInfo(reserveServiceInfo3)
         .payMethod("CARD")
         .build();
+    payHistoryRespository.save(payHistory3);
+
     LocalDate startOfMonth = LocalDate.now().with(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
     LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
 
-    PayHistory savePayHistory1 = payHistoryRespository.save(payHistory1);
-    PayHistory savePayHistory2 = payHistoryRespository.save(payHistory2);
-    PayHistory savePayHistory3 = payHistoryRespository.save(payHistory3);
     WalkerAdjust adjust=WalkerAdjust.builder()
         .walkerAdjustDate(LocalDate.now())
         .userId(walker.getUserId())
@@ -107,38 +130,7 @@ public class WalkerAdjustBatchTest {
         .walkerAdjustPeriodStart(startOfMonth)
         .build();
 
-    WalkerReserveServiceInfo reserveServiceInfo1 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .walker(walker)
-        .payHistory(savePayHistory1)
-        .serviceDateTime(LocalDateTime.now())
-        .timeUnit(50)
-        .status(WalkerServiceStatus.FINISH)
-        .servicePrice(1000)
-        .build();
-
-    WalkerReserveServiceInfo reserveServiceInfo2 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .payHistory(savePayHistory2)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
-        .timeUnit(50)
-        .status(WalkerServiceStatus.FINISH)
-        .servicePrice(1000)
-        .build();
-    WalkerReserveServiceInfo reserveServiceInfo3 = WalkerReserveServiceInfo.builder()
-        .customer(user)
-        .payHistory(savePayHistory3)
-        .walker(walker)
-        .serviceDateTime(LocalDateTime.now().plusDays(1))
-        .timeUnit(50)
-        .status(WalkerServiceStatus.CUSTOMER_CANCEL)
-        .servicePrice(1000)
-        .build();
-    reserveServiceRepository.save(reserveServiceInfo1);
-    reserveServiceRepository.save(reserveServiceInfo2);
-    reserveServiceRepository.save(reserveServiceInfo3);
-    adjustRepository.saveAndFlush(adjust);
+    adjustRepository.save(adjust);
 
 
     JobParameters jobParameters=new JobParametersBuilder()
@@ -154,5 +146,6 @@ public class WalkerAdjustBatchTest {
     //then
     assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
+    assertThat(adjustRepository.findById(adjust.getWalkerAdjustId()).get().getWalkerTtlPrice()).isEqualTo(20000);
   }
 }

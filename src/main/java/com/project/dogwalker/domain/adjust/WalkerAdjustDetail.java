@@ -1,8 +1,7 @@
 package com.project.dogwalker.domain.adjust;
 
-import static com.project.dogwalker.domain.adjust.AdjustDetailStatus.*;
+import static com.project.dogwalker.domain.adjust.AdjustDetailStatus.ADJUST_NOT_YET;
 
-import com.project.dogwalker.domain.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "walker_adjust_detail")
-public class WalkerAdjustDetail extends BaseEntity {
+public class WalkerAdjustDetail {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

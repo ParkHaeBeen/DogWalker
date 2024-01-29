@@ -5,6 +5,7 @@ import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,11 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -54,6 +53,10 @@ public class PayHistory extends BaseEntity {
   @Column(name = "pay_method",nullable = false)
   private String payMethod;
 
+  @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.MERGE)
+  @JoinColumn(name = "walker_reserve_service_id")
+  private WalkerReserveServiceInfo walkerReserveInfo;
+
 
   public static PayHistory of(final ReserveRequest request,final User customer){
     return PayHistory.builder()
@@ -61,5 +64,9 @@ public class PayHistory extends BaseEntity {
         .payMethod(request.getPayMethod())
         .payPrice(request.getPrice())
         .build();
+  }
+
+  public void modifyStatus(final PayStatus payStatus){
+    this.payStatus=payStatus;
   }
 }

@@ -29,8 +29,6 @@ public class QWalkerReserveServiceInfo extends EntityPathBase<WalkerReserveServi
 
     public final com.project.dogwalker.domain.user.QUser customer;
 
-    public final QPayHistory payHistory;
-
     public final NumberPath<Long> reserveId = createNumber("reserveId", Long.class);
 
     public final DateTimePath<java.time.LocalDateTime> serviceDateTime = createDateTime("serviceDateTime", java.time.LocalDateTime.class);
@@ -65,7 +63,6 @@ public class QWalkerReserveServiceInfo extends EntityPathBase<WalkerReserveServi
     public QWalkerReserveServiceInfo(Class<? extends WalkerReserveServiceInfo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.customer = inits.isInitialized("customer") ? new com.project.dogwalker.domain.user.QUser(forProperty("customer")) : null;
-        this.payHistory = inits.isInitialized("payHistory") ? new QPayHistory(forProperty("payHistory"), inits.get("payHistory")) : null;
         this.walker = inits.isInitialized("walker") ? new com.project.dogwalker.domain.user.QUser(forProperty("walker")) : null;
     }
 

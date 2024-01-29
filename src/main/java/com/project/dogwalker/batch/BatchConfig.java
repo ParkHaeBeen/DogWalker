@@ -2,7 +2,6 @@ package com.project.dogwalker.batch;
 
 import static com.project.dogwalker.domain.reserve.PayStatus.ADJUST_DONE;
 import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
-import static com.project.dogwalker.domain.reserve.PayStatus.PAY_REFUND;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_REFUSE;
 
@@ -10,19 +9,19 @@ import com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo;
 import com.project.dogwalker.domain.adjust.AdjustStatus;
 import com.project.dogwalker.domain.adjust.WalkerAdjust;
 import com.project.dogwalker.domain.adjust.WalkerAdjustDetail;
-import com.project.dogwalker.domain.adjust.WalkerAdjustRepository;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -51,7 +50,6 @@ public class BatchConfig{
   private final JobRepository jobRepository;
   private final PlatformTransactionManager platformManager;
   private final EntityManagerFactory entityManagerFactory;
-  private final WalkerAdjustRepository adjustRepository;
 
   @PersistenceContext
   private EntityManager manager;
@@ -108,7 +106,7 @@ public class BatchConfig{
   public ItemProcessor<WalkerReserveServiceInfo,WalkerReserveServiceInfo> reserveProcessor(){
     return reserveService -> {
       reserveService.setStatus(WALKER_REFUSE);
-      reserveService.getPayHistory().setPayStatus(PAY_REFUND);
+     // reserveService.getPayHistory().setPayStatus(PAY_REFUND);
       return entityManagerFactory.createEntityManager().merge(reserveService);
     };
   }
@@ -140,56 +138,71 @@ public class BatchConfig{
     parameter.put("status", WalkerServiceStatus.FINISH);
     parameter.put("payStatus", PAY_DONE);
 
-    return new JpaPagingItemReaderBuilder<AdjustWalkerInfo>()
-        .name("adjustReader")
-        .entityManagerFactory(entityManagerFactory)
-        .pageSize(chunkSize)
-        .queryString("SELECT NEW com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo(u, ph, w) "
-        + "FROM WalkerReserveServiceInfo w "
-        + "JOIN FETCH w.payHistory ph "
-        + "JOIN FETCH w.walker u "
+    JpaPagingItemReader<AdjustWalkerInfo> reader = new JpaPagingItemReader <>(){
+      @Override
+      public int getPage() {
+        return 0;
+      }
+    };
+
+    reader.setName("adjustReader");
+    reader.setEntityManagerFactory(entityManagerFactory);
+    reader.setPageSize(chunkSize);
+    reader.setQueryString("SELECT NEW com.project.dogwalker.batch.adjust.dto.AdjustWalkerInfo(u, ph, w) "
+        + "FROM PayHistory ph "
+        + "JOIN FETCH ph.walkerReserveInfo w "
+        + "JOIN User u On w.walker.userId = u.userId "
         + "WHERE w.status = :status "
-        + "AND ph.payStatus = :payStatus")
-        .parameterValues(parameter)
-        .build();
+        + "AND ph.payStatus = :payStatus");
+    reader.setParameterValues(parameter);
+    return reader;
+
   }
 
   @Bean
   public ItemProcessor<AdjustWalkerInfo, WalkerAdjust> adjustProcessor(){
     return adjustWalkerInfo -> {
-      Long userId=adjustWalkerInfo.getWalker().getUserId();
-      WalkerAdjust walkerAdjust=findOrCreateWalkerAdjust(userId);
-      walkerAdjust.setWalkerTtlPrice(walkerAdjust.getWalkerTtlPrice()+adjustWalkerInfo.getPayHistory()
+      final Long userId=adjustWalkerInfo.getWalker().getUserId();
+      final WalkerAdjust walkerAdjust=findOrCreateWalkerAdjust(userId);
+      walkerAdjust.modifyWalkerTtlPrice(walkerAdjust.getWalkerTtlPrice()+adjustWalkerInfo.getPayHistory()
           .getPayPrice());
-      WalkerAdjustDetail adjustDetail=WalkerAdjustDetail.builder()
+
+      final WalkerAdjustDetail adjustDetail=WalkerAdjustDetail.builder()
           .walkerAdjustPrice(adjustWalkerInfo.getPayHistory().getPayPrice())
           .walkerAdjust(walkerAdjust)
           .walkerReserveServiceId(adjustWalkerInfo.getReserveServiceInfo().getReserveId())
           .build();
+
       walkerAdjust.addAdjustDetail(adjustDetail);
-      PayHistory payHistory = adjustWalkerInfo.getPayHistory();
-      payHistory.setPayStatus(ADJUST_DONE);
+
+      final PayHistory payHistory = adjustWalkerInfo.getPayHistory();
+      payHistory.modifyStatus(ADJUST_DONE);
       manager.merge(payHistory);
-      return manager.merge(walkerAdjust);
+      return walkerAdjust;
     };
   }
 
   private WalkerAdjust findOrCreateWalkerAdjust(final Long walkerId) {
-    LocalDate startOfMonth = LocalDate.now().with(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
+    LocalDate startOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
     LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-    Optional <WalkerAdjust> walkerAdjustDate = adjustRepository.findByUserIdAndAndWalkerAdjustDate(
-        walkerId , LocalDate.now());
 
-    log.info("walkerAdjustDate = {} ", walkerAdjustDate);
-    return walkerAdjustDate.orElseGet( ()->{
-         return WalkerAdjust.builder()
-              .userId(walkerId)
-              .walkerAdjustDate(LocalDate.now())
-              .walkerAdjustStatus(AdjustStatus.ADJUST_NOT_YET)
-              .walkerAdjustPeriodStart(startOfMonth)
-              .walkerAdjustPeriodEnd(endOfMonth)
-              .build();
-    });
+    try {
+      Query query = manager.createQuery("SELECT wa FROM WalkerAdjust wa " +
+          "WHERE wa.userId = :walkerId AND wa.walkerAdjustDate = :currentDate");
+      query.setParameter("walkerId", walkerId);
+      query.setParameter("currentDate", LocalDate.now());
+
+      WalkerAdjust result = (WalkerAdjust) query.getSingleResult();
+      return result;
+    } catch (NoResultException e) {
+      return WalkerAdjust.builder()
+          .userId(walkerId)
+          .walkerAdjustDate(LocalDate.now())
+          .walkerAdjustStatus(AdjustStatus.ADJUST_NOT_YET)
+          .walkerAdjustPeriodStart(startOfMonth)
+          .walkerAdjustPeriodEnd(endOfMonth)
+          .build();
+    }
   }
 
   @Bean
