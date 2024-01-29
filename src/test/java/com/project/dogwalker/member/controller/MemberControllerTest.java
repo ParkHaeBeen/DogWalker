@@ -4,6 +4,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -67,7 +71,11 @@ class MemberControllerTest extends ControllerTest {
     //then
     actions.andExpect(status().isOk())
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/login",
+        preprocessRequest(prettyPrint()),
+        preprocessResponse(prettyPrint())
+    ));
   }
 
   @Test
@@ -85,7 +93,10 @@ class MemberControllerTest extends ControllerTest {
 
     //then
     actions.andExpect(status().isNotFound())
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/login/exception",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -137,7 +148,10 @@ class MemberControllerTest extends ControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/join/user",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -180,7 +194,10 @@ class MemberControllerTest extends ControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/join/walker",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -215,7 +232,10 @@ class MemberControllerTest extends ControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/accesstoken",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
   @Test
   @DisplayName("access token 만료시 accessToken,refreshToken 재지급-실패 : RefreshToken  존재하지 않아")
@@ -228,7 +248,10 @@ class MemberControllerTest extends ControllerTest {
         .andExpect(result ->
             Assertions.assertThat(result.getResolvedException()).isInstanceOf(
                 TokenException.class)
-        );
+        )
+        .andDo(document("member/accesstoken/fail",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
   @Test
@@ -256,7 +279,10 @@ class MemberControllerTest extends ControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(header().string("Set-cookie",containsString("RefreshToken="+refreshToken)))
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("member/refreshtoken",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));
   }
 
 }

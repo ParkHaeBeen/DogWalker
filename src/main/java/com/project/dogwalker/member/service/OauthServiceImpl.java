@@ -104,7 +104,7 @@ public class OauthServiceImpl implements OauthService{
   @Override
   @Transactional
   public LoginResult joinCustomer(final JoinUserRequest request ,final MultipartFile dotImg) {
-    final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
+     final ClientResponse userInfo = oauthClients.getUserInfo(request.getCommonRequest().getLoginType() ,
         request.getCommonRequest().getAccessToken());
 
     final User newUser = User.from(request.getCommonRequest(),userInfo.getEmail());

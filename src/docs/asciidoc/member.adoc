@@ -1,0 +1,76 @@
+=== Member
+
+=== 📌 member 로그인
+
+==== HTTP Request
+| `GET`
+include::{snippets}/member/login/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/login/http-response.adoc[]
+
+---
+
+=== 📌 member 회원가입
+
+user
+
+==== HTTP Request
+| `POST`
+include::{snippets}/member/join/user/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/join/user/http-response.adoc[]
+
+
+walker
+
+
+==== HTTP Request
+| `POST`
+include::{snippets}/member/join/walker/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/join/walker/http-response.adoc[]
+
+---
+
+=== 📌 member accesstoken 재발급
+
+=== 성공
+
+==== HTTP Request
+| `POST`
+include::{snippets}/member/accesstoken/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/accesstoken/http-response.adoc[]
+
+
+=== 실패
+
+==== HTTP Request
+| `POST`
+include::{snippets}/member/accesstoken/fail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/accesstoken/fail/http-response.adoc[]
+
+
+---
+
+=== 📌 member refreshtoken
+
+
+==== HTTP Request
+| `POST`
+include::{snippets}/member/refreshtoken/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/member/refreshtoken/http-response.adoc[]
