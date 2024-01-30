@@ -10,7 +10,7 @@ import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.DomainTest;
+import com.project.dogwalker.support.BatchTest;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,34 +20,28 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
-import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
-
-@SpringBatchTest
-@Transactional
-public class ReserveBatchTest extends DomainTest {
+public class ReserveBatchTest extends BatchTest {
 
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
+
 
   @Autowired
   private BatchConfig batchConfig;
 
   @Autowired
-  private WalkerReserveServiceRepository reserveServiceRepository;
+  private PayHistoryRespository payHistoryRespository;
 
   @Autowired
-  private PayHistoryRespository payHistoryRespository;
+  private WalkerReserveServiceRepository reserveServiceRepository;
 
   @Autowired
   private UserRepository userRepository;
 
   @Test
   @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
-  @Rollback
   public void reserveBatchJob_success() throws Exception {
     //given
     User user= User.builder()
