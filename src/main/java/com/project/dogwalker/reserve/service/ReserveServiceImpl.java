@@ -65,7 +65,9 @@ public class ReserveServiceImpl implements ReserveService{
   @Override
   @DistributedLock
   public ReserveResponse reserveService(MemberInfo memberInfo , ReserveRequest request) {
+
     existReserve(request.getWalkerId(),request.getServiceDateTime());
+
     final User customer = userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() ,
             memberInfo.getRole())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
@@ -74,10 +76,10 @@ public class ReserveServiceImpl implements ReserveService{
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo reserveService = WalkerReserveServiceInfo.of(request , customer , walker);
-    final PayHistory payHistory = PayHistory.of(request , customer);
-
-    final PayHistory pay = payHistoryRespository.save(payHistory);
     final WalkerReserveServiceInfo reserve = reserveServiceRepository.save(reserveService);
+
+    final PayHistory payHistory = PayHistory.of(request , customer, reserve);
+    final PayHistory pay = payHistoryRespository.save(payHistory);
 
     Map <String, String > params=new HashMap <>();
     params.put("senderName",walker.getUserName());
@@ -86,7 +88,7 @@ public class ReserveServiceImpl implements ReserveService{
             .noticeType(NoticeType.RESERVE)
             .receiver(walker)
             .params(params)
-            .path("/api/reserve/request/"+reserveService.getReserveId())
+            .path("/reserve/"+reserveService.getReserveId())
         .build());
 
     return ReserveResponse.builder()
