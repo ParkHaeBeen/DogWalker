@@ -23,9 +23,9 @@ jobs:
         distribution: 'temurin'
     - name: Make application.properties
       run : |
-        touch ./src/main/resources/application.properties
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
-        cat ./src/main/resources/application.properties
+        touch ./src/main/resources/application-test.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application-test.properties
+        cat ./src/main/resources/application-test.properties
         
     - name: Setup MySQL
       uses: samin/mysql-action@v1
