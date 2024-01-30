@@ -1,4 +1,4 @@
-package com.project.dogwalker.reserve.dto;
+package com.project.dogwalker.reserve.dto.request;
 
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import jakarta.validation.constraints.NotNull;

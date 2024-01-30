@@ -22,10 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
-import com.project.dogwalker.reserve.dto.ReserveListResponse;
-import com.project.dogwalker.reserve.dto.ReserveRequest;
-import com.project.dogwalker.reserve.dto.ReserveResponse;
-import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
+import com.project.dogwalker.reserve.dto.response.ReserveListResponse;
+import com.project.dogwalker.reserve.dto.request.ReserveRequest;
+import com.project.dogwalker.reserve.dto.response.ReserveResponse;
+import com.project.dogwalker.reserve.dto.request.ReserveStatusRequest;
 import com.project.dogwalker.support.ControllerTest;
 import java.time.LocalDateTime;
 import java.util.List;

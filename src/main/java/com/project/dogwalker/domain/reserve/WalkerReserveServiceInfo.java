@@ -4,7 +4,7 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CH
 
 import com.project.dogwalker.domain.BaseEntity;
 import com.project.dogwalker.domain.user.User;
-import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.reserve.dto.request.ReserveRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

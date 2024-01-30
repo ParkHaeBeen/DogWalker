@@ -1,4 +1,4 @@
-package com.project.dogwalker.reserve.dto;
+package com.project.dogwalker.reserve.dto.response;
 
 import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;

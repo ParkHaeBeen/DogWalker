@@ -7,10 +7,10 @@ import static com.project.dogwalker.domain.user.walker.QWalkerSchedule.walkerSch
 import static com.project.dogwalker.domain.user.walker.QWalkerScheduleTemp.walkerScheduleTemp;
 import static com.project.dogwalker.domain.user.walker.QWalkerServicePrice.walkerServicePrice;
 
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;

@@ -6,7 +6,7 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.reserve.dto.request.ReserveRequest;
 import com.project.dogwalker.support.DomainTest;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;

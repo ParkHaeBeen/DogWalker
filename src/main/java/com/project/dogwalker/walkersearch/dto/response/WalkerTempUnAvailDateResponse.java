@@ -1,4 +1,4 @@
-package com.project.dogwalker.walkersearch.dto;
+package com.project.dogwalker.walkersearch.dto.response;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
