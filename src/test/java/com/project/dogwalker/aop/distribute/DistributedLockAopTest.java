@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 
 import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.reserve.dto.ReserveRequest;
-import com.project.dogwalker.reserve.dto.ReserveResponse;
+import com.project.dogwalker.reserve.dto.request.ReserveRequest;
+import com.project.dogwalker.reserve.dto.response.ReserveResponse;
 import com.project.dogwalker.reserve.service.ReserveServiceImpl;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;

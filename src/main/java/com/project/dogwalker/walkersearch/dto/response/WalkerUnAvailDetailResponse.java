@@ -1,5 +1,8 @@
-package com.project.dogwalker.walkersearch.dto;
+package com.project.dogwalker.walkersearch.dto.response;
 
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

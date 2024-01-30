@@ -1,9 +1,9 @@
 package com.project.dogwalker.domain.user.walker;
 
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
 import java.time.LocalDate;
 import java.util.List;
 

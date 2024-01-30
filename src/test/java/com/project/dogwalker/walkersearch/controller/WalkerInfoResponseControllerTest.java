@@ -14,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.project.dogwalker.support.ControllerTest;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoResponse;
-import com.project.dogwalker.walkersearch.dto.WalkerInfoRequest;
-import com.project.dogwalker.walkersearch.dto.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerInfoResponse;
+import com.project.dogwalker.walkersearch.dto.request.WalkerInfoRequest;
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
-import com.project.dogwalker.walkersearch.dto.WalkerTempUnAvailDateResponse;
-import com.project.dogwalker.walkersearch.dto.WalkerTimePriceResponse;
-import com.project.dogwalker.walkersearch.dto.WalkerUnAvailDetailResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerUnAvailDetailResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

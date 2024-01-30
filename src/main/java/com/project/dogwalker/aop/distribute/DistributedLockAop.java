@@ -7,7 +7,7 @@ import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIS
 
 import com.project.dogwalker.exception.reserve.LockException;
 import com.project.dogwalker.exception.reserve.ReserveException;
-import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.reserve.dto.request.ReserveRequest;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

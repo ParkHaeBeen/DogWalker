@@ -1,4 +1,4 @@
-package com.project.dogwalker.reserve.dto;
+package com.project.dogwalker.reserve.dto.response;
 
 import java.time.LocalDateTime;
 import lombok.Builder;

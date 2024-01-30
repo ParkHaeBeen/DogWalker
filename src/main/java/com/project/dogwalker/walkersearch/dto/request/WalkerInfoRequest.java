@@ -1,4 +1,4 @@
-package com.project.dogwalker.walkersearch.dto;
+package com.project.dogwalker.walkersearch.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
