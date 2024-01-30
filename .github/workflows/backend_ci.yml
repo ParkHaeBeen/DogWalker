@@ -32,7 +32,7 @@ jobs:
       with:
         mysql database: 'walker'
         mysql user: 'dogWalker'
-        mysql password: 'test'
+        mysql password: ${{ secrets.DATABASE_PROPERTIES }}
 
     - name: Start Redis
       uses: supercharge/redis-github-action@1.1.0
