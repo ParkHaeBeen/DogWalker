@@ -30,7 +30,6 @@ public class ReserveController {
 
   private final ReserveService reserveService;
 
-
   /**
    * 결제 뷰로 넘어가기전에 해당 날짜에 예약이 되어있는지 확인
    */

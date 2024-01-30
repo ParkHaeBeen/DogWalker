@@ -18,12 +18,7 @@ public class ExceptionResponse {
   }
 
   public static ExceptionResponse from(final CustomException e) {
-    return new ExceptionResponse(e.getMessage(), e.getErrorCode());
+    return new ExceptionResponse(e.getErrorCode().getValue(), e.getErrorCode());
   }
-
-  public static ExceptionResponse from(final String message, final ErrorCode errorCode) {
-    return new ExceptionResponse(message, errorCode);
-  }
-
 
 }
