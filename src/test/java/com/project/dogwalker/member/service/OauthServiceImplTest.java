@@ -1,6 +1,10 @@
 package com.project.dogwalker.member.service;
 
 import static com.project.dogwalker.domain.user.Role.USER;
+import static com.project.dogwalker.support.fixture.UserFixture.USER_ONE;
+import static com.project.dogwalker.support.fixture.UserFixture.USER_TWO;
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +15,6 @@ import static org.mockito.Mockito.mock;
 
 import com.project.dogwalker.domain.token.RefreshToken;
 import com.project.dogwalker.domain.token.RefreshTokenRepository;
-import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.customer.CustomerDogInfoRepository;
@@ -151,19 +154,11 @@ class OauthServiceImplTest {
     String idToken="idToken";
     String imgUrl="url";
 
-    ClientResponse clientResponse = new ClientResponse("auth3@gmail.com","auth3",idToken);
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(clientResponse.getEmail())
-        .userPhoneNumber("010-1234-1234")
-        .userName("auth2")
-        .userRole(USER)
-        .build();
+    User user= USER_ONE.생성();
+    ClientResponse clientResponse = new ClientResponse(user.getUserEmail(),user.getUserName(),idToken);
 
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
-        .name("auth2")
+        .name(user.getUserName())
         .accessToken(idToken)
         .loginType(type)
         .build();
@@ -200,20 +195,11 @@ class OauthServiceImplTest {
     String refreshToken="refreshToken";
     String type = "google";
     String idToken="idToken";
-    String email="test@gmail.com";
+
+    User user= WALKER_TWO.생성();
 
     RefreshToken refreshTokenObject=RefreshToken.builder().refreshToken(refreshToken).build();
-    ClientResponse clientResponse = new ClientResponse(email,"test",idToken);
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
-
+    ClientResponse clientResponse = new ClientResponse(user.getUserEmail(),"test",idToken);
     JoinCommonRequest commonRequest=JoinCommonRequest.builder()
         .name(user.getUserName())
         .accessToken(idToken)
@@ -258,17 +244,8 @@ class OauthServiceImplTest {
     //given
     String accessToken = "accessToken";
     String refreshToken="refreshToken";
-    String email="test@gmail.com";
 
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
+    User user= WALKER_TWO.생성();
 
     RefreshToken refreshTokenObject=RefreshToken.builder()
         .refreshToken(refreshToken)
@@ -310,17 +287,7 @@ class OauthServiceImplTest {
   void generateToken_fail_expired(){
     //given
     String refreshToken="refreshToken";
-    String email="test@gmail.com";
-
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
+    User user= WALKER_ONE.생성();
 
     RefreshToken refreshTokenObject=RefreshToken.builder()
         .refreshToken(refreshToken)
@@ -338,17 +305,8 @@ class OauthServiceImplTest {
   void generateToken_fail_notMember(){
     //given
     String refreshToken="refreshToken";
-    String email="test@gmail.com";
 
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
+    User user= WALKER_ONE.생성();
 
     RefreshToken refreshTokenObject=RefreshToken.builder()
         .refreshToken(refreshToken)
@@ -369,22 +327,12 @@ class OauthServiceImplTest {
   void generateNewRefreshToken_success(){
     //given
     String refreshToken="refreshToken";
-    String email="test@gmail.com";
     String accessToken = "accessToken";
 
-
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
+    User user= USER_ONE.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
+        .email(user.getUserEmail())
         .role(USER)
         .build();
 
@@ -450,23 +398,11 @@ class OauthServiceImplTest {
   @DisplayName("RefreshToken 재발급 - 실패 : refreshtoken이 db에 없음")
   void generateNewRefreshToken_fail_refreshTokenNotFound(){
     //given
-    String refreshToken="refreshToken";
-    String email="test@gmail.com";
     String accessToken = "accessToken";
-
-
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail(email)
-        .userPhoneNumber("010-1234-1234")
-        .userName("test")
-        .userRole(Role.WALKER)
-        .build();
+    User user= USER_TWO.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
+        .email(user.getUserEmail())
         .role(USER)
         .build();
 

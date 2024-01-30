@@ -1,21 +1,23 @@
 package com.project.dogwalker.walkersearch.service;
 
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_TWO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkersearch.dto.response.WalkerInfoResponse;
-import com.project.dogwalker.walkersearch.dto.request.WalkerInfoRequest;
-import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.support.fixture.MemberInfoFixture;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo.Response;
+import com.project.dogwalker.walkersearch.dto.request.WalkerInfoRequest;
+import com.project.dogwalker.walkersearch.dto.response.WalkerInfoResponse;
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
 import com.project.dogwalker.walkersearch.dto.response.WalkerUnAvailDetailResponse;
@@ -55,25 +57,15 @@ class WalkerInfoResponseServiceImplTest {
   @DisplayName("고객 위치 중심 검색 + 이름 검색 가능")
   void getWalkerInfoList() {
     //given
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email("info@gmail.com")
-        .role(Role.USER)
-        .build();
+    MemberInfo memberInfo= MemberInfoFixture.MEMBERINFO_USER.생성();
     WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
         .name("test")
         .lnt(12.0)
         .lat(11.0)
         .build();
 
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(11.0)
-        .userEmail("info@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("info")
-        .userRole(Role.WALKER)
-        .build();
+    User user= WALKER_TWO.생성();
+
     WalkerDocument document1=WalkerDocument.builder()
         .id(1L)
         .walker_name("test1")
@@ -102,15 +94,8 @@ class WalkerInfoResponseServiceImplTest {
   @DisplayName("서비스 수행자 안되는 요일.시간 + 일시적으로 안되는 날짜 + 단위시간당 가격 조회")
   void getWalkerUnAvailService() {
     //given
-    User user= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerInfo1@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerInfo1")
-        .userRole(Role.WALKER)
-        .build();
+    User user= WALKER_ONE.생성();
+
     WalkerPermUnAvailDateResponse permUnAvailDate1= WalkerPermUnAvailDateResponse.builder()
         .dayOfWeak("MON")
         .startTime(3)
@@ -152,7 +137,7 @@ class WalkerInfoResponseServiceImplTest {
     WalkerUnAvailDetailResponse walkerUnAvailService = walkerInfoService.getWalkerUnAvailService(1L);
 
     //then
-    Assertions.assertThat(walkerUnAvailService.getWalkerName()).isEqualTo("walkerInfo1");
+    Assertions.assertThat(walkerUnAvailService.getWalkerName()).isEqualTo(user.getUserName());
     Assertions.assertThat(walkerUnAvailService.getPermUnAvailDates().size()).isEqualTo(2);
     Assertions.assertThat(walkerUnAvailService.getTempUnAvailDates().size()).isEqualTo(2);
     Assertions.assertThat(walkerUnAvailService.getTimePrices().size()).isEqualTo(2);

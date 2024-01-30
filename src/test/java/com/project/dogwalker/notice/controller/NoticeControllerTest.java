@@ -4,38 +4,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.common.config.WebConfig;
-import com.project.dogwalker.member.token.JwtTokenProvider;
-import com.project.dogwalker.notice.service.NoticeServiceImpl;
+import com.project.dogwalker.support.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(NoticeController.class)
-@Import(WebConfig.class)
-class NoticeControllerTest {
-
-  @MockBean
-  private NoticeServiceImpl noticeService;
-
-  @InjectMocks
-  private NoticeController noticeController;
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @MockBean
-  private JwtTokenProvider jwtTokenProvider;
+class NoticeControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("sse 연결")
