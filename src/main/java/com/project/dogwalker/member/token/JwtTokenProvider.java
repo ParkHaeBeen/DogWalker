@@ -68,7 +68,7 @@ public class JwtTokenProvider {
 
   public boolean isWalker(final String authorizationToken){
     final Jws<Claims> claims = parseClaims(authorizationToken);
-    final Role role = (Role) claims.getBody().get("role");
+    final Role role = Role.valueOf((String) claims.getBody().get("role"));
     return role==Role.WALKER;
   }
 

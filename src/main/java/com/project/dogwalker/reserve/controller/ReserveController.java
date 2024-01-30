@@ -6,13 +6,16 @@ import com.project.dogwalker.common.resolver.queryString.QueryStringResolver;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
+import com.project.dogwalker.reserve.dto.ReserveListResponse;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import com.project.dogwalker.reserve.service.ReserveService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,16 +59,32 @@ public class ReserveController {
    */
   @PatchMapping
   @Auth(isWalker = true)
-  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,@RequestBody @Valid ReserveStatusRequest request){
+  public ResponseEntity<?> changeRequestServiceStatus(@AuthMember @Valid final MemberInfo memberInfo,
+      @RequestBody @Valid ReserveStatusRequest request){
     reserveService.changeRequestServiceStatus(memberInfo,request);
     return ResponseEntity.ok().build();
   }
+
   /**
    * 예약 하루전까지 취소 가능
    */
   @DeleteMapping
   @Auth
-  public ResponseEntity<ReserveCancel.Response> reserveCancel(@AuthMember @Valid final MemberInfo memberInfo, @RequestBody @Valid final ReserveCancel.Request request ){
+  public ResponseEntity<ReserveCancel.Response> reserveCancel(@AuthMember @Valid final MemberInfo memberInfo,
+      @RequestBody @Valid final ReserveCancel.Request request ){
     return ResponseEntity.ok(reserveService.reserveCancel(memberInfo,request));
   }
+
+  /**
+   * 예약 리스트 조회(user, walker에따라 조회가능)
+   */
+  @GetMapping
+  @Auth
+  public ResponseEntity<List <ReserveListResponse>> getReserveList(@AuthMember @Valid final MemberInfo memberInfo, final
+  Pageable pageable){
+    return ResponseEntity.ok(reserveService.getReserveList(memberInfo, pageable));
+  }
+
+
+
 }
