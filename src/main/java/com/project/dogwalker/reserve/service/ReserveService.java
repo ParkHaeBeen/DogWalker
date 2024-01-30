@@ -21,4 +21,6 @@ public interface ReserveService {
   void changeRequestServiceStatus(MemberInfo memberInfo , ReserveStatusRequest request);
 
   List <ReserveListResponse> getReserveList(MemberInfo memberInfo, Pageable pageable);
+
+  ReserveResponse getReserveDetail(final MemberInfo memberInfo, final Long reserveId);
 }
