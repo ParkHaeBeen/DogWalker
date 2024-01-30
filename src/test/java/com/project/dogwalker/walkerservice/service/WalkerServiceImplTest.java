@@ -1,6 +1,9 @@
 package com.project.dogwalker.walkerservice.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
+import static com.project.dogwalker.support.fixture.MemberInfoFixture.MEMBERINFO_WALKER;
+import static com.project.dogwalker.support.fixture.UserFixture.USER_ONE;
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,13 +40,10 @@ import org.locationtech.jts.geom.LineString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
 @Transactional
-@MockitoSettings(strictness = Strictness.LENIENT)
 class WalkerServiceImplTest {
 
   @Mock
@@ -65,24 +65,8 @@ class WalkerServiceImplTest {
   private WalkerServiceImpl walkerService;
 
   void validationWalkerAndReserve(){
-    User walker= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService1")
-        .userRole(Role.USER)
-        .build();
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
+    User walker= WALKER_ONE.생성();
+    User customer= USER_ONE.생성();
 
     PayHistory payHistory=PayHistory.builder()
         .payPrice(10000)
@@ -111,10 +95,7 @@ class WalkerServiceImplTest {
   @DisplayName("예약 수행 날짜 확인 : 현재 날짜 맞음")
   void checkService_success() {
     //given
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.WALKER)
-        .build();
+    MemberInfo info= MEMBERINFO_WALKER.생성();
     ServiceCheckRequest request=ServiceCheckRequest.builder()
         .nowDate(LocalDateTime.now().minusMinutes(10))
         .reserveId(1L)
@@ -151,24 +132,8 @@ class WalkerServiceImplTest {
   @DisplayName("고객에게 서비스 종료 5분전 알림 - 성공")
   void noticeCustomer_success(){
     //given
-    User walker= User.builder()
-        .userId(1L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService1")
-        .userRole(Role.USER)
-        .build();
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
+    User walker= WALKER_ONE.생성();
+    User customer= USER_ONE.생성();
 
     WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
         .reserveId(1L)
@@ -222,10 +187,7 @@ class WalkerServiceImplTest {
         .reserveInfo(new WalkerReserveServiceInfo())
         .build();
 
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.WALKER)
-        .build();
+    MemberInfo info=MEMBERINFO_WALKER.생성();
     ServiceEndRequest request=ServiceEndRequest.builder()
         .reserveId(1L)
         .build();
