@@ -1,10 +1,10 @@
 package com.project.dogwalker.reserve.dto;
 
-import jakarta.validation.constraints.NotNull;
+import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
+import com.project.dogwalker.domain.user.Role;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -14,16 +14,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
-public class ReserveRequest {
-  @NotNull
-  private Long walkerId;
-  @NotNull
-  private LocalDateTime serviceDateTime;
-  @NotNull
+public class ReserveListResponse {
+  private Long reserveId;
+  private LocalDateTime serviceDate;
   private Integer timeUnit;
-  @NotNull
   private Integer price;
-  @NotNull
-  private String payMethod;
+  private Role role;
+  private WalkerServiceStatus serviceStatus;
 }
