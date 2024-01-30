@@ -4,52 +4,33 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.common.config.WebConfig;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.member.token.JwtTokenProvider;
+import com.project.dogwalker.support.ControllerTest;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
-import com.project.dogwalker.walkerservice.service.WalkerServiceImpl;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-
-@WebMvcTest(WalkerServiceController.class)
-@Import(WebConfig.class)
-class WalkerServiceControllerTest {
-
-  @MockBean
-  private WalkerServiceImpl walkerService;
-
-  @MockBean
-  private JwtTokenProvider jwtTokenProvider;
-
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private ObjectMapper objectMapper;
+class WalkerServiceControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("예약이 존재하는지, walker가 해당 예약을 수행하는게 맞는지, 날짜 확인 ")
@@ -67,14 +48,19 @@ class WalkerServiceControllerTest {
     given(jwtTokenProvider.isWalker(authorization)).willReturn(true);
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/service/check/valid")
+        get("/service/valid")
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(request))
+            .queryParam("nowDate",request.getNowDate().toString())
+            .queryParam("reserveId",request.getReserveId().toString())
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andDo(document("walkerService/valid",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
   @Test
@@ -83,20 +69,24 @@ class WalkerServiceControllerTest {
     //given
     String authorization ="Bearer Token";
 
-   Long reserveId=1L;
+    Long reserveId=1L;
 
     given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
     given(walkerService.isStartedService(reserveId)).willReturn(true);
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/service/check/start")
+        get("/service/start/{reserveId}",reserveId)
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(reserveId))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andExpect(content().string("true"))
+        .andDo(document("walkerService/start/success",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
   @Test
@@ -111,14 +101,18 @@ class WalkerServiceControllerTest {
     given(walkerService.isStartedService(reserveId)).willReturn(false);
     //when
     ResultActions resultActions = mockMvc.perform(
-        get("/api/service/check/start")
+        get("/service/start/{reserveId}",reserveId)
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(reserveId))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isNotFound());
+    resultActions.andExpect(status().isOk())
+        .andExpect(content().string("false"))
+        .andDo(document("walkerService/start/fail",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
   @Test
@@ -133,14 +127,18 @@ class WalkerServiceControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/api/service/location")
+        post("/service")
             .content(objectMapper.writeValueAsString(location))
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
     verify(walkerService).saveRealTimeLocation(location);
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andDo(document("walkerService",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
   @Test
@@ -154,14 +152,18 @@ class WalkerServiceControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/api/service/notice/customer")
+        post("/service/notice")
             .content(objectMapper.writeValueAsString(1L))
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .contentType(MediaType.APPLICATION_JSON)
     );
 
     //then
-    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(status().isOk())
+        .andDo(document("walkerService/notice",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));
   }
 
   @Test
@@ -194,7 +196,7 @@ class WalkerServiceControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/api/service/finish")
+        post("/service/finish")
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .content(objectMapper.writeValueAsString(params))
             .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +205,11 @@ class WalkerServiceControllerTest {
     //then
     resultActions.andExpect(status().isOk())
         .andExpect(jsonPath("$.endTime").value(expectedEndTime.toString()))
-        .andExpect(jsonPath("$.routeId").value(response.getRouteId().intValue()));
+        .andExpect(jsonPath("$.routeId").value(response.getRouteId().intValue()))
+        .andDo(document("walkerService/finish",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())
+        ));;
   }
 
 }

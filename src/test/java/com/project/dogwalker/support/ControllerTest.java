@@ -10,6 +10,8 @@ import com.project.dogwalker.reserve.controller.ReserveController;
 import com.project.dogwalker.reserve.service.ReserveServiceImpl;
 import com.project.dogwalker.walkersearch.controller.WalkerInfoController;
 import com.project.dogwalker.walkersearch.service.WalkerInfoServiceImpl;
+import com.project.dogwalker.walkerservice.controller.WalkerServiceController;
+import com.project.dogwalker.walkerservice.service.WalkerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest({
     MemberController.class,
     WalkerInfoController.class,
-    ReserveController.class
+    ReserveController.class,
+    WalkerServiceController.class
 })
 @AutoConfigureRestDocs
 @ActiveProfiles(profiles = "test")
@@ -48,5 +51,8 @@ public abstract class ControllerTest {
 
   @MockBean
   protected ReserveServiceImpl reserveService;
+
+  @MockBean
+  protected WalkerServiceImpl walkerService;
 
 }
