@@ -1,0 +1,73 @@
+=== WalkerService
+
+=== 📌 서비스 수행전 예약 관련 유효한지 확인
+
+==== HTTP Request
+| `GET`
+include::{snippets}/walkerService/valid/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/valid/http-response.adoc[]
+
+---
+
+=== 📌 서비스가 시작되었는지
+
+==== HTTP Request
+
+==== 시작
+
+| `GET`
+include::{snippets}/walkerService/start/success/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/start/success/http-response.adoc[]
+
+==== 시작하지 않음
+
+| `GET`
+include::{snippets}/walkerService/start/fail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/start/fail/http-response.adoc[]
+
+---
+
+=== 📌 서비스 수행자 위치 저장
+
+==== HTTP Request
+| `POST`
+include::{snippets}/walkerService/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/http-response.adoc[]
+
+---
+
+=== 📌 서비스 수행자 서비스 완료 5분전 알림
+
+==== HTTP Request
+| `POST`
+include::{snippets}/walkerService/notice/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/notice/http-response.adoc[]
+
+---
+
+=== 📌 서비스 수행자 서비스 완료 후 이동 경로  내역 저장
+
+==== HTTP Request
+| `POST`
+include::{snippets}/walkerService/finish/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/walkerService/finish/http-response.adoc[]
+
+---
