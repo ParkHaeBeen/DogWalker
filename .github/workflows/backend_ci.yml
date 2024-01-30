@@ -24,6 +24,7 @@ jobs:
     - name: Make application.properties
       run : |
         touch ./src/main/resources/application-test.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application-test.properties
         cat ./src/main/resources/application-test.properties
         
     - name: Setup MySQL
