@@ -23,17 +23,17 @@ jobs:
         distribution: 'temurin'
     - name: Make application.properties
       run : |
-        touch ./src/main/resources/application-test.properties
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application-test.properties
-        cat ./src/main/resources/application-test.properties
+        touch ./src/main/resources/application.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
+        cat ./src/main/resources/application.properties
         
     - name: Setup MySQL
       uses: samin/mysql-action@v1
       with:
         mysql database: 'walker'
         mysql user: 'dogWalker'
-        mysql password: 'test'
-
+        mysql password: "${{ secrets.DATABASE_PROPERTIES }}"
+        
     - name: Start Redis
       uses: supercharge/redis-github-action@1.1.0
       with:
