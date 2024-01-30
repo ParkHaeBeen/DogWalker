@@ -107,7 +107,7 @@ public class NoticeServiceImpl implements NoticeService{
   @Transactional
   public void readNotification(Long id) {
     Notice notice = noticeRepository.findById(id)
-        .orElseThrow(() -> new NoticeNotFoundException(ErrorCode.NOTICE_NOT_FOUND));
+        .orElseThrow(() -> new NoticeNotFoundException(ErrorCode.NOT_FOUND_NOTICE));
     notice.setCheckDate(LocalDateTime.now());
   }
 }

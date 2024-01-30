@@ -100,7 +100,7 @@ public class MemberController {
   @PostMapping("/auth/newtoken")
   public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
     if(refreshToken==null||refreshToken.isEmpty()){
-      throw new TokenException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
+      throw new TokenException(ErrorCode.TOKEN_NOT_EXIST);
     }
 
     final IssueToken issueToken = oauthService.generateToken(refreshToken);

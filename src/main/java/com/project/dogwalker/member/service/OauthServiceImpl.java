@@ -1,9 +1,9 @@
 package com.project.dogwalker.member.service;
 
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
-import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_REFRESH_TOKEN;
 import static com.project.dogwalker.exception.ErrorCode.NOT_WRITE_SERVICE_PRICE;
 import static com.project.dogwalker.exception.ErrorCode.TOKEN_EXPIRED;
+import static com.project.dogwalker.exception.ErrorCode.TOKEN_NOT_EXIST;
 
 import com.project.dogwalker.domain.token.RefreshToken;
 import com.project.dogwalker.domain.token.RefreshTokenRepository;
@@ -209,7 +209,7 @@ public class OauthServiceImpl implements OauthService{
   @Transactional
   public IssueToken generateToken(final String refreshToken) {
     final RefreshToken findRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
-        .orElseThrow(()->new TokenException(NOT_EXIST_REFRESH_TOKEN));
+        .orElseThrow(()->new TokenException(TOKEN_NOT_EXIST));
 
     if(refreshTokenProvider.isNotExpired(findRefreshToken)){
       refreshTokenRepository.delete(findRefreshToken);
@@ -246,7 +246,7 @@ public class OauthServiceImpl implements OauthService{
     final User user = userRepository.findByUserEmail(memberInfo.getEmail())
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
     final RefreshToken token = refreshTokenRepository.findByUserId(user.getUserId())
-        .orElseThrow(() -> new TokenException(NOT_EXIST_REFRESH_TOKEN));
+        .orElseThrow(() -> new TokenException(TOKEN_NOT_EXIST));
 
     final RefreshToken newRefreshToken = generateNewRefreshToken(user.getUserId() , token);
     return newRefreshToken.getRefreshToken();
