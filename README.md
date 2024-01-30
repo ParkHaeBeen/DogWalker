@@ -1,10 +1,16 @@
-# :dog2: 산책 대행 서비스
 
-강아지 산책 알바 예약 서비스입니다.
+<img src= https://github.com/ParkHaeBeen/DogWalker/assets/130157565/660acee2-0578-4777-9fc6-b2d6a8c1d2eb  width ="170">
+
+### 🔥 REFACTORING 중! 🔥
+
+## :dog2: 프로젝트 소개 < 산책 대행 서비스 >
+바쁜 현대인들을 위해 강아지 산책 대행 알바 서비스!
+
+위치 기준으로 산책 알바를 검색하고 가능한 날짜에 예약을 진행!
 
 ## 프로젝트 기능 및 설계
 
-### [회원가입과 로그인]
+### 회원가입과 로그인
 :bulb: 회원가입 
 - OAuth(google,naver)을 통해서 회원가입
 - 서비스 이용 고객과 서비스 수행자를 role로서 구분
@@ -25,7 +31,7 @@
 
 <br>
 
-### [산책 서비스 수행자 리스트, 선택, 이용 방법]
+### 산책 서비스 수행자 리스트, 선택, 이용 방법
 
 💡 산책 서비스 수행자 리스트 보여주기
 - 서비스 이용 고객 DB 주소 기준으로 반경 3km이내의 산책 서비스 수행자 리스트 보여주기
@@ -50,7 +56,7 @@
 
 <br>
 
-### [산책 서비스 수행자 서비스 수행 요청]
+### 산책 서비스 수행자 서비스 수행 요청
 
 💡 산책 서비스 수행자 서비스 예약에 대해 수락 또는 거부가능
 - 서비스 예약 요청에 대한 알람
@@ -62,7 +68,7 @@
 
 <br>
 
-### [산책 서비스 수행]
+### 산책 서비스 수행
 
 💡 산책 서비스 수행중 서비스 이용 고객에게 수행자의 위치 실시간으로 전송
 - 실시간 보여줌 + 나중에 내역확인시 산책 경로를 보여주기 위함
@@ -77,7 +83,7 @@
 <br>
 
 
-### [산책 서비스 수행자 정산]
+### 산책 서비스 수행자 정산
 
 💡 매월말마다 포인트에 대한 정산이 이루어짐
 - 스프링 배치 이용
@@ -88,7 +94,7 @@
 
 ### ERD
 
-![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/d9a206d4-f341-402b-8245-d45418645bd3)
+![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/041be768-fa25-4fc3-a6d5-ca6b9359e73a)
 
 <hr>
 
@@ -114,4 +120,5 @@
   <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
   <img src="https://img.shields.io/badge/elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white">
   <img src="https://img.shields.io/badge/junit5-25a162?style=for-the-badge&logo=junit5&logoColor=white">
+  <img src="https://img.shields.io/badge/springrestdocs-6DB33F?style=for-the-badge&logo=springrestdocs-6DB33F&logoColor=white">
 </div>

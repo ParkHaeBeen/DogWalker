@@ -28,8 +28,8 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class WalkerAdjustBatchTest extends BatchTest {
 
+public class WalkerAdjustBatchTest extends BatchTest {
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
 
