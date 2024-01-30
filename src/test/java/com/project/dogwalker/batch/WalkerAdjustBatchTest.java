@@ -14,7 +14,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.DomainTest;
+import com.project.dogwalker.support.BatchTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -26,14 +26,10 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
-import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBatchTest
-@Transactional
-public class WalkerAdjustBatchTest extends DomainTest {
+
+public class WalkerAdjustBatchTest extends BatchTest {
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
 
@@ -55,7 +51,6 @@ public class WalkerAdjustBatchTest extends DomainTest {
 
   @Test
   @DisplayName("정산 batch 기능 수행 - 성공 : Walkeradjust 엔티티가 있으면 거기에 추가")
-  @Rollback
   public void adjustBatch_success() throws Exception {
     //given
     User user= User.builder()

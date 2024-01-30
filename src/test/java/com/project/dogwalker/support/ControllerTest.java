@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
     ReserveController.class
 })
 @AutoConfigureRestDocs
-@ActiveProfiles(profiles = "local")
+@ActiveProfiles(profiles = "test")
 @Import(WebConfig.class)
 public abstract class ControllerTest {
 

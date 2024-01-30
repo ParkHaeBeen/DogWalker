@@ -7,9 +7,9 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.DomainTest;
-import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
+import com.project.dogwalker.support.RepositoryTest;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo.Response;
+import com.project.dogwalker.walkersearch.dto.response.WalkerPermUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.response.WalkerTempUnAvailDateResponse;
 import com.project.dogwalker.walkersearch.dto.response.WalkerTimePriceResponse;
 import java.time.LocalDate;
@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-class WalkerInfoResponseRepositoryImplTest extends DomainTest {
+@RepositoryTest
+class WalkerInfoResponseRepositoryImplTest{
 
   @Autowired
   private UserRepository userRepository;
