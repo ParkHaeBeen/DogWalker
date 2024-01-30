@@ -5,10 +5,8 @@ import static com.project.dogwalker.exception.ErrorCode.LOCK_INTERRUPTED_ERROR;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_NOT_AVAILABLE;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
-import com.project.dogwalker.exception.reserve.AlreadyUnLockException;
-import com.project.dogwalker.exception.reserve.LockInterruptedException;
-import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
+import com.project.dogwalker.exception.reserve.LockException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
@@ -43,20 +41,20 @@ public class DistributedLockAop {
       boolean isLocked=lock.tryLock(distributedLock.waitTime(),distributedLock.leaseTime(),distributedLock.timeUnit());
 
       if(!isLocked){
-        throw  new ReserveNotAvailableException(RESERVE_NOT_AVAILABLE);
+        throw  new ReserveException(RESERVE_NOT_AVAILABLE);
       }
       log.info("redis lock start");
 
       return aopForTransaction.proceed(joinPoint);
     }catch (InterruptedException e){
-      throw new LockInterruptedException(LOCK_INTERRUPTED_ERROR);
+      throw new LockException(LOCK_INTERRUPTED_ERROR);
     }finally {
       try {
         lock.unlock();
         log.info("redis unlock");
 
       }catch (IllegalMonitorStateException e){
-        throw  new AlreadyUnLockException(ALREADY_UNLOCK);
+        throw  new LockException(ALREADY_UNLOCK);
       }
     }
 
@@ -73,7 +71,7 @@ public class DistributedLockAop {
     }
 
     if(request==null){
-      throw new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST);
+      throw new ReserveException(RESERVE_REQUEST_NOT_EXIST);
     }
 
     return request.getClass().getSimpleName()+":"+request.getWalkerId()+":"+request.getServiceDateTime();

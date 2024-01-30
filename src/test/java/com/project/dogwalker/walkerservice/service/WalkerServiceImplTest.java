@@ -17,8 +17,7 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRouteRepository;
-import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
@@ -145,7 +144,7 @@ class WalkerServiceImplTest {
     validationWalkerAndReserve();
 
     //then
-    Assertions.assertThrows(ReserveDateNotMatch.class,()-> walkerService.checkService(info,request));
+    Assertions.assertThrows(ReserveException.class,()-> walkerService.checkService(info,request));
   }
 
   @Test
@@ -197,7 +196,7 @@ class WalkerServiceImplTest {
 
     //when
     //then
-    Assertions.assertThrows(ReserveRequestNotExistException.class,()->walkerService.noticeCustomer(1L));
+    Assertions.assertThrows(ReserveException.class,()->walkerService.noticeCustomer(1L));
 
   }
   @Test

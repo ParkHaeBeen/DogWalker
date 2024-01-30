@@ -6,7 +6,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import jakarta.persistence.EntityManager;
@@ -81,7 +81,7 @@ public class ReserveDistributeTest {
               .build();
           reserveService.reserveService(member, request);
         }catch (Exception e){
-          Assertions.assertThat(e).isInstanceOf(ReserveAlreadyException.class);
+          Assertions.assertThat(e).isInstanceOf(ReserveException.class);
         }finally {
           latch.countDown();
         }
