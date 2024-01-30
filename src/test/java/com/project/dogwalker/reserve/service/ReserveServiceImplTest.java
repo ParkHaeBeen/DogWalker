@@ -18,9 +18,7 @@ import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
-import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.service.NoticeServiceImpl;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
@@ -93,7 +91,7 @@ class ReserveServiceImplTest {
 
     //when
     //then
-    Assertions.assertThrows(ReserveAlreadyException.class,()->reserveService.isReserved(request));
+    Assertions.assertThrows(ReserveException.class,()->reserveService.isReserved(request));
 
   }
 
@@ -175,7 +173,7 @@ class ReserveServiceImplTest {
 
     //when
     //then
-    Assertions.assertThrows(ReserveRequestNotExistException.class,()->reserveService.reserveCancel(memberInfo,request));
+    Assertions.assertThrows(ReserveException.class,()->reserveService.reserveCancel(memberInfo,request));
   }
 
   @Test
@@ -210,7 +208,7 @@ class ReserveServiceImplTest {
     //when
     //then
     Assertions.assertThrows(
-        ReserveUnAvailCancelException.class,()->reserveService.reserveCancel(memberInfo,request));
+        ReserveException.class,()->reserveService.reserveCancel(memberInfo,request));
   }
 
 
@@ -309,7 +307,7 @@ class ReserveServiceImplTest {
         .willReturn(Optional.empty());
 
     //then
-    Assertions.assertThrows(ReserveRequestNotExistException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
+    Assertions.assertThrows(ReserveException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
   }
 
   @Test

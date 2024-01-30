@@ -8,7 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
@@ -95,7 +95,7 @@ class DistributedLockAopTest {
 
     //when
     //then
-    Assertions.assertThrows(ReserveNotAvailableException.class,()->distributedLockAop.lock(joinPoint));
+    Assertions.assertThrows(ReserveException.class,()->distributedLockAop.lock(joinPoint));
   }
 
 }

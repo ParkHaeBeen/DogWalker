@@ -15,8 +15,7 @@ import com.project.dogwalker.domain.walkerservice.WalkerServiceRoute;
 import com.project.dogwalker.domain.walkerservice.WalkerServiceRouteRepository;
 import com.project.dogwalker.exception.ErrorCode;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.reserve.ReserveDateNotMatch;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
+import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
@@ -58,7 +57,7 @@ public class WalkerServiceImpl implements WalkerService{
         memberInfo , request.getReserveId());
 
     if(!serviceInfo.getServiceDateTime().toLocalDate().equals(request.getNowDate().toLocalDate())){
-      throw new ReserveDateNotMatch(ErrorCode.RESERVE_DATE_NOT_MATCH);
+      throw new ReserveException(ErrorCode.RESERVE_DATE_NOT_MATCH);
     }
     startService(serviceInfo.getReserveId() , serviceInfo.getTimeUnit());
   }
@@ -94,7 +93,7 @@ public class WalkerServiceImpl implements WalkerService{
   @Override
   public void noticeCustomer(final Long reserveId) {
     final WalkerReserveServiceInfo serviceInfo = reserveRepository.findById(reserveId)
-        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+        .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
 
     Map <String, String > params=new HashMap <>();
     params.put("senderName",serviceInfo.getWalker().getUserName());
@@ -141,7 +140,7 @@ public class WalkerServiceImpl implements WalkerService{
 
     final WalkerReserveServiceInfo serviceInfo = reserveRepository.findByReserveIdAndStatusAndWalkerUserId(
             reserveId , WALKER_ACCEPT,walker.getUserId())
-        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+        .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
     return serviceInfo;
   }
 }

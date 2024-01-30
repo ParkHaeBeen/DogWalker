@@ -12,12 +12,7 @@ import com.project.dogwalker.exception.member.AuthMemberException;
 import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.notice.NoticeNotFoundException;
 import com.project.dogwalker.exception.notice.SseException;
-import com.project.dogwalker.exception.reserve.AlreadyUnLockException;
-import com.project.dogwalker.exception.reserve.LockInterruptedException;
-import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
-import com.project.dogwalker.exception.reserve.ReserveNotAvailableException;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
-import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
+import com.project.dogwalker.exception.reserve.LockException;
 import com.project.dogwalker.exception.unauth.TokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -80,40 +75,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(ExceptionResponse.from(e));
   }
 
-  @ExceptionHandler(AlreadyUnLockException.class)
-  public ResponseEntity<ExceptionResponse> handleAlreadyUnLock(final AlreadyUnLockException e){
+  @ExceptionHandler(LockException.class)
+  public ResponseEntity<ExceptionResponse> handleLock(final LockException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
   }
 
-  @ExceptionHandler(LockInterruptedException.class)
-  public ResponseEntity<ExceptionResponse> handleLockInterrupt(final LockInterruptedException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(ReserveAlreadyException.class)
-  public ResponseEntity<ExceptionResponse> handleReserveAlready(final ReserveAlreadyException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(ReserveNotAvailableException.class)
-  public ResponseEntity<ExceptionResponse> handleReserveNotAvaliable(final ReserveNotAvailableException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
-  }
-  @ExceptionHandler(ReserveRequestNotExistException.class)
-  public ResponseEntity<ExceptionResponse> handleReserveRequestNotExist(final ReserveRequestNotExistException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ExceptionResponse.from(e));
-  }
-
-  @ExceptionHandler(ReserveUnAvailCancelException.class)
-  public ResponseEntity<ExceptionResponse> handleReserveUnAvailCancel(final ReserveUnAvailCancelException e){
-    log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ExceptionResponse.from(e));
-  }
   @ExceptionHandler(ReserveBatchException.class)
   public ResponseEntity<ExceptionResponse> handleReserveBatch(final ReserveBatchException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());

@@ -18,10 +18,7 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.ErrorCode;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.reserve.ReserveAlreadyException;
 import com.project.dogwalker.exception.reserve.ReserveException;
-import com.project.dogwalker.exception.reserve.ReserveRequestNotExistException;
-import com.project.dogwalker.exception.reserve.ReserveUnAvailCancelException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
@@ -104,7 +101,7 @@ public class ReserveServiceImpl implements ReserveService{
 
   private void existReserve(Long walkerId, LocalDateTime serviceDate) {
     if(reserveServiceRepository.findByWalkerUserIdAndServiceDateTime(walkerId , serviceDate).isPresent()){
-      throw new ReserveAlreadyException(RESERVE_ALREAY);
+      throw new ReserveException(RESERVE_ALREAY);
     }
   }
 
@@ -119,10 +116,10 @@ public class ReserveServiceImpl implements ReserveService{
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo reserveInfo = reserveServiceRepository.findById(request.getReserveId())
-        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+        .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
 
     if(Duration.between(request.getNow(),reserveInfo.getServiceDateTime()).toDays()<1){
-      throw new ReserveUnAvailCancelException(ErrorCode.RESERVE_CANCEL_UNAVAIL);
+      throw new ReserveException(ErrorCode.RESERVE_CANCEL_UNAVAIL);
     }
 
     final PayHistory payHistory = payHistoryRespository.findByWalkerReserveInfoReserveId(
@@ -145,7 +142,7 @@ public class ReserveServiceImpl implements ReserveService{
 
     WalkerReserveServiceInfo serviceInfo = reserveServiceRepository.findByReserveIdAndStatusAndWalkerUserId(
             request.getReserveId() ,request.getStatus() , walker.getUserId())
-        .orElseThrow(() -> new ReserveRequestNotExistException(RESERVE_REQUEST_NOT_EXIST));
+        .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
 
     Map <String, String > params=new HashMap <>();
     params.put("senderName",walker.getUserName());
