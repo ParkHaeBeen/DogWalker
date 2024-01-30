@@ -5,9 +5,9 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ReserveDateNotMatch extends CustomException {
-
-  public ReserveDateNotMatch(final ErrorCode errorCode) {
+public class LockException extends CustomException {
+  public LockException(final ErrorCode errorCode) {
     super(errorCode);
   }
+
 }
