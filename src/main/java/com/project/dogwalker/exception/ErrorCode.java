@@ -21,6 +21,7 @@ public enum ErrorCode {
 
   RESERVE_REQUEST_NOT_EXIST("해당 요청에 예약관련된 정보가 존재하지 않습니다"),
   RESERVE_NOT_AVAILABLE("락 획득 실패로 예약 불가합니다"),
+  NOT_EXIST_RESERVE("해당 예약이 존재하지 않습니다."),
 
   LOCK_INTERRUPTED_ERROR("인터럽트로 인해 락 획득 실패"),
   ALREADY_UNLOCK("이미 락이 해제되었습니다"),

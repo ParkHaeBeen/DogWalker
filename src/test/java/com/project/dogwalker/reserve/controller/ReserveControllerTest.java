@@ -3,6 +3,7 @@ package com.project.dogwalker.reserve.controller;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 import static com.project.dogwalker.domain.user.Role.USER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -272,6 +273,48 @@ class ReserveControllerTest extends ControllerTest {
             preprocessResponse(prettyPrint())));;
 
     verify(reserveService).getReserveList(any(),any());
+  }
+
+  @Test
+  @DisplayName("예약 상세 조회")
+  void reserveDetail() throws Exception {
+    //given
+    String email="dal@gmail.com";
+    Role role= USER;
+    String authorization ="Bearer Token";
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(role)
+        .build();
+    ReserveResponse reserveResponse = ReserveResponse.builder()
+        .serviceDate(LocalDateTime.now().plusDays(10))
+        .payDate(LocalDateTime.now().minusDays(1))
+        .price(10000)
+        .timeUnit(30)
+        .walkerName("hello")
+        .build();
+
+    given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
+    given(jwtTokenProvider.getMemberInfo(authorization)).willReturn(memberInfo);
+    given(reserveService.getReserveDetail(any(),anyLong())).willReturn(reserveResponse);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        get("/reserve/{reserveId}",1L)
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+
+    //then
+    resultActions.andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("reserve/detail",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));;
+
+    verify(reserveService).getReserveDetail(any(),anyLong());
   }
 
 }

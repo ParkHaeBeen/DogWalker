@@ -6,7 +6,10 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.user.Role.WALKER;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
+import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_RESERVE;
+import static com.project.dogwalker.exception.ErrorCode.NOT_FOUND_PAY_HISTORY;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_ALREAY;
+import static com.project.dogwalker.exception.ErrorCode.RESERVE_CANCEL_UNAVAIL;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
 import com.project.dogwalker.aop.distribute.DistributedLock;
@@ -17,7 +20,6 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.exception.ErrorCode;
 import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
@@ -127,11 +129,11 @@ public class ReserveServiceImpl implements ReserveService{
         .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
 
     if(Duration.between(request.getNow(),reserveInfo.getServiceDateTime()).toDays()<1){
-      throw new ReserveException(ErrorCode.RESERVE_CANCEL_UNAVAIL);
+      throw new ReserveException(RESERVE_CANCEL_UNAVAIL);
     }
 
     final PayHistory payHistory = payHistoryRespository.findByWalkerReserveInfoReserveId(
-        reserveInfo.getReserveId()).orElseThrow(() -> new ReserveException(ErrorCode.NOT_FOUND_PAY_HISTORY));
+        reserveInfo.getReserveId()).orElseThrow(() -> new ReserveException(NOT_FOUND_PAY_HISTORY));
 
     reserveInfo.modifyStatus(CUSTOMER_CANCEL);
     payHistory.modifyStatus(ADJUST_DONE);
@@ -190,6 +192,23 @@ public class ReserveServiceImpl implements ReserveService{
               .build();
         }
     ).collect(Collectors.toList());
+  }
 
+  @Override
+  public ReserveResponse getReserveDetail(final MemberInfo memberInfo, final Long reserveId){
+    userRepository.findByUserEmailAndUserRole(memberInfo.getEmail() , memberInfo.getRole())
+        .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
+
+    final WalkerReserveServiceInfo serviceInfo = reserveServiceRepository.findById(reserveId)
+        .orElseThrow(() -> new ReserveException(NOT_EXIST_RESERVE));
+    final PayHistory payHistory = payHistoryRespository.findByWalkerReserveInfoReserveId(reserveId)
+        .orElseThrow(()->new ReserveException(NOT_FOUND_PAY_HISTORY));
+
+    return ReserveResponse.builder()
+        .timeUnit(serviceInfo.getTimeUnit())
+        .serviceDate(serviceInfo.getServiceDateTime())
+        .price(serviceInfo.getServicePrice())
+        .payDate(payHistory.getCreatedAt())
+        .build();
   }
 }

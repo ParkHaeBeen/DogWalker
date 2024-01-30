@@ -72,3 +72,14 @@ include::{snippets}/reserve/list/http-request.adoc[]
 ==== HTTP Response
 
 include::{snippets}/reserve/list/http-response.adoc[]
+
+=== 📌 서비스 예약 상세 조회
+
+
+==== HTTP Request
+| `GET`
+include::{snippets}/reserve/detail/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/detail/http-response.adoc[]
