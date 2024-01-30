@@ -21,32 +21,11 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Make application.properties
-      run : |
-        mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.properties
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
-        cat ./src/main/resources/application.properties
-        
-    - name: Setup MySQL
-      uses: samin/mysql-action@v1
-      with:
-        mysql database: 'walker'
-        mysql user: 'dogWalker'
-        mysql password: 'test'
-        
-    - name: Start Redis
-      uses: supercharge/redis-github-action@1.1.0
-      with:
-        redis-version: 6
-
-    - name: ElasticSearch Setup
-      uses: DreamsOfImran/elasticsearch-action@v1.0
-      with:
-        elasticsearch version: '7.17.4'
                     
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
       
     - name: Build with Gradle
-      run : ./gradlew build
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: clean build -x test
