@@ -1,5 +1,7 @@
 package com.project.dogwalker.reserve.service;
 
+import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.user.Role.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +15,6 @@ import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
-import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
@@ -25,6 +26,7 @@ import com.project.dogwalker.reserve.dto.ReserveCancel;
 import com.project.dogwalker.reserve.dto.ReserveCheckRequest;
 import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +37,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(MockitoExtension.class)
@@ -254,7 +259,7 @@ class ReserveServiceImplTest {
 
     ReserveStatusRequest request=ReserveStatusRequest.builder()
         .reserveId(1L)
-        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .status(WALKER_ACCEPT)
         .build();
 
     //when
@@ -298,7 +303,7 @@ class ReserveServiceImplTest {
 
     ReserveStatusRequest request=ReserveStatusRequest.builder()
         .reserveId(1L)
-        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .status(WALKER_ACCEPT)
         .build();
 
     //when
@@ -342,7 +347,7 @@ class ReserveServiceImplTest {
 
     ReserveStatusRequest request=ReserveStatusRequest.builder()
         .reserveId(1L)
-        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .status(WALKER_ACCEPT)
         .build();
 
     //when
@@ -352,5 +357,113 @@ class ReserveServiceImplTest {
     //then
     Assertions.assertThrows(
         MemberException.class,()->reserveService.changeRequestServiceStatus(memberInfo,request));
+  }
+
+  @Test
+  @DisplayName("예약 리스트 조회")
+  void getReserveList_success(){
+    //given
+    User walker= User.builder()
+        .userRole(Role.WALKER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userId(1L)
+        .userName("request1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("request1@gmail.com")
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+
+    WalkerReserveServiceInfo serviceInfo = WalkerReserveServiceInfo.builder()
+        .reserveId(1L)
+        .serviceDateTime(LocalDateTime.now().plusDays(10))
+        .servicePrice(1000)
+        .customer(customer)
+        .walker(walker)
+        .status(WALKER_ACCEPT)
+        .build();
+    List <WalkerReserveServiceInfo> reserveListContent = List.of(serviceInfo);
+    Page<WalkerReserveServiceInfo> reserveList = new PageImpl <>(reserveListContent
+        , PageRequest.of(0, 10), reserveListContent.size());
+
+    //when
+    given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
+    given(walkerReserveServiceRepository.findByWalkerUserId(anyLong(),
+        any())).willReturn(reserveList);
+
+
+    //then
+    reserveService.getReserveList(memberInfo,PageRequest.of(0,10));
+  }
+
+  @Test
+  @DisplayName("예약 상세 조회")
+  void getReserveDetail_success(){
+    //given
+    User walker= User.builder()
+        .userRole(Role.WALKER)
+        .userLat(12.0)
+        .userLnt(15.0)
+        .userId(1L)
+        .userName("request1")
+        .userPhoneNumber("010-1234-1234")
+        .userEmail("request1@gmail.com")
+        .build();
+
+    User customer= User.builder()
+        .userId(2L)
+        .userLat(12.0)
+        .userLnt(3.0)
+        .userEmail("walkerservice2@gmail.com")
+        .userPhoneNumber("010-1234-1234")
+        .userName("walkerService2")
+        .userRole(Role.USER)
+        .build();
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(walker.getUserEmail())
+        .role(walker.getUserRole())
+        .build();
+
+    WalkerReserveServiceInfo serviceInfo = WalkerReserveServiceInfo.builder()
+        .reserveId(1L)
+        .serviceDateTime(LocalDateTime.now().plusDays(10))
+        .servicePrice(1000)
+        .customer(customer)
+        .walker(walker)
+        .status(WALKER_ACCEPT)
+        .build();
+
+    PayHistory payHistory = PayHistory.builder()
+        .payId(1L)
+        .walkerReserveInfo(serviceInfo)
+        .payStatus(PAY_DONE)
+        .payPrice(1000)
+        .customer(customer)
+        .build();
+
+    //when
+    given(userRepository.findByUserEmailAndUserRole(any(),any())).willReturn(Optional.of(walker));
+    given(walkerReserveServiceRepository.findById(anyLong())).willReturn(Optional.of(serviceInfo));
+    given(payHistoryRespository.findByWalkerReserveInfoReserveId(anyLong())).willReturn(Optional.of(payHistory));
+
+
+    //then
+    reserveService.getReserveDetail(memberInfo,1L);
   }
 }
