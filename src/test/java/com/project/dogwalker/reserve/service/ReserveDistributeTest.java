@@ -1,14 +1,13 @@
 package com.project.dogwalker.reserve.service;
 
-import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
-import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
+import com.project.dogwalker.support.DomainTest;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
@@ -18,15 +17,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-public class ReserveDistributeTest {
+public class ReserveDistributeTest extends DomainTest {
 
-  @Autowired
-  private WalkerReserveServiceRepository walkerReserveServiceRepository;
-  @Autowired
-  private PayHistoryRespository payHistoryRespository;
   @Autowired
   private UserRepository userRepository;
 
@@ -41,25 +34,8 @@ public class ReserveDistributeTest {
   void reserveService_success() throws InterruptedException {
     // Mock data
     LocalDateTime serviceReserve=LocalDateTime.of(2023,12,12,15,30);
-    User customer= User.builder()
-        .userRole(Role.USER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userName("dis1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("dis1@gmail.com")
-        .build();
-    User walker=User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userName("dis2")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("dis2@gmail.com")
-        .build();
-
-    userRepository.save(customer);
-    User walkerSave = userRepository.saveAndFlush(walker);
+    User customer= userRepository.findById(2L).get();
+    User walker= userRepository.findById(1L).get();
 
     int numThreads = 50;
 
@@ -70,10 +46,10 @@ public class ReserveDistributeTest {
         try {
           MemberInfo member=MemberInfo.builder()
               .role(Role.USER)
-              .email("dis1@gmail.com")
+              .email("haebing0309@gmail.com")
               .build();
           ReserveRequest request=ReserveRequest.builder()
-              .walkerId(walkerSave.getUserId())
+              .walkerId(walker.getUserId())
               .timeUnit(30)
               .serviceDateTime(serviceReserve)
               .price(1000)
@@ -94,12 +70,12 @@ public class ReserveDistributeTest {
             "SELECT w FROM WalkerReserveServiceInfo w "
                 + "JOIN fetch w.customer "
                 + "JOIN fetch w.walker " +
-                "WHERE w.walker = :walkerId " +
+                "WHERE w.walker.userId = :walkerId " +
                 "AND w.serviceDateTime = :serviceDate" , WalkerReserveServiceInfo.class)
-        .setParameter("walkerId" , walkerSave)
+        .setParameter("walkerId" , walker.getUserId())
         .setParameter("serviceDate" , serviceReserve)
         .getSingleResult();
-
+    System.out.println(singleResult);
     Assertions.assertThat(singleResult.getServiceDateTime()).isEqualTo(serviceReserve);
     Assertions.assertThat(singleResult.getCustomer().getUserEmail()).isEqualTo(customer.getUserEmail());
     Assertions.assertThat(singleResult.getWalker().getUserEmail()).isEqualTo(walker.getUserEmail());

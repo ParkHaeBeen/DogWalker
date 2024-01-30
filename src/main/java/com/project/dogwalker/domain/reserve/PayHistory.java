@@ -58,11 +58,12 @@ public class PayHistory extends BaseEntity {
   private WalkerReserveServiceInfo walkerReserveInfo;
 
 
-  public static PayHistory of(final ReserveRequest request,final User customer){
+  public static PayHistory of(final ReserveRequest request,final User customer, final WalkerReserveServiceInfo reserveServiceInfo){
     return PayHistory.builder()
         .customer(customer)
         .payMethod(request.getPayMethod())
         .payPrice(request.getPrice())
+        .walkerReserveInfo(reserveServiceInfo)
         .build();
   }
 
