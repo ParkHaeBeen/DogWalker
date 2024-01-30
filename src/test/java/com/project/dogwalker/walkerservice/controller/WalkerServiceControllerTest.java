@@ -1,5 +1,6 @@
 package com.project.dogwalker.walkerservice.controller;
 
+import static com.project.dogwalker.support.fixture.MemberInfoFixture.MEMBERINFO_WALKER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -14,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.support.ControllerTest;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
@@ -171,10 +171,7 @@ class WalkerServiceControllerTest extends ControllerTest {
   void endService() throws Exception {
     //given
     String authorization ="Bearer Token";
-    MemberInfo info=MemberInfo.builder()
-        .email("walkerservice@gmail.com")
-        .role(Role.USER)
-        .build();
+    MemberInfo info= MEMBERINFO_WALKER.생성();
 
     ServiceEndRequest request=ServiceEndRequest.builder()
         .reserveId(2L)
