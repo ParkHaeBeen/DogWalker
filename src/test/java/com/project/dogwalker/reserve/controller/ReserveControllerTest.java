@@ -1,5 +1,6 @@
 package com.project.dogwalker.reserve.controller;
 
+import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 import static com.project.dogwalker.domain.user.Role.USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,15 +18,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
+import com.project.dogwalker.reserve.dto.ReserveListResponse;
 import com.project.dogwalker.reserve.dto.ReserveRequest;
 import com.project.dogwalker.reserve.dto.ReserveResponse;
 import com.project.dogwalker.reserve.dto.ReserveStatusRequest;
 import com.project.dogwalker.support.ControllerTest;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -145,7 +147,7 @@ class ReserveControllerTest extends ControllerTest {
         .build();
 
     ReserveStatusRequest request=ReserveStatusRequest.builder()
-        .status(WalkerServiceStatus.WALKER_ACCEPT)
+        .status(WALKER_ACCEPT)
         .reserveId(1L)
         .build();
 
@@ -216,5 +218,60 @@ class ReserveControllerTest extends ControllerTest {
     verify(reserveService).reserveCancel(memberInfo,request);
   }
 
+  @Test
+  @DisplayName("예약 리스트 조회")
+  void reserveList() throws Exception {
+    //given
+    String email="dal@gmail.com";
+    Role role= USER;
+    String authorization ="Bearer Token";
+
+    MemberInfo memberInfo=MemberInfo.builder()
+        .email(email)
+        .role(role)
+        .build();
+
+    ReserveListResponse response1=ReserveListResponse.builder()
+        .reserveId(1L)
+        .serviceStatus(WALKER_ACCEPT)
+        .price(10000)
+        .timeUnit(50)
+        .role(role)
+        .serviceDate(LocalDateTime.now())
+        .build();
+
+    ReserveListResponse response2=ReserveListResponse.builder()
+        .reserveId(2L)
+        .serviceStatus(WALKER_ACCEPT)
+        .price(10000)
+        .timeUnit(50)
+        .role(role)
+        .serviceDate(LocalDateTime.now().plusDays(10))
+        .build();
+    List<ReserveListResponse> responses=List.of(response2,response1);
+
+    given(jwtTokenProvider.validateToken(authorization)).willReturn(true);
+    given(jwtTokenProvider.getMemberInfo(authorization)).willReturn(memberInfo);
+    given(reserveService.getReserveList(any(),any())).willReturn(responses);
+
+    //when
+    ResultActions resultActions = mockMvc.perform(
+        get("/reserve")
+            .param("page","0")
+            .param("size","10")
+            .header(HttpHeaders.AUTHORIZATION , authorization)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+
+    //then
+    resultActions.andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("reserve/list",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint())));;
+
+    verify(reserveService).getReserveList(any(),any());
+  }
 
 }

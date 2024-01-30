@@ -85,6 +85,4 @@ public class ReserveController {
     return ResponseEntity.ok(reserveService.getReserveList(memberInfo, pageable));
   }
 
-
-
 }

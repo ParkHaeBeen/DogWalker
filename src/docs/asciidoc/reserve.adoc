@@ -60,3 +60,15 @@ include::{snippets}/reserve/cancel/http-request.adoc[]
 ==== HTTP Response
 
 include::{snippets}/reserve/cancel/http-response.adoc[]
+
+
+=== 📌 서비스 예약 리스트 조회
+
+
+==== HTTP Request
+| `GET`
+include::{snippets}/reserve/list/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/reserve/list/http-response.adoc[]

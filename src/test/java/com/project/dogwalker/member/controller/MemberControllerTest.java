@@ -19,11 +19,14 @@ import com.project.dogwalker.member.dto.IssueToken;
 import com.project.dogwalker.member.dto.LoginResult;
 import com.project.dogwalker.member.dto.join.JoinCommonRequest;
 import com.project.dogwalker.member.dto.join.JoinUserRequest;
+import com.project.dogwalker.member.dto.join.JoinWalkerPrice;
 import com.project.dogwalker.member.dto.join.JoinWalkerRequest;
+import com.project.dogwalker.member.dto.join.JoinWalkerSchedule;
 import com.project.dogwalker.support.ControllerTest;
 import jakarta.servlet.http.Cookie;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,9 +116,17 @@ class MemberControllerTest extends ControllerTest {
         .email(email)
         .accessToken(accessToken)
         .build();
+    JoinCommonRequest commonRequest = JoinCommonRequest.builder()
+        .loginType("naver")
+        .accessToken("naver token")
+        .name("푸들 주인")
+        .lat(105.0)
+        .lnt(12.0)
+        .phoneNumber("010-4568-4568")
+        .build();
 
     JoinUserRequest joinUserRequest=JoinUserRequest.builder()
-        .commonRequest(new JoinCommonRequest())
+        .commonRequest(commonRequest)
         .dogBirth(LocalDateTime.of(2022,01,01,0,0))
         .dogType("푸들")
         .dogName("달빈")
@@ -177,8 +188,40 @@ class MemberControllerTest extends ControllerTest {
         .maxAge(Duration.ofMillis(604800))
         .build();
 
+    JoinCommonRequest commonRequest = JoinCommonRequest.builder()
+        .loginType("naver")
+        .accessToken("naver token")
+        .name("푸들 주인")
+        .lat(105.0)
+        .lnt(12.0)
+        .phoneNumber("010-4568-4568")
+        .build();
+
+    JoinWalkerSchedule joinWalkerRequest1 = JoinWalkerSchedule.builder()
+        .dayOfWeek("MON")
+        .startTime(10)
+        .endTime(17)
+        .build();
+
+    JoinWalkerSchedule joinWalkerRequest2 = JoinWalkerSchedule.builder()
+        .dayOfWeek("TUE")
+        .startTime(10)
+        .endTime(17)
+        .build();
+
+    JoinWalkerPrice joinWalkerPrice1 = JoinWalkerPrice.builder()
+        .timeFee(10000)
+        .timeUnit(30)
+        .build();
+
+    JoinWalkerPrice joinWalkerPrice2 = JoinWalkerPrice.builder()
+        .timeFee(12000)
+        .timeUnit(40)
+        .build();
     JoinWalkerRequest request=JoinWalkerRequest.builder()
-        .commonRequest(new JoinCommonRequest())
+        .commonRequest(commonRequest)
+        .schedules(List.of(joinWalkerRequest1,joinWalkerRequest2))
+        .servicePrices(List.of(joinWalkerPrice1,joinWalkerPrice2))
         .build();
 
 
