@@ -11,8 +11,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.project.dogwalker.common.service.redis.RedisService;
-import com.project.dogwalker.domain.reserve.PayHistory;
-import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -67,14 +65,6 @@ class WalkerServiceImplTest {
   void validationWalkerAndReserve(){
     User walker= WALKER_ONE.생성();
     User customer= USER_ONE.생성();
-
-    PayHistory payHistory=PayHistory.builder()
-        .payPrice(10000)
-        .payId(1L)
-        .payMethod("CARD")
-        .payStatus(PayStatus.PAY_DONE)
-        .customer(customer)
-        .build();
 
     WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
         .reserveId(1L)

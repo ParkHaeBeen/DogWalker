@@ -1,7 +1,8 @@
 package com.project.dogwalker.reserve.controller;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
-import static com.project.dogwalker.domain.user.Role.USER;
+import static com.project.dogwalker.support.fixture.MemberInfoFixture.MEMBERINFO_USER;
+import static com.project.dogwalker.support.fixture.MemberInfoFixture.MEMBERINFO_WALKER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,13 +20,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.ReserveCancel;
-import com.project.dogwalker.reserve.dto.response.ReserveListResponse;
 import com.project.dogwalker.reserve.dto.request.ReserveRequest;
-import com.project.dogwalker.reserve.dto.response.ReserveResponse;
 import com.project.dogwalker.reserve.dto.request.ReserveStatusRequest;
+import com.project.dogwalker.reserve.dto.response.ReserveListResponse;
+import com.project.dogwalker.reserve.dto.response.ReserveResponse;
 import com.project.dogwalker.support.ControllerTest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -89,19 +89,15 @@ class ReserveControllerTest extends ControllerTest {
   @DisplayName("예약 및 결제 진행 성공")
   void reserve_success() throws Exception {
     //given
-    String email="dal@gmail.com";
-    Role role= USER;
+    MemberInfo memberInfo= MEMBERINFO_USER.생성();
     String authorization ="Bearer Token";
+
     ReserveRequest request=ReserveRequest.builder()
         .payMethod("card")
         .price(1000)
         .serviceDateTime(LocalDateTime.of(2023,12,12,12,30))
         .timeUnit(30)
         .walkerId(1L)
-        .build();
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
-        .role(role)
         .build();
 
     ReserveResponse reserveResponse = ReserveResponse.builder()
@@ -142,10 +138,7 @@ class ReserveControllerTest extends ControllerTest {
   void changeRequestServiceStatus_success() throws Exception{
     //given
     String authorization="Bearer token";
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email("request@gmail.com")
-        .role(Role.WALKER)
-        .build();
+    MemberInfo memberInfo= MEMBERINFO_WALKER.생성();
 
     ReserveStatusRequest request=ReserveStatusRequest.builder()
         .status(WALKER_ACCEPT)
@@ -177,17 +170,12 @@ class ReserveControllerTest extends ControllerTest {
   @DisplayName("예약 하루전까지 취소 가능")
   void reserveCancel_success() throws Exception {
     //given
-    String email="dal@gmail.com";
-    Role role= USER;
     String authorization ="Bearer Token";
     ReserveCancel.Request request=ReserveCancel.Request.builder()
         .reserveId(1L)
         .build();
 
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
-        .role(role)
-        .build();
+    MemberInfo memberInfo=MEMBERINFO_USER.생성();
 
     ReserveCancel.Response response = ReserveCancel.Response.builder()
         .cancelDate(LocalDateTime.now())
@@ -223,21 +211,16 @@ class ReserveControllerTest extends ControllerTest {
   @DisplayName("예약 리스트 조회")
   void reserveList() throws Exception {
     //given
-    String email="dal@gmail.com";
-    Role role= USER;
     String authorization ="Bearer Token";
 
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
-        .role(role)
-        .build();
+    MemberInfo memberInfo=MEMBERINFO_USER.생성();
 
     ReserveListResponse response1=ReserveListResponse.builder()
         .reserveId(1L)
         .serviceStatus(WALKER_ACCEPT)
         .price(10000)
         .timeUnit(50)
-        .role(role)
+        .role(memberInfo.getRole())
         .serviceDate(LocalDateTime.now())
         .build();
 
@@ -246,7 +229,7 @@ class ReserveControllerTest extends ControllerTest {
         .serviceStatus(WALKER_ACCEPT)
         .price(10000)
         .timeUnit(50)
-        .role(role)
+        .role(memberInfo.getRole())
         .serviceDate(LocalDateTime.now().plusDays(10))
         .build();
     List<ReserveListResponse> responses=List.of(response2,response1);
@@ -279,14 +262,9 @@ class ReserveControllerTest extends ControllerTest {
   @DisplayName("예약 상세 조회")
   void reserveDetail() throws Exception {
     //given
-    String email="dal@gmail.com";
-    Role role= USER;
     String authorization ="Bearer Token";
 
-    MemberInfo memberInfo=MemberInfo.builder()
-        .email(email)
-        .role(role)
-        .build();
+    MemberInfo memberInfo=MEMBERINFO_USER.생성();
     ReserveResponse reserveResponse = ReserveResponse.builder()
         .serviceDate(LocalDateTime.now().plusDays(10))
         .payDate(LocalDateTime.now().minusDays(1))

@@ -4,6 +4,9 @@ import static com.project.dogwalker.domain.reserve.PayStatus.PAY_DONE;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_CHECKING;
 import static com.project.dogwalker.domain.user.Role.USER;
+import static com.project.dogwalker.support.fixture.UserFixture.USER_ONE;
+import static com.project.dogwalker.support.fixture.UserFixture.USER_TWO;
+import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -15,7 +18,6 @@ import com.project.dogwalker.domain.reserve.PayHistoryRespository;
 import com.project.dogwalker.domain.reserve.PayStatus;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
-import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.member.MemberException;
@@ -105,14 +107,7 @@ class ReserveServiceImplTest {
   @DisplayName("하루 전날까지 취소 가능 - 성공")
   void cancel_success(){
     //given
-    User customer= User.builder()
-        .userRole(Role.USER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userName("dis1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("dis1@gmail.com")
-        .build();
+    User customer= USER_ONE.생성();
 
     WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
         .reserveId(1L)
@@ -151,17 +146,7 @@ class ReserveServiceImplTest {
   @DisplayName("하루 전날까지 취소 진행 - 해당 예약이 없어서 실패")
   void cancel_fail_notFoundReserve(){
     //given
-    User customer= User.builder()
-        .userRole(Role.USER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userName("dis1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("dis1@gmail.com")
-        .build();
-    WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
-        .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
-        .build();
+    User customer= USER_ONE.생성();
 
     ReserveCancel.Request request=ReserveCancel.Request.builder()
         .reserveId(1L)
@@ -185,14 +170,8 @@ class ReserveServiceImplTest {
   @DisplayName("하루 전날까지 취소 진행 - 해당 예약이 예약 취소 가능 기간 지나서 실패")
   void cancel_fail_cancelPeriod(){
     //given
-    User customer= User.builder()
-        .userRole(Role.USER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userName("dis1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("dis1@gmail.com")
-        .build();
+    User customer= USER_TWO.생성();
+
     WalkerReserveServiceInfo walkerReserveServiceInfo=WalkerReserveServiceInfo.builder()
         .serviceDateTime(LocalDateTime.of(2023,12,12,15,0))
         .build();
@@ -221,26 +200,8 @@ class ReserveServiceImplTest {
   @DisplayName("서비스 수행자 요청 수락/거부 -성공")
   void changeRequestServiceStatus_success(){
     //given
-    User walker= User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userId(1L)
-        .userName("request1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("request1@gmail.com")
-        .build();
-
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
-
+    User walker= WALKER_ONE.생성();
+    User customer= USER_ONE.생성();
 
     WalkerReserveServiceInfo serviceInfo=WalkerReserveServiceInfo.builder()
         .reserveId(1L)
@@ -275,26 +236,7 @@ class ReserveServiceImplTest {
   @DisplayName("서비스 수행자 요청 수락/거부 - 실패 : reserveInfo 존재하지 않음")
   void changeRequestServiceStatus_fail_notFoundReserve(){
     //given
-    User walker= User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userId(1L)
-        .userName("request1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("request1@gmail.com")
-        .build();
-
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
-
+    User walker= WALKER_ONE.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
         .email(walker.getUserEmail())
@@ -319,26 +261,7 @@ class ReserveServiceImplTest {
   @DisplayName("서비스 수행자 요청 수락/거부 - 실패 : 해당 유저 없음")
   void changeRequestServiceStatus_fail_notFoundUser(){
     //given
-    User walker= User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userId(1L)
-        .userName("request1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("request1@gmail.com")
-        .build();
-
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
-
+    User walker= WALKER_ONE.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
         .email(walker.getUserEmail())
@@ -363,25 +286,8 @@ class ReserveServiceImplTest {
   @DisplayName("예약 리스트 조회")
   void getReserveList_success(){
     //given
-    User walker= User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userId(1L)
-        .userName("request1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("request1@gmail.com")
-        .build();
-
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
+    User walker= WALKER_ONE.생성();
+    User customer= USER_ONE.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
         .email(walker.getUserEmail())
@@ -415,25 +321,8 @@ class ReserveServiceImplTest {
   @DisplayName("예약 상세 조회")
   void getReserveDetail_success(){
     //given
-    User walker= User.builder()
-        .userRole(Role.WALKER)
-        .userLat(12.0)
-        .userLnt(15.0)
-        .userId(1L)
-        .userName("request1")
-        .userPhoneNumber("010-1234-1234")
-        .userEmail("request1@gmail.com")
-        .build();
-
-    User customer= User.builder()
-        .userId(2L)
-        .userLat(12.0)
-        .userLnt(3.0)
-        .userEmail("walkerservice2@gmail.com")
-        .userPhoneNumber("010-1234-1234")
-        .userName("walkerService2")
-        .userRole(Role.USER)
-        .build();
+    User walker= WALKER_ONE.생성();
+    User customer= USER_ONE.생성();
 
     MemberInfo memberInfo=MemberInfo.builder()
         .email(walker.getUserEmail())
