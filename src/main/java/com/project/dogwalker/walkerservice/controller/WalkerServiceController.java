@@ -64,9 +64,9 @@ public class WalkerServiceController {
   /**
    * 고객에게 서비스 완료 5분전이라 알림
    */
-  @PostMapping("/notice")
+  @PostMapping("/notice/{reserveId}")
   @Auth(isWalker = true)
-  public ResponseEntity<?> noticeCustomer(@RequestBody final Long reserveId){
+  public ResponseEntity<?> noticeCustomer(@PathVariable final Long reserveId){
     walkerService.noticeCustomer(reserveId);
     return ResponseEntity.ok().build();
   }

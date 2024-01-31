@@ -14,7 +14,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.BatchTest;
+import com.project.dogwalker.support.SpringTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -29,7 +29,7 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-public class WalkerAdjustBatchTest extends BatchTest {
+public class WalkerAdjustSpringTest extends SpringTest {
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
 

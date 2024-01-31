@@ -9,7 +9,6 @@ import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 public interface WalkerService {
   void checkService(MemberInfo memberInfo ,ServiceCheckRequest request);
 
-  void startService(Long reserveId,int timeUnit);
   void saveRealTimeLocation(RealTimeLocation location);
 
   boolean isStartedService(Long reserveId);

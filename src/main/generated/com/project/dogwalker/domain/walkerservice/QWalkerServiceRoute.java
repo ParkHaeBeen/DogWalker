@@ -28,7 +28,7 @@ public class QWalkerServiceRoute extends EntityPathBase<WalkerServiceRoute> {
 
     public final NumberPath<Long> routeId = createNumber("routeId", Long.class);
 
-    public final ComparablePath<org.locationtech.jts.geom.LineString> routes = createComparable("routes", org.locationtech.jts.geom.LineString.class);
+    public final StringPath routes = createString("routes");
 
     public QWalkerServiceRoute(String variable) {
         this(WalkerServiceRoute.class, forVariable(variable), INITS);

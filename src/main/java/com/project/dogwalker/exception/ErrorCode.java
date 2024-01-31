@@ -36,7 +36,8 @@ public enum ErrorCode {
   SSE_ERROR("sse 관련 오류 발생"),
   NOT_FOUND_NOTICE("해당 알림을 찾을 수 없습니다"),
 
-  NOT_FOUND_PAY_HISTORY("결제 내역을 찾을 수 없습니다");
+  NOT_FOUND_PAY_HISTORY("결제 내역을 찾을 수 없습니다"),
+  NOT_FOUND_ROUTE("해당 경로 내역을 찾을 수 없습니다");
 
   private final String value;
 

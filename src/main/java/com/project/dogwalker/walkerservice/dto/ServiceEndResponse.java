@@ -1,7 +1,9 @@
 package com.project.dogwalker.walkerservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.project.dogwalker.common.service.route.dto.Location;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,4 +21,6 @@ public class ServiceEndResponse {
 
   @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
   private LocalDateTime endTime;
+
+  private List <Location> routes;
 }

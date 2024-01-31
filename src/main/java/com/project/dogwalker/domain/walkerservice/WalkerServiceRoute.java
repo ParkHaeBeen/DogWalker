@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.locationtech.jts.geom.LineString;
 import org.springframework.data.annotation.CreatedDate;
 
 @Builder
@@ -35,8 +34,8 @@ public class WalkerServiceRoute {
   @JoinColumn(name = "walker_reserve_service_id")
   private WalkerReserveServiceInfo reserveInfo;
 
-  @Column(name = "walker_route")
-  private LineString routes;
+  @Column(name = "walker_route", columnDefinition = "LINESTRING")
+  private String routes;
 
   @CreatedDate
   private LocalDateTime createdAt;

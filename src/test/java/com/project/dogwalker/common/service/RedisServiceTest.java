@@ -1,16 +1,15 @@
 package com.project.dogwalker.common.service;
 
 import com.project.dogwalker.common.service.redis.RedisService;
+import com.project.dogwalker.support.SpringTest;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-public class RedisServiceTest {
+public class RedisServiceTest extends SpringTest {
   private final String startServicePrefix="start-";
   private final String proceedServicePrefix="proceed-";
 
