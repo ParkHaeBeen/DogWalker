@@ -19,7 +19,6 @@ import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.support.ControllerTest;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
-import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -152,8 +151,7 @@ class WalkerServiceControllerTest extends ControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/service/notice")
-            .content(objectMapper.writeValueAsString(1L))
+        post("/service/notice/{reserveId}",1L)
             .header(HttpHeaders.AUTHORIZATION , authorization)
             .contentType(MediaType.APPLICATION_JSON)
     );
@@ -173,12 +171,9 @@ class WalkerServiceControllerTest extends ControllerTest {
     String authorization ="Bearer Token";
     MemberInfo info= MEMBERINFO_WALKER.생성();
 
-    ServiceEndRequest request=ServiceEndRequest.builder()
-        .reserveId(2L)
-        .build();
     Map <String, Object> params = new HashMap <>();
     params.put("memberInfo", info);
-    params.put("request", request);
+    params.put("request", 1L);
 
     LocalDateTime expectedEndTime = LocalDateTime.of(2023, 12, 23, 2, 0,0,0);
 
@@ -193,9 +188,8 @@ class WalkerServiceControllerTest extends ControllerTest {
 
     //when
     ResultActions resultActions = mockMvc.perform(
-        post("/service/finish")
+        post("/service/finish/{reserveId}",1L)
             .header(HttpHeaders.AUTHORIZATION , authorization)
-            .content(objectMapper.writeValueAsString(params))
             .contentType(MediaType.APPLICATION_JSON)
     );
 

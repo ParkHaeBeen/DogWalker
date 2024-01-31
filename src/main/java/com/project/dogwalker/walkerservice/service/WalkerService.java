@@ -3,7 +3,6 @@ package com.project.dogwalker.walkerservice.service;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
-import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 
 public interface WalkerService {
@@ -13,7 +12,7 @@ public interface WalkerService {
 
   boolean isStartedService(Long reserveId);
 
-  ServiceEndResponse saveServiceRoute(MemberInfo memberInfo, ServiceEndRequest request);
+  ServiceEndResponse saveServiceRoute(MemberInfo memberInfo, Long reserveId);
 
   void noticeCustomer(Long reserveId);
 }

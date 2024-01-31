@@ -23,7 +23,6 @@ import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
-import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.util.HashMap;
 import java.util.List;
@@ -110,24 +109,24 @@ public class WalkerServiceImpl implements WalkerService{
    */
   @Override
   @Transactional
-  public ServiceEndResponse saveServiceRoute(final MemberInfo memberInfo ,final ServiceEndRequest request){
+  public ServiceEndResponse saveServiceRoute(final MemberInfo memberInfo ,final Long reserveId){
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(memberInfo ,
-        request.getReserveId());
-    final List<Coordinate> routes = redisService.getList(proceedServicePrefix+request.getReserveId());
+        reserveId);
+    final List<Coordinate> routes = redisService.getList(proceedServicePrefix+reserveId);
 
     if(routes.isEmpty()){
       throw new ReserveException(NOT_FOUND_ROUTE);
     }
 
     final LineString routeLine = routeService.CoordinateToLineString(routes);
-    routeRepository.saveWithLineString(request.getReserveId() , routeLine.toString());
+    routeRepository.saveWithLineString(reserveId, routeLine.toString());
 
-    final WalkerServiceRoute walkerServiceRoute = routeRepository.findByReserveInfoReserveId(request.getReserveId())
+    final WalkerServiceRoute walkerServiceRoute = routeRepository.findByReserveInfoReserveId(reserveId)
         .orElseThrow(
             () -> new ReserveException(NOT_FOUND_ROUTE)
         );
 
-    redisService.deleteRedis(proceedServicePrefix+request.getReserveId());
+    redisService.deleteRedis(proceedServicePrefix+reserveId);
     serviceInfo.modifyStatus(WalkerServiceStatus.FINISH);
 
     return ServiceEndResponse.builder()

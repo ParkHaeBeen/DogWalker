@@ -6,11 +6,13 @@ import static com.project.dogwalker.support.fixture.UserFixture.USER_ONE;
 import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.project.dogwalker.common.service.redis.RedisService;
+import com.project.dogwalker.common.service.route.RouteService;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
@@ -22,7 +24,6 @@ import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.service.NoticeService;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
-import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ class WalkerServiceImplTest {
 
   @Mock
   private WalkerServiceRouteRepository serviceRouteRepository;
+
+  @Mock
+  private RouteService routeService;
 
   @Mock
   private NoticeService noticeService;
@@ -172,21 +176,20 @@ class WalkerServiceImplTest {
     LineString routeLine=geometryFactory.createLineString(coordinateList.toArray(new Coordinate[0]));
 
     WalkerServiceRoute routes=WalkerServiceRoute.builder()
-        .routes(routeLine)
+        .routes(routeLine.toString())
         .createdAt(LocalDateTime.of(2023,12,13,0,12))
         .reserveInfo(new WalkerReserveServiceInfo())
         .build();
 
     MemberInfo info=MEMBERINFO_WALKER.생성();
-    ServiceEndRequest request=ServiceEndRequest.builder()
-        .reserveId(1L)
-        .build();
+
 
     given(redisService.getList(anyString())).willReturn(coordinateList);
-    given(serviceRouteRepository.save(any())).willReturn(routes);
+    given(routeService.CoordinateToLineString(anyList())).willReturn(routeLine);
+    given(serviceRouteRepository.findByReserveInfoReserveId(anyLong())).willReturn(Optional.of(routes));
 
     //when
-    ServiceEndResponse serviceEndResponse = walkerService.saveServiceRoute(info , request);
+    ServiceEndResponse serviceEndResponse = walkerService.saveServiceRoute(info , 1L);
 
     //then
     assertThat(serviceEndResponse.getEndTime()).isEqualTo(LocalDateTime.of(2023,12,13,0,12));
