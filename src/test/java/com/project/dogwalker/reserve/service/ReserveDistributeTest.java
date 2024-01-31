@@ -7,7 +7,7 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.reserve.dto.request.ReserveRequest;
-import com.project.dogwalker.support.BatchTest;
+import com.project.dogwalker.support.SpringTest;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ReserveDistributeTest extends BatchTest {
+public class ReserveDistributeTest extends SpringTest {
 
   @Autowired
   private UserRepository userRepository;

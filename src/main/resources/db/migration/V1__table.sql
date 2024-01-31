@@ -1,7 +1,7 @@
 use walker;
 CREATE TABLE `users` (
                          `user_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         `user_email`	varchar(100) NOT NULL,
+                         `user_email`	varchar(100) UNIQUE NOT NULL,
                          `user_phone_number`	varchar(20)	NOT NULL,
                          `user_lat`	double	NOT NULL,
                          `user_lnt`	double	NOT NULL,

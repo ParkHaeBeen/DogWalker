@@ -10,7 +10,7 @@ import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.BatchTest;
+import com.project.dogwalker.support.SpringTest;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ReserveBatchTest extends BatchTest {
+public class ReserveSpringTest extends SpringTest {
 
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;

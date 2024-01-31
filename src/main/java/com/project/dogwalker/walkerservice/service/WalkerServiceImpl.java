@@ -2,9 +2,11 @@ package com.project.dogwalker.walkerservice.service;
 
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.WALKER_ACCEPT;
 import static com.project.dogwalker.exception.ErrorCode.NOT_EXIST_MEMBER;
+import static com.project.dogwalker.exception.ErrorCode.NOT_FOUND_ROUTE;
 import static com.project.dogwalker.exception.ErrorCode.RESERVE_REQUEST_NOT_EXIST;
 
 import com.project.dogwalker.common.service.redis.RedisService;
+import com.project.dogwalker.common.service.route.RouteService;
 import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceInfo;
 import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
@@ -28,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ public class WalkerServiceImpl implements WalkerService{
   private final RedisService redisService;
   private final WalkerServiceRouteRepository routeRepository;
   private final NoticeService noticeService;
+  private final RouteService routeService;
   private final String startServicePrefix="start-";
   private final String proceedServicePrefix="proceed-";
 
@@ -51,7 +53,7 @@ public class WalkerServiceImpl implements WalkerService{
    * 해당 예약 수행날짜가 현재 날짜인지 확인
    */
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public void checkService(final MemberInfo memberInfo ,final ServiceCheckRequest request) {
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(
         memberInfo , request.getReserveId());
@@ -65,9 +67,7 @@ public class WalkerServiceImpl implements WalkerService{
   /**
    * 예약 유효성 확인후 redis에 서비스 수행시작되었다고 저장
    */
-  @Override
-  @Transactional
-  public void startService(final Long reserveId,final int timeUnit) {
+  private void startService(final Long reserveId,final int timeUnit) {
     redisService.setData(startServicePrefix+reserveId,"ON",timeUnit);
   }
 
@@ -75,7 +75,6 @@ public class WalkerServiceImpl implements WalkerService{
    * 산책서비스가 시작되었는지 확인
    */
   @Override
-  @Transactional(readOnly = true)
   public boolean isStartedService(final Long reserveId) {
     return redisService.getStartData(startServicePrefix+reserveId);
   }
@@ -111,17 +110,22 @@ public class WalkerServiceImpl implements WalkerService{
    */
   @Override
   @Transactional
-  public ServiceEndResponse saveServiceRoute(final MemberInfo memberInfo ,final ServiceEndRequest request) {
+  public ServiceEndResponse saveServiceRoute(final MemberInfo memberInfo ,final ServiceEndRequest request){
     final WalkerReserveServiceInfo serviceInfo = validationWalkerAndReserve(memberInfo ,
         request.getReserveId());
     final List<Coordinate> routes = redisService.getList(proceedServicePrefix+request.getReserveId());
 
-    GeometryFactory geometryFactory=new GeometryFactory();
-    final LineString routeLine = geometryFactory.createLineString(routes.toArray(new Coordinate[0]));
-    final WalkerServiceRoute walkerServiceRoute = routeRepository.save(WalkerServiceRoute.builder()
-        .routes(routeLine)
-        .reserveInfo(serviceInfo)
-        .build());
+    if(routes.isEmpty()){
+      throw new ReserveException(NOT_FOUND_ROUTE);
+    }
+
+    final LineString routeLine = routeService.CoordinateToLineString(routes);
+    routeRepository.saveWithLineString(request.getReserveId() , routeLine.toString());
+
+    final WalkerServiceRoute walkerServiceRoute = routeRepository.findByReserveInfoReserveId(request.getReserveId())
+        .orElseThrow(
+            () -> new ReserveException(NOT_FOUND_ROUTE)
+        );
 
     redisService.deleteRedis(proceedServicePrefix+request.getReserveId());
     serviceInfo.modifyStatus(WalkerServiceStatus.FINISH);
@@ -129,6 +133,7 @@ public class WalkerServiceImpl implements WalkerService{
     return ServiceEndResponse.builder()
         .routeId(walkerServiceRoute.getRouteId())
         .endTime(walkerServiceRoute.getCreatedAt())
+        .routes(routeService.LineStringToLocation(walkerServiceRoute.getRoutes()))
         .build();
   }
 
@@ -139,7 +144,7 @@ public class WalkerServiceImpl implements WalkerService{
         .orElseThrow(() -> new MemberException(NOT_EXIST_MEMBER));
 
     final WalkerReserveServiceInfo serviceInfo = reserveRepository.findByReserveIdAndStatusAndWalkerUserId(
-            reserveId , WALKER_ACCEPT,walker.getUserId())
+            reserveId , WALKER_ACCEPT, walker.getUserId())
         .orElseThrow(() -> new ReserveException(RESERVE_REQUEST_NOT_EXIST));
     return serviceInfo;
   }

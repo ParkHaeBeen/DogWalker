@@ -10,6 +10,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ActiveProfiles(profiles = "test")
-public abstract class BatchTest {
+public abstract class SpringTest {
 
 }
