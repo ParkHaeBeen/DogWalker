@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.support.ControllerTest;
-import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
+import com.project.dogwalker.walkerservice.dto.RealTimeLocationRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.time.LocalDateTime;
@@ -118,7 +118,7 @@ class WalkerServiceControllerTest extends ControllerTest {
   @DisplayName("서비스 수행자 위치 저장")
   void realTimeLocation() throws Exception {
     //given
-    RealTimeLocation location=RealTimeLocation.builder()
+    RealTimeLocationRequest location=RealTimeLocationRequest.builder()
         .lat(12.0)
         .lnt(2.0)
         .reserveId(1L)

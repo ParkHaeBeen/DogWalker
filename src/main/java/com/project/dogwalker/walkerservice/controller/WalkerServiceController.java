@@ -4,7 +4,7 @@ import com.project.dogwalker.common.interceptor.Auth;
 import com.project.dogwalker.common.resolver.auth.AuthMember;
 import com.project.dogwalker.common.resolver.queryString.QueryStringResolver;
 import com.project.dogwalker.member.dto.MemberInfo;
-import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
+import com.project.dogwalker.walkerservice.dto.RealTimeLocationRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import com.project.dogwalker.walkerservice.service.WalkerService;
@@ -55,7 +55,7 @@ public class WalkerServiceController {
    * 프론트 쪽에서 10초마다 해당 위치에 대해서 엔드포인트 호출
    */
   @PostMapping
-  public ResponseEntity<?> realTimeLocation(@RequestBody @Valid final RealTimeLocation location){
+  public ResponseEntity<?> realTimeLocation(@RequestBody @Valid final RealTimeLocationRequest location){
     walkerService.saveRealTimeLocation(location);
     return ResponseEntity.ok().build();
   }

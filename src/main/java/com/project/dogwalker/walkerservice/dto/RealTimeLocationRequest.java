@@ -14,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class RealTimeLocation {
+public class RealTimeLocationRequest {
   @NotNull
   private Long reserveId;
   @NotNull
