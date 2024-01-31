@@ -18,7 +18,7 @@ pipeline {
         stage('Deployment') {
             steps {
                 dir('build/libs') {
-                    sshagent(credentials: ['id_rsa_deploy']) {
+                    sshagent(credentials: ['id_rsa_dogwalker']) {
                         sh '''#!/bin/bash
         
                         if curl -s "http://${BACKEND_IP}:${BLUE_PORT}" > /dev/null
