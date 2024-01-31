@@ -6,7 +6,6 @@ import com.project.dogwalker.common.resolver.queryString.QueryStringResolver;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
-import com.project.dogwalker.walkerservice.dto.ServiceEndRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import com.project.dogwalker.walkerservice.service.WalkerService;
 import jakarta.validation.Valid;
@@ -73,11 +72,11 @@ public class WalkerServiceController {
   /**
    * 서비스 완료후 이동경로 내역 저장
    */
-  @PostMapping("/finish")
+  @PostMapping("/finish/{reserveId}")
   @Auth(isWalker = true)
   public ResponseEntity<ServiceEndResponse> endService(@AuthMember @Valid final MemberInfo memberInfo,
-      @RequestBody @Valid ServiceEndRequest request){
-    final ServiceEndResponse serviceEndResponse = walkerService.saveServiceRoute(memberInfo , request);
+      @PathVariable final Long reserveId){
+    final ServiceEndResponse serviceEndResponse = walkerService.saveServiceRoute(memberInfo , reserveId);
     return ResponseEntity.ok(serviceEndResponse);
   }
 }
