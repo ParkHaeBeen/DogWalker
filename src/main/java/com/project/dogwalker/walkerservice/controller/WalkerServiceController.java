@@ -50,7 +50,6 @@ public class WalkerServiceController {
     return ResponseEntity.ok(walkerService.isStartedService(reserveId));
   }
 
-
   /**
    * 프론트 쪽에서 10초마다 해당 위치에 대해서 엔드포인트 호출
    */
