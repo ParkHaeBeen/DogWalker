@@ -21,7 +21,7 @@ import com.project.dogwalker.exception.reserve.ReserveException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.dto.NoticeRequest;
 import com.project.dogwalker.notice.service.NoticeService;
-import com.project.dogwalker.walkerservice.dto.RealTimeLocation;
+import com.project.dogwalker.walkerservice.dto.RealTimeLocationRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceCheckRequest;
 import com.project.dogwalker.walkerservice.dto.ServiceEndResponse;
 import java.util.HashMap;
@@ -83,7 +83,7 @@ public class WalkerServiceImpl implements WalkerService{
    */
   @Override
   @Transactional
-  public void saveRealTimeLocation(final RealTimeLocation location) {
+  public void saveRealTimeLocation(final RealTimeLocationRequest location) {
     final Coordinate coordinate=new Coordinate(location.getLat(),location.getLnt());
     redisService.addToList(proceedServicePrefix+location.getReserveId(),coordinate);
   }
