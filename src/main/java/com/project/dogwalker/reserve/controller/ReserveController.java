@@ -88,7 +88,7 @@ public class ReserveController {
 
   @GetMapping("/{reserveId}")
   @Auth
-  public ResponseEntity<ReserveResponse> getRserveDetail(@AuthMember @Valid final MemberInfo memberInfo, @PathVariable final Long reserveId){
+  public ResponseEntity<ReserveResponse> getReserveDetail(@AuthMember @Valid final MemberInfo memberInfo, @PathVariable final Long reserveId){
     return ResponseEntity.ok(reserveService.getReserveDetail(memberInfo, reserveId));
   }
 
