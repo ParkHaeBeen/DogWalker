@@ -75,7 +75,7 @@ public class  BatchConfig{
   public Step reserveStep(){
 
     return new StepBuilder("reserveStep",jobRepository)
-        .<ReserveInfo,WalkerReserveServiceInfo>chunk(chunkSize,platformManager)
+        .<ReserveInfo,PayHistory>chunk(chunkSize,platformManager)
         .reader(reserveReader())
         .processor(reserveProcessor())
         .writer(reserveWriter())
@@ -106,20 +106,19 @@ public class  BatchConfig{
   }
 
   @Bean
-  public ItemProcessor<ReserveInfo,WalkerReserveServiceInfo> reserveProcessor(){
+  public ItemProcessor<ReserveInfo,PayHistory> reserveProcessor(){
     return reserveService -> {
       final WalkerReserveServiceInfo reserveServiceInfo = reserveService.getReserveServiceInfo();
       reserveServiceInfo.modifyStatus(WALKER_REFUSE);
       final PayHistory payHistory = reserveService.getPayHistory();
       payHistory.modifyStatus(PAY_REFUND);
-      entityManager.merge(payHistory);
-      return reserveServiceInfo;
+      return payHistory;
     };
   }
 
   @Bean
-  public JpaItemWriter<WalkerReserveServiceInfo> reserveWriter(){
-    return new JpaItemWriterBuilder<WalkerReserveServiceInfo>()
+  public JpaItemWriter<PayHistory> reserveWriter(){
+    return new JpaItemWriterBuilder<PayHistory>()
         .entityManagerFactory(entityManagerFactory)
         .build();
   }
@@ -180,7 +179,6 @@ public class  BatchConfig{
           .build();
 
       walkerAdjust.addAdjustDetail(adjustDetail);
-
       final PayHistory payHistory = adjustWalkerInfo.getPayHistory();
       payHistory.modifyStatus(ADJUST_DONE);
       entityManager.merge(payHistory);
