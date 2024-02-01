@@ -100,7 +100,7 @@
 
 # Trouble Shooting
 
-[go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/main/docs/TROUBLE_SHOOTING.md)
+[go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/develop/docs/TROUBLE_SHOOTING.md)
 
 <hr>
 
