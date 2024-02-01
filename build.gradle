@@ -5,6 +5,7 @@ plugins {
 	id "org.flywaydb.flyway" version "10.0.0"
 	//id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id 'jacoco'
 }
 
 group = 'com.project'
@@ -12,6 +13,10 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	sourceCompatibility = '17'
+}
+
+jacoco {
+	toolVersion = "0.8.10"
 }
 
 ext {
@@ -112,6 +117,23 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+	jacoco{
+		excludes += [
+				"**/*Application*",
+				"**/exception/**",
+				"**/dto/**",
+				"**/querydsl/**",
+				"**/common/**",
+				"**/domain/**",
+				"**/member/aws/**",
+				"**/member/client/**",
+				"**/member/token/**",
+				"**/batch/adjust/**",
+				"**/batch/reserve/**",
+				"*.Q*"
+		]
+	}
+	finalizedBy jacocoTestReport
 }
 
 //querydsl 추가 시작
@@ -141,3 +163,83 @@ task copyDocument(type: Copy) {
 bootJar {
 	dependsOn copyDocument
 }
+
+//jacoco
+
+jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.required = true
+
+		xml.destination file("${buildDir}/jacoco/index.xml")
+		csv.destination file("${buildDir}/jacoco/index.csv")
+		html.destination file("${buildDir}/jacoco/index.html")
+	}
+	// dependsOn : 이 작업에 지정된 종속성을 추가
+	dependsOn test // jacocoTestReport 에 test라는 종속성을 추가
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, excludes: [
+							"**/common/*",
+							"**/*Application*",
+							"**/exception/**",
+							"**/dto/**",
+							"**/querydsl/*",
+							"**/common/*",
+							"**/domain/*",
+							"**/member/aws/*",
+							"**/member/client/*",
+							"**/member/token/*",
+							"**/batch/adjust/*",
+							"**/batch/reserve/*",
+							"*.Q*"
+					])
+				})
+		)
+	}
+	finalizedBy "jacocoTestCoverageVerification"
+}
+
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true
+			element = "CLASS"
+
+			// 모든 클래스 각각 라인 커버리지 75% 만족시 빌드 성공
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.75
+
+			}
+
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.75
+
+			}
+
+			excludes = [
+					"**.common.**",
+					"*.*Application*",
+					"**.exception.**",
+					"**.dto.**",
+					"**.querydsl.**",
+					"**.domain.**",
+					"**.aws.**",
+					"**.client.**",
+					"**.token.**",
+					"**.batch.adjust.**",
+					"**.batch.reserve.**",
+					"*.Q*"
+
+			]
+		}
+	}
+}
+
