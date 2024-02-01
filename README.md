@@ -1,14 +1,34 @@
-
-<img src= https://github.com/ParkHaeBeen/DogWalker/assets/130157565/660acee2-0578-4777-9fc6-b2d6a8c1d2eb  width ="170">
+<div align="center">
+<img src= https://github.com/ParkHaeBeen/DogWalker/assets/130157565/660acee2-0578-4777-9fc6-b2d6a8c1d2eb  width ="200">
+</div>
 
 ### 🔥 REFACTORING 중! 🔥
 
-## :dog2: 프로젝트 소개 < 산책 대행 서비스 >
-바쁜 현대인들을 위해 강아지 산책 대행 알바 서비스!
+# 🦮 소개 
+바쁜 현대인들을 위해 강아지 산책 대행 알바 예약 서비스 입니다. 위치기준, 이름으로 검색하여 산책 대행자 리스트를 조회하고,
+서비스 가능한 날짜에 예약을 진행합니다. 예약 완료후 산책 경로를 볼 수 있습니다.
 
-위치 기준으로 산책 알바를 검색하고 가능한 날짜에 예약을 진행!
+<br>
 
-## 프로젝트 기능 및 설계
+# 🛠 Tech Stack
+
+![제목 없는 그림](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/6cad8484-d291-42fc-b436-8849b0562c58)
+
+<br>
+
+# 📓 ERD
+
+![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/041be768-fa25-4fc3-a6d5-ca6b9359e73a)
+
+<br>
+
+# 🔥 Trouble Shooting
+
+[go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/develop/docs/TROUBLE_SHOOTING.md)
+
+<br>
+
+# ⚙️ 프로젝트 기능 및 설계
 
 ### 회원가입과 로그인
 :bulb: 회원가입 
@@ -88,37 +108,6 @@
 💡 매월말마다 포인트에 대한 정산이 이루어짐
 - 스프링 배치 이용
 
-<br>
 
-<hr>
 
-### ERD
 
-![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/041be768-fa25-4fc3-a6d5-ca6b9359e73a)
-
-<hr>
-
-# Trouble Shooting
-
-[go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/develop/docs/TROUBLE_SHOOTING.md)
-
-<hr>
-
-# Tech Stack
-
-<div align=center> 
-  <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
-  <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> 
-  <img src="https://img.shields.io/badge/jsonwebtokens-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white"> 
-  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-  <img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-  <img src="https://img.shields.io/badge/flyway-CC0200?style=for-the-badge&logo=flyway&logoColor=white">
-</div>
-
-<div align=center> 
-  <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
-  <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
-  <img src="https://img.shields.io/badge/elasticsearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white">
-  <img src="https://img.shields.io/badge/junit5-25a162?style=for-the-badge&logo=junit5&logoColor=white">
-  <img src="https://img.shields.io/badge/springrestdocs-6DB33F?style=for-the-badge&logo=springrestdocs-6DB33F&logoColor=white">
-</div>
