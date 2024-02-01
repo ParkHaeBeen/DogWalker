@@ -106,7 +106,7 @@
 
 <br>
 
-## 7. Github actions build에러
+## 8. Github actions build에러
 문제 상황
 - application.properties가 인식이 안되는 문제 발생
 - repository 테스트 코드를 위한 임시 데이터베이스 필요
