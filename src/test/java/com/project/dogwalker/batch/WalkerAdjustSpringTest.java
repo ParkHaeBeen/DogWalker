@@ -14,7 +14,7 @@ import com.project.dogwalker.domain.reserve.WalkerReserveServiceRepository;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.SpringTest;
+import com.project.dogwalker.support.RepositoryTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -27,9 +27,10 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
-
-public class WalkerAdjustSpringTest extends SpringTest {
+@RepositoryTest
+public class WalkerAdjustSpringTest {
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
 
@@ -50,13 +51,14 @@ public class WalkerAdjustSpringTest extends SpringTest {
 
 
   @Test
+  @Rollback
   @DisplayName("정산 batch 기능 수행 - 성공 : Walkeradjust 엔티티가 있으면 거기에 추가")
   public void adjustBatch_success() throws Exception {
     //given
     User user= User.builder()
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("batchuser1@gmail.com")
+        .userEmail("batchuser888@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("batchuser1")
         .userRole(Role.USER)
@@ -64,7 +66,7 @@ public class WalkerAdjustSpringTest extends SpringTest {
     User walker= User.builder()
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("batchuser2@gmail.com")
+        .userEmail("batchuser999@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("batchuser2")
         .userRole(Role.WALKER)

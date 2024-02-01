@@ -10,7 +10,7 @@ import com.project.dogwalker.domain.reserve.WalkerServiceStatus;
 import com.project.dogwalker.domain.user.Role;
 import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
-import com.project.dogwalker.support.SpringTest;
+import com.project.dogwalker.support.RepositoryTest;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,10 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
-public class ReserveSpringTest extends SpringTest {
+@RepositoryTest
+public class ReserveSpringTest  {
 
   @Autowired
   private JobLauncherTestUtils jobLauncherTestUtils;
@@ -42,12 +44,13 @@ public class ReserveSpringTest extends SpringTest {
 
   @Test
   @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
+  @Rollback
   public void reserveBatchJob_success() throws Exception {
     //given
     User user= User.builder()
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("batchuser1@gmail.com")
+        .userEmail("batchuser123@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("batchuser1")
         .userRole(Role.WALKER)
@@ -55,7 +58,7 @@ public class ReserveSpringTest extends SpringTest {
     User walker= User.builder()
         .userLat(12.0)
         .userLnt(3.0)
-        .userEmail("batchuser3@gmail.com")
+        .userEmail("batchuser456@gmail.com")
         .userPhoneNumber("010-1234-1234")
         .userName("batchuser3")
         .userRole(Role.WALKER)

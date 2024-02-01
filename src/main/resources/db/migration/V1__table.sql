@@ -1,4 +1,4 @@
-use walker;
+
 CREATE TABLE `users` (
                          `user_id`	BIGINT AUTO_INCREMENT PRIMARY KEY,
                          `user_email`	varchar(100) UNIQUE NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE `walker_reserve_service` (
 CREATE TABLE `walker_service_route` (
                                         `walker_service_route_id`	bigint	AUTO_INCREMENT PRIMARY KEY ,
                                         `walker_reserve_service_id`	bigint	NOT NULL,
-                                        `walker_route`	multipoint	NULL,
+                                        `walker_route`	linestring	NULL,
                                         `created_at`	timestamp	NULL,
                                         FOREIGN KEY (`walker_reserve_service_id`) REFERENCES `walker_reserve_service` (`walker_reserve_service_id`)
 

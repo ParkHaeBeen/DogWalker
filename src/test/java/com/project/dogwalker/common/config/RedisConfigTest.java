@@ -2,7 +2,7 @@ package com.project.dogwalker.common.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dogwalker.support.SpringTest;
+import com.project.dogwalker.support.RepositoryTest;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
@@ -12,8 +12,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-
-class RedisConfigTest extends SpringTest {
+@RepositoryTest
+class RedisConfigTest {
 
   @Autowired
   private RedisTemplate<String,Object> objectRedisTemplate;
