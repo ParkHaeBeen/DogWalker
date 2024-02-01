@@ -1,3 +1,9 @@
+# ⚙️ 프로젝트 기능 및 설계
+
+<div align=center>
+<img src=https://github.com/ParkHaeBeen/DogWalker/assets/130157565/421e21bd-db09-4dda-8e77-0321b9113890 width=600>
+</div>
+
 ### 1. 회원가입과 로그인
 :bulb: 회원가입 
 - OAuth(google,naver)을 통해서 회원가입
@@ -72,4 +78,5 @@
 
 💡 매월말마다 포인트에 대한 정산이 이루어짐
 - 스프링 배치 이용
+
 
