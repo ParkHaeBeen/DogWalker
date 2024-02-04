@@ -12,6 +12,7 @@ public class RedisContainerTest {
   static final GenericContainer <?> REDIS_CONTAINER;
 
   static {
+
     REDIS_CONTAINER = new GenericContainer<>(REDIS_IMAGE)
         .withExposedPorts(6379) // 여기서 6380은 호스트에 노출될 포트, 6379는 컨테이너 내부의 포트
         .withReuse(true);
