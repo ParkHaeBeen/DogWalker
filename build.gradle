@@ -28,10 +28,6 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
-	all {
-		// 필요하면 여기에 slf4j-simple의 제외 구성을 추가
-		exclude module: 'slf4j-simple'
-	}
 }
 
 repositories {
@@ -106,7 +102,7 @@ dependencies {
 	testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
 	testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'it.ozimov:embedded-redis:0.7.3'
+	implementation("it.ozimov:embedded-redis:0.7.2")
 
 }
 

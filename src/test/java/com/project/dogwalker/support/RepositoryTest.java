@@ -1,6 +1,7 @@
 package com.project.dogwalker.support;
 
 import com.project.dogwalker.common.config.ElasticSearchConfig;
+import com.project.dogwalker.common.config.EmbeddedRedisConfig;
 import com.project.dogwalker.common.config.JpaAuditingConfig;
 import com.project.dogwalker.common.config.QueryDslConfig;
 import java.lang.annotation.Retention;
@@ -14,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest
 @SpringBatchTest
-@Import({ElasticSearchConfig.class, JpaAuditingConfig.class, QueryDslConfig.class})
+@Import({ElasticSearchConfig.class, JpaAuditingConfig.class, QueryDslConfig.class, EmbeddedRedisConfig.class})
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ActiveProfiles(profiles = "test")
 public @interface RepositoryTest {
