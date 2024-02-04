@@ -23,7 +23,7 @@ public class BatchReserveScheduler {
   private final JobLauncher jobLauncher;
   private final BatchConfig batchConfig;
 
-  @Scheduled(fixedRate = 300000)
+  //@Scheduled(fixedRate = 300000)
   public void myScheduleMethod(){
 
     JobParameters jobParameters = new JobParametersBuilder()
