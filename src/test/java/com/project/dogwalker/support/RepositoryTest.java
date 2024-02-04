@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest
 @SpringBatchTest
-@Import({ElasticSearchConfig.class, JpaAuditingConfig.class, QueryDslConfig.class})
+@Import({ElasticSearchConfig.class, JpaAuditingConfig.class, QueryDslConfig.class, RedisContainerTest.class})
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ActiveProfiles(profiles = "test")
 public @interface RepositoryTest {
