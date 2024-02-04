@@ -19,10 +19,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         
-    - name: Start Redis
-      uses: supercharge/redis-github-action@1.1.0
-      with:
-        redis-version: 6
 
     - name: ElasticSearch Setup
       uses: DreamsOfImran/elasticsearch-action@v1.0
