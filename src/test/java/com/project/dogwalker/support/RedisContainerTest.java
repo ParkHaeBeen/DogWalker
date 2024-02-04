@@ -13,7 +13,7 @@ public class RedisContainerTest {
 
   static {
     REDIS_CONTAINER = new GenericContainer<>(REDIS_IMAGE) // (1)
-        .withExposedPorts(6379) // (2)
+        .withExposedPorts(6380) // (2)
         .withReuse(true); // (3)
     REDIS_CONTAINER.start(); // (4)
   }
