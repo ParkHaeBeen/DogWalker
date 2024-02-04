@@ -22,7 +22,7 @@ public class BatchAdjustScheduler {
   private final JobLauncher jobLauncher;
   private final BatchConfig batchConfig;
 
-  @Scheduled(cron = "0 50 23 L * ?")
+ // @Scheduled(cron = "0 50 23 L * ?")
   public void adjustMethod(){
     JobParameters jobParameters=new JobParametersBuilder()
         .addLong("time",System.currentTimeMillis())
