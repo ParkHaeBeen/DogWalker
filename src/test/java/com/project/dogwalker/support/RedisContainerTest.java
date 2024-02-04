@@ -3,12 +3,13 @@ package com.project.dogwalker.support;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public class RedisContainerTest {
-
   static final String REDIS_IMAGE = "redis:7.0.8-alpine";
+  @Container
   static final GenericContainer <?> REDIS_CONTAINER;
 
   static {
