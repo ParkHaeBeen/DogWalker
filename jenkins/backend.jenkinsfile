@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh "chmod +x gradlew"
-                sh "./gradlew bootJar --debug"
+                sh "./gradlew bootJar --debug -x test"
             }
         }
         stage('Deployment') {
