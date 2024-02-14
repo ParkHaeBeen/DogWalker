@@ -68,6 +68,7 @@ CREATE TABLE `walker_reserve_service` (
                                           `walker_service_status`	char(15)	NOT NULL,
                                           `updated_at`	timestamp NOT NULL,
                                           `walker_reserve_service_price` int NOT NULL,
+                                          UNIQUE KEY unique_walker_datetime (walker_id, walker_service_date),
                                           FOREIGN KEY (`walker_id`) REFERENCES `users` (`user_id`),
                                           FOREIGN KEY (`customer_id`) REFERENCES `users` (`user_id`)
 );
