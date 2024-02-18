@@ -10,7 +10,7 @@ import com.project.dogwalker.exception.feign.FeignNotFoundException;
 import com.project.dogwalker.exception.feign.FeignServerException;
 import com.project.dogwalker.exception.member.AuthMemberException;
 import com.project.dogwalker.exception.member.MemberException;
-import com.project.dogwalker.exception.notice.NoticeNotFoundException;
+import com.project.dogwalker.exception.notice.NoticeException;
 import com.project.dogwalker.exception.notice.SseException;
 import com.project.dogwalker.exception.reserve.LockException;
 import com.project.dogwalker.exception.reserve.ReserveException;
@@ -99,8 +99,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ExceptionResponse.from(e));
   }
 
-  @ExceptionHandler(NoticeNotFoundException.class)
-  public ResponseEntity<ExceptionResponse> handleException(final NoticeNotFoundException e){
+  @ExceptionHandler(NoticeException.class)
+  public ResponseEntity<ExceptionResponse> handleException(final NoticeException e){
     log.info(LOG_ERROR_MESSAGE,e.getClass(),e.getErrorCode(),e.getErrorMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ExceptionResponse.from(e));
   }

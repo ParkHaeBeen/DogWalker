@@ -5,9 +5,9 @@ import com.project.dogwalker.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class NoticeNotFoundException extends CustomException {
+public class NoticeException extends CustomException {
 
-  public NoticeNotFoundException(final ErrorCode errorCode) {
+  public NoticeException(final ErrorCode errorCode) {
     super(errorCode);
   }
 }

@@ -239,6 +239,42 @@ class OauthServiceImplTest {
   }
 
   @Test
+  @DisplayName("서비스 수행자로 회원 가입 가격 미기재로 실패")
+  void joinWalker_fail() {
+    //given
+    String accessToken = "accessToken";
+    String refreshToken="refreshToken";
+    String type = "google";
+    String idToken="idToken";
+
+    User user= WALKER_TWO.생성();
+
+    RefreshToken refreshTokenObject=RefreshToken.builder().refreshToken(refreshToken).build();
+    ClientResponse clientResponse = new ClientResponse(user.getUserEmail(),"test",idToken);
+    JoinCommonRequest commonRequest=JoinCommonRequest.builder()
+        .name(user.getUserName())
+        .accessToken(idToken)
+        .loginType(type)
+        .build();
+
+    JoinWalkerSchedule schedule1=JoinWalkerSchedule.builder().build();
+    JoinWalkerSchedule schedule2=JoinWalkerSchedule.builder().build();
+    List<JoinWalkerSchedule> schedules=List.of(schedule1,schedule2);
+
+
+    JoinWalkerRequest walkerRequest=JoinWalkerRequest.builder()
+        .commonRequest(commonRequest)
+        .schedules(schedules)
+        .build();
+
+    given(oauthClients.getUserInfo(type,idToken)).willReturn(clientResponse);
+    given(userRepository.save(any())).willReturn(user);
+
+    //when
+    assertThrows(MemberException.class,()->oauthService.joinWalker(walkerRequest));
+
+  }
+  @Test
   @DisplayName("access token 만료시 accessToken,refreshToken 재지급 - 성공")
   void generateToken_success(){
     //given
@@ -254,6 +290,7 @@ class OauthServiceImplTest {
         .build();
 
     given(refreshTokenRepository.findByRefreshToken(anyString())).willReturn(Optional.of(refreshTokenObject));
+    given(refreshTokenProvider.isNotExpired(any())).willReturn(false);
     given(userRepository.findById(refreshTokenObject.getUserId())).willReturn(Optional.of(user));
     given(jwtProvider.generateToken(anyString(),any())).willReturn(accessToken);
     given(refreshTokenProvider.generateRefreshToken(anyLong())).willReturn(refreshTokenObject);
