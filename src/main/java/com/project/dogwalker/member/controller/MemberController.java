@@ -98,7 +98,7 @@ public class MemberController {
    * @param refreshToken
    */
   @PostMapping("/auth/newtoken")
-  public ResponseEntity<?> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
+  public ResponseEntity<String> getNewToken(@CookieValue(value = "RefreshToken",required = false) final String refreshToken){
     if(refreshToken==null||refreshToken.isEmpty()){
       throw new TokenException(ErrorCode.TOKEN_NOT_EXIST);
     }
@@ -113,7 +113,7 @@ public class MemberController {
    * @param accessToken
    */
   @PostMapping("/auth/refreshtoken")
-  public ResponseEntity<?> reIssueRefreshToken(@RequestBody final String accessToken){
+  public ResponseEntity<Void> reIssueRefreshToken(@RequestBody final String accessToken){
     final String newRefreshToken = oauthService.generateNewRefreshToken(accessToken);
     final ResponseCookie cookie=refreshTokenCookieProvider.generateCookie(newRefreshToken);
 
