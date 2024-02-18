@@ -39,6 +39,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 class MemberControllerTest extends ControllerTest {
+
   @Test
   @DisplayName("회원 db에 존재하여 로그인 성공")
   void loginSuccess() throws Exception {

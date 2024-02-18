@@ -2,6 +2,7 @@ package com.project.dogwalker.walkersearch.service;
 
 import static com.project.dogwalker.support.fixture.UserFixture.WALKER_ONE;
 import static com.project.dogwalker.support.fixture.UserFixture.WALKER_TWO;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -11,6 +12,7 @@ import com.project.dogwalker.domain.user.User;
 import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerDocument;
 import com.project.dogwalker.domain.user.walker.elastic.WalkerSearchRepository;
+import com.project.dogwalker.exception.member.MemberException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.support.fixture.MemberInfoFixture;
 import com.project.dogwalker.walkersearch.dto.WalkerReserveInfo;
@@ -42,7 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles(profiles = "local")
-class WalkerInfoResponseServiceImplTest {
+class WalkerInfoServiceImplTest {
 
   @Mock
   private WalkerSearchRepository walkerSearchRepository;
@@ -54,8 +56,8 @@ class WalkerInfoResponseServiceImplTest {
   private WalkerInfoServiceImpl walkerInfoService;
 
   @Test
-  @DisplayName("고객 위치 중심 검색 + 이름 검색 가능")
-  void getWalkerInfoList() {
+  @DisplayName("고객 위치 중심 검색 + 이름 검색 가능 : 위도,경도도 입력했을때")
+  void getWalkerInfoList_success_lat_lon_input() {
     //given
     MemberInfo memberInfo= MemberInfoFixture.MEMBERINFO_USER.생성();
     WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
@@ -88,6 +90,60 @@ class WalkerInfoResponseServiceImplTest {
     //then
     Assertions.assertThat(walkerInfoResponseList.size()).isEqualTo(2);
 
+  }
+
+  @Test
+  @DisplayName("고객 위치 중심 검색 + 이름 검색 가능 : 위도,경도도 입력안했을 때")
+  void getWalkerInfoList_success_lat_lon_not_input() {
+    //given
+    MemberInfo memberInfo= MemberInfoFixture.MEMBERINFO_USER.생성();
+    WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
+        .name("test")
+        .build();
+
+    User user= WALKER_TWO.생성();
+
+    WalkerDocument document1=WalkerDocument.builder()
+        .id(1L)
+        .walker_name("test1")
+        .location(new GeoPoint(12.0,11.0))
+        .build();
+    WalkerDocument document2=WalkerDocument.builder()
+        .id(2L)
+        .walker_name("test2")
+        .location(new GeoPoint(12.00001,11.0))
+        .build();
+    Page <WalkerDocument> pages=new PageImpl <>(Arrays.asList(document1,document2));
+    Pageable pageable = PageRequest.of(0,10);
+
+    given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.of(user));
+    given(walkerSearchRepository.searchByName(any(),any())).willReturn(pages);
+
+    //when
+    List <WalkerInfoResponse> walkerInfoResponseList = walkerInfoService.getWalkerInfoList(memberInfo,searchCond,pageable);
+
+    //then
+    Assertions.assertThat(walkerInfoResponseList.size()).isEqualTo(2);
+
+  }
+  @Test
+  @DisplayName("고객 위치 중심 검색 + 이름 검색 회원 찾을 수 없어 실패")
+  void getWalkerInfoList_fail() {
+    //given
+    MemberInfo memberInfo= MemberInfoFixture.MEMBERINFO_USER.생성();
+    WalkerInfoRequest searchCond= WalkerInfoRequest.builder()
+        .name("test")
+        .lnt(12.0)
+        .lat(11.0)
+        .build();
+
+    Pageable pageable = PageRequest.of(0,10);
+
+    given(userRepository.findByUserEmailAndUserRole(anyString(),any())).willReturn(Optional.empty());
+
+    //when
+    //then
+    assertThrows(MemberException.class, () -> walkerInfoService.getWalkerInfoList(memberInfo,searchCond,pageable));
   }
 
   @Test

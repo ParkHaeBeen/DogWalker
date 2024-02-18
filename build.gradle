@@ -233,10 +233,7 @@ jacocoTestCoverageVerification {
 					"**.token.**",
 					"**.batch.adjust.**",
 					"**.batch.reserve.**",
-					"*.Q*",
-					"*.OauthServiceImpl",
-					"*.WalkerInfoServiceImpl",
-					"*.NoticeServiceImpl"
+					"*.Q*"
 
 			]
 		}

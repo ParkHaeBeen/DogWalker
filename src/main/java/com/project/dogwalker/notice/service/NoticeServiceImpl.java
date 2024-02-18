@@ -5,7 +5,7 @@ import com.project.dogwalker.domain.notice.Notice;
 import com.project.dogwalker.domain.notice.NoticeRepository;
 import com.project.dogwalker.domain.notice.NoticeType;
 import com.project.dogwalker.exception.ErrorCode;
-import com.project.dogwalker.exception.notice.NoticeNotFoundException;
+import com.project.dogwalker.exception.notice.NoticeException;
 import com.project.dogwalker.exception.notice.SseException;
 import com.project.dogwalker.member.dto.MemberInfo;
 import com.project.dogwalker.notice.dto.NoticeRequest;
@@ -29,8 +29,8 @@ public class NoticeServiceImpl implements NoticeService{
   private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
   @Override
   public SseEmitter addEmitter(final MemberInfo memberInfo ,final String lastEventId) {
-    final String id = memberInfo.getEmail()+"-"+System.currentTimeMillis();
-    SseEmitter emitter=emitterRepository.save(id,new SseEmitter(DEFAULT_TIMEOUT));
+    final String id = memberInfo.getEmail();
+    final SseEmitter emitter=emitterRepository.save(id,new SseEmitter(DEFAULT_TIMEOUT));
 
     emitter.onCompletion(() -> emitterRepository.deleteByEmail(id));
     emitter.onTimeout(() -> emitterRepository.deleteByEmail(id));
@@ -38,7 +38,7 @@ public class NoticeServiceImpl implements NoticeService{
     sendToClient(emitter, id, "Create EventStream : email =" + memberInfo.getEmail());
 
     if (!lastEventId.isEmpty()) {
-      Map<String, Object> events = emitterRepository.findAllEventCacheStartWithEmail(memberInfo.getEmail());
+      final Map<String, Object> events = emitterRepository.findAllEventCacheStartWithEmail(memberInfo.getEmail());
       events.entrySet().stream()
           .filter(entry -> lastEventId.compareTo(entry.getKey()) < 0)
           .forEach(entry -> sendToClient(emitter, entry.getKey(), entry.getValue()));
@@ -46,7 +46,7 @@ public class NoticeServiceImpl implements NoticeService{
 
     return emitter;
   }
-  private void sendToClient(SseEmitter emitter, String id, Object data) {
+  private void sendToClient(final SseEmitter emitter, final String id, final Object data) {
     try {
       emitter.send(SseEmitter.event()
           .id(id)
@@ -60,10 +60,10 @@ public class NoticeServiceImpl implements NoticeService{
 
   @Override
   public void send(final NoticeRequest noticeRequest) {
-    Notice notice=noticeRepository.save(createNotice(noticeRequest));
-    String id=noticeRequest.getReceiver().getUserEmail();
+    final Notice notice=noticeRepository.save(createNotice(noticeRequest));
+    final String id=noticeRequest.getReceiver().getUserEmail();
 
-    Map <String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithByEmail(id);
+    final Map <String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithByEmail(id);
     sseEmitters.forEach(
         (key, emitter) -> {
           emitterRepository.saveEventCache(key, notice);
@@ -84,9 +84,9 @@ public class NoticeServiceImpl implements NoticeService{
         .build();
   }
 
-  private String createMessage(NoticeRequest request){
+  private String createMessage(final NoticeRequest request){
     final Map <String, String> params = request.getParams();
-    String senderName = params.get("senderName");
+    final String senderName = params.get("senderName");
 
     if(request.getNoticeType()== NoticeType.SERVICE){
       return senderName+"님 산책 종료 5분전입니다. 대기해주세요.";
@@ -106,8 +106,8 @@ public class NoticeServiceImpl implements NoticeService{
   @Override
   @Transactional
   public void readNotification(Long id) {
-    Notice notice = noticeRepository.findById(id)
-        .orElseThrow(() -> new NoticeNotFoundException(ErrorCode.NOT_FOUND_NOTICE));
+    final Notice notice = noticeRepository.findById(id)
+        .orElseThrow(() -> new NoticeException(ErrorCode.NOT_FOUND_NOTICE));
     notice.setCheckDate(LocalDateTime.now());
   }
 }

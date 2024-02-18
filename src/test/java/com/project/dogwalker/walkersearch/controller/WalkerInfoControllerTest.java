@@ -30,7 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
-class WalkerInfoResponseControllerTest extends ControllerTest {
+class WalkerInfoControllerTest extends ControllerTest {
 
   @Test
   @DisplayName("회원 위치 기준으로 walker list 검색")
