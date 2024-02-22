@@ -23,9 +23,6 @@ class CustomWalkerSearchRepositoryImplTest{
   @Test
   @DisplayName("elastic insert 성공")
   void elastic_insert_test(){
-    //이전 데이터 영향받지 않기 위해 삭제후 테스트 진행
-    //walkerSearchRepository.deleteAll();
-
     //given
     for(int i=1;i<15;i++){
       User user = User.builder()
@@ -52,7 +49,7 @@ class CustomWalkerSearchRepositoryImplTest{
     Page <WalkerDocument> walkerDocuments = walkerSearchRepository.searchByName(searchCond,pageable);
 
     //then
-    //Assertions.assertThat(walkerDocuments.getTotalElements()).isEqualTo(14);
-    //Assertions.assertThat(walkerDocuments.getSize()).isEqualTo(10);
+    Assertions.assertThat(walkerDocuments.getTotalElements()).isEqualTo(14);
+    Assertions.assertThat(walkerDocuments.getSize()).isEqualTo(10);
   }
 }
