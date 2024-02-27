@@ -5,6 +5,7 @@ import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.CUSTOMER_
 import static com.project.dogwalker.domain.reserve.WalkerServiceStatus.FINISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.project.dogwalker.domain.adjust.WalkerAdjustDetailRepository;
 import com.project.dogwalker.domain.adjust.WalkerAdjustRepository;
 import com.project.dogwalker.domain.reserve.PayHistory;
 import com.project.dogwalker.domain.reserve.PayHistoryRespository;
@@ -50,6 +51,9 @@ public class WalkerAdjustSpringTest {
   private WalkerAdjustRepository adjustRepository;
 
   @Autowired
+  private WalkerAdjustDetailRepository adjustDetailRepository;
+
+  @Autowired
   @Qualifier("Adjust")
   private Step adjustStep;
 
@@ -81,11 +85,11 @@ public class WalkerAdjustSpringTest {
     userRepository.save(user);
     userRepository.save(walker);
 
-    for(int i=0;i<19;i++){
+    for(int i=0;i<100;i++){
       WalkerReserveServiceInfo reserveServiceInfo = WalkerReserveServiceInfo.builder()
           .customer(user)
           .walker(walker)
-          .serviceDateTime(LocalDateTime.now().plusHours(i))
+          .serviceDateTime(LocalDateTime.now().minusDays(i))
           .timeUnit(50)
           .status(FINISH)
           .servicePrice(1000)
@@ -152,5 +156,7 @@ public class WalkerAdjustSpringTest {
     //then
     assertThat(jobExecution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
     assertThat(jobExecution.getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
+    assertThat(adjustRepository.findByUserIdAndAndWalkerAdjustDate(walker.getUserId(),LocalDate.now()).get().getUserId()).isEqualTo(walker.getUserId());
+    assertThat(adjustDetailRepository.findAll().size()).isEqualTo(100);
   }
 }
