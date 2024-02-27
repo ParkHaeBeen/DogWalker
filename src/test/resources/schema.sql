@@ -113,12 +113,11 @@ CREATE TABLE `walker_adjust` (
 CREATE TABLE `walker_adjust_detail` (
                                         `walker_adjust_detail_id`	bigint	 AUTO_INCREMENT	PRIMARY KEY,
                                         `walker_adjust_id`	bigint	NOT NULL,
-                                        `walker_reserve_service_id`	bigint	NOT NULL,
                                         `walker_adjust_price`	bigint NOT 	NULL,
                                         `walker_adjust_status`	char(30) NOT NULL,
+                                        `pay_history_id` bigint NOT NULL,
                                         FOREIGN KEY (`walker_adjust_id`) REFERENCES `walker_adjust` (`walker_adjust_id`),
-                                        FOREIGN KEY (`walker_reserve_service_id`) REFERENCES `walker_reserve_service` (`walker_reserve_service_id`)
-
+                                        FOREIGN KEY (`pay_history_id`) REFERENCES `pay_history` (`pay_history_id`)
 );
 
 CREATE TABLE `notice` (
