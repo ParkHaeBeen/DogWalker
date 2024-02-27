@@ -2,6 +2,7 @@ package com.project.dogwalker.domain.adjust;
 
 import static com.project.dogwalker.domain.adjust.AdjustDetailStatus.ADJUST_NOT_YET;
 
+import com.project.dogwalker.domain.reserve.PayHistory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,12 +33,13 @@ public class WalkerAdjustDetail {
   @Column(name = "walker_adjust_detail_id")
   private Long walkerAdjustDetailId;
 
-  @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+  @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
   @JoinColumn(name = "walker_adjust_id", nullable = false)
   private WalkerAdjust walkerAdjust;
 
-  @Column(name = "walker_reserve_service_id", nullable = false)
-  private Long walkerReserveServiceId;
+  @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+  @JoinColumn(name = "pay_history_id", nullable = false)
+  private PayHistory payHistory;
 
   @Column(name = "walker_adjust_price",nullable = false)
   private Integer walkerAdjustPrice;
