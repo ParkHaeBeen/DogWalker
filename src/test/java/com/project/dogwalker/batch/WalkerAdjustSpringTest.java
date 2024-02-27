@@ -17,7 +17,6 @@ import com.project.dogwalker.domain.user.UserRepository;
 import com.project.dogwalker.support.RepositoryTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.BatchStatus;
@@ -126,22 +125,6 @@ public class WalkerAdjustSpringTest {
         .payMethod("CARD")
         .build();
     payHistoryRespository.save(payHistory3);
-
-    LocalDate startOfMonth = LocalDate.now().with(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
-    LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-
-/*    WalkerAdjust adjust=WalkerAdjust.builder()
-        .walkerAdjustDate(LocalDate.now())
-        .userId(walker.getUserId())
-        .walkerTtlPrice(1000L)
-        .walkerAdjustPeriodEnd(endOfMonth)
-        .walkerAdjustPeriodStart(startOfMonth)
-        .build();*/
-
-/*
-    adjustRepository.save(adjust);
-*/
-
 
     JobParameters jobParameters=new JobParametersBuilder()
         .addString("jobName","adjustJob")

@@ -19,8 +19,10 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 
 @RepositoryTest
@@ -41,6 +43,10 @@ public class ReserveSpringTest  {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  @Qualifier ("Reserve")
+  private Step reserveStep;
 
   @Test
   @DisplayName("예약 배치 기능 성공 - 10분 후 예약상태 변경안된거 변경성절")
@@ -93,7 +99,7 @@ public class ReserveSpringTest  {
         .toJobParameters();
 
     //when
-    jobLauncherTestUtils.setJob(batchConfig.refuseReserveJob());
+    jobLauncherTestUtils.setJob(batchConfig.refuseReserveJob(reserveStep));
     JobExecution jobExecution = jobLauncherTestUtils.launchJob(jobParameters);
 
 
