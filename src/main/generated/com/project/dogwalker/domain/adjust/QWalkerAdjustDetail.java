@@ -24,13 +24,13 @@ public class QWalkerAdjustDetail extends EntityPathBase<WalkerAdjustDetail> {
 
     public final EnumPath<AdjustDetailStatus> adjustDetailStatus = createEnum("adjustDetailStatus", AdjustDetailStatus.class);
 
+    public final com.project.dogwalker.domain.reserve.QPayHistory payHistory;
+
     public final QWalkerAdjust walkerAdjust;
 
     public final NumberPath<Long> walkerAdjustDetailId = createNumber("walkerAdjustDetailId", Long.class);
 
     public final NumberPath<Integer> walkerAdjustPrice = createNumber("walkerAdjustPrice", Integer.class);
-
-    public final NumberPath<Long> walkerReserveServiceId = createNumber("walkerReserveServiceId", Long.class);
 
     public QWalkerAdjustDetail(String variable) {
         this(WalkerAdjustDetail.class, forVariable(variable), INITS);
@@ -50,6 +50,7 @@ public class QWalkerAdjustDetail extends EntityPathBase<WalkerAdjustDetail> {
 
     public QWalkerAdjustDetail(Class<? extends WalkerAdjustDetail> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.payHistory = inits.isInitialized("payHistory") ? new com.project.dogwalker.domain.reserve.QPayHistory(forProperty("payHistory"), inits.get("payHistory")) : null;
         this.walkerAdjust = inits.isInitialized("walkerAdjust") ? new QWalkerAdjust(forProperty("walkerAdjust")) : null;
     }
 

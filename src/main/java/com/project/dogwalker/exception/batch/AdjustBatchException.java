@@ -10,4 +10,8 @@ public class AdjustBatchException extends CustomException {
   public AdjustBatchException(final ErrorCode errorCode,final Exception e) {
     super(errorCode,e);
   }
+
+  public AdjustBatchException(final ErrorCode errorCode) {
+    super(errorCode);
+  }
 }

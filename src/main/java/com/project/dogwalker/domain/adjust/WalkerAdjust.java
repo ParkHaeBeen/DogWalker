@@ -1,7 +1,6 @@
 package com.project.dogwalker.domain.adjust;
 
 import com.project.dogwalker.domain.BaseEntity;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,7 +55,7 @@ public class WalkerAdjust extends BaseEntity{
   @Column(name = "walker_adjust_period_end",nullable = false)
   private LocalDate walkerAdjustPeriodEnd;
 
-  @OneToMany(mappedBy = "walkerAdjust",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "walkerAdjust",fetch = FetchType.LAZY)
   @Builder.Default
   private List <WalkerAdjustDetail> adjustDetailList=new ArrayList <>();
 
