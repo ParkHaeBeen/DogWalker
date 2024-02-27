@@ -35,12 +35,13 @@ public class AdjustDetailStepConfig {
 
   private final WalkerAdjustRepository walkerAdjustRepository;
   private final EntityManagerFactory entityManagerFactory;
+  private final int chunkSize=10;
 
   @Bean (name = "AdjustDetail")
   @JobScope
   public Step adjustDetailStep(JobRepository jobRepository , PlatformTransactionManager transactionManager) {
     return new StepBuilder("adjustDetailStep" , jobRepository)
-        .<PayHistory, WalkerAdjustDetail>chunk(10,transactionManager)
+        .<PayHistory, WalkerAdjustDetail>chunk(chunkSize,transactionManager)
         .reader(adjustDetailReader())
         .processor(adjustDetailProcessor())
         .writer(adjustDetailItemWriter())
@@ -61,7 +62,7 @@ public class AdjustDetailStepConfig {
     reader.setName("adjustDetailReader");
     reader.setEntityManagerFactory(entityManagerFactory);
     reader.setParameterValues(parameters);
-    reader.setPageSize(10);
+    reader.setPageSize(chunkSize);
     reader.setQueryString("select p from PayHistory p "
         + "join fetch p.walkerReserveInfo w "
         + "JOIN User u On w.walker.userId = u.userId "
