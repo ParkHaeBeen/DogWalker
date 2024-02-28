@@ -125,8 +125,7 @@ tasks.named('test') {
 				"**/member/aws/**",
 				"**/member/client/**",
 				"**/member/token/**",
-				"**/batch/adjust/**",
-				"**/batch/reserve/**",
+				"**/batch/**",
 				"*.Q*"
 		]
 	}
@@ -189,8 +188,7 @@ jacocoTestReport {
 							"**/member/aws/*",
 							"**/member/client/*",
 							"**/member/token/*",
-							"**/batch/adjust/*",
-							"**/batch/reserve/*",
+							"**/batch/**",
 							"*.Q*"
 					])
 				})
@@ -231,8 +229,7 @@ jacocoTestCoverageVerification {
 					"**.aws.**",
 					"**.client.**",
 					"**.token.**",
-					"**.batch.adjust.**",
-					"**.batch.reserve.**",
+					"**.batch.**",
 					"*.Q*"
 
 			]
