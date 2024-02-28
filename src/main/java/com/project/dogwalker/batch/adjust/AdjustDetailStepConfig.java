@@ -13,7 +13,6 @@ import com.project.dogwalker.exception.batch.AdjustBatchException;
 import jakarta.persistence.EntityManagerFactory;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
@@ -74,11 +73,6 @@ public class AdjustDetailStepConfig {
   @Bean
   public ItemProcessor <PayHistory, WalkerAdjustDetail> adjustDetailProcessor() {
     return payHistory -> {
-      System.out.println("useruser = "+payHistory.getWalkerReserveInfo().getWalker().getUserId());
-      List <WalkerAdjust> all = walkerAdjustRepository.findAll();
-      for (WalkerAdjust walkerAdjust : all) {
-        System.out.println(walkerAdjust.getUserId());
-      }
       final WalkerAdjust walkerAdjust = walkerAdjustRepository.findByUserIdAndAndWalkerAdjustDate(
               payHistory.getWalkerReserveInfo().getWalker().getUserId() , LocalDate.now())
           .orElseThrow(() -> new AdjustBatchException(ErrorCode.BATCH_ADJUST_ERROR));

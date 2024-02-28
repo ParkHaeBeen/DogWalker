@@ -63,7 +63,6 @@ public class AdjustStepConfig {
     return userId -> {
       final LocalDate startOfMonth = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
       final LocalDate endOfMonth = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-      System.out.println("userId = " + userId);
       return WalkerAdjust.builder()
           .userId(userId)
           .walkerAdjustDate(LocalDate.now())
