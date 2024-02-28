@@ -19,7 +19,7 @@ public class  BatchConfig{
   private final JobRepository jobRepository;
   private final JobExecutionListener jobExecutionListener;
 
-  @Bean
+  @Bean("refuseReserveJob")
   public Job refuseReserveJob(@Qualifier("Reserve") Step reserveStep){
 
     return new JobBuilder("reserveJob",jobRepository)
@@ -28,7 +28,7 @@ public class  BatchConfig{
         .build();
   }
 
-  @Bean
+  @Bean("adjustJob")
   public Job adjustJob(@Qualifier("Adjust") Step adjustStep, @Qualifier("AdjustDetail")
   Step adjustDetailStep) {
     return new JobBuilder("adjustJob" , jobRepository)
