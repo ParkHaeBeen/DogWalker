@@ -18,11 +18,6 @@
 
 ![DogWalker (5)](https://github.com/ParkHaeBeen/DogWalker/assets/130157565/041be768-fa25-4fc3-a6d5-ca6b9359e73a)
 
-<br>
-
-# 🔥 Trouble Shooting
-
-### [📌 go to the trouble shooting section](https://github.com/ParkHaeBeen/DogWalker/blob/develop/docs/TROUBLE_SHOOTING.md)
 
 <br>
 
